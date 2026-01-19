@@ -1,0 +1,546 @@
+/* =========================
+   BASE / TOKENS
+   ========================= */
+:root{
+  /* Colores estilo Canva (beige + tinta suave) */
+  --bg: #d6cfb1;            /* fondo general */
+  --paper: #efe7d0;         /* panel principal (beige más claro) */
+  --paper-2: #e7dcc2;       /* variación para bandas */
+  --ink: #2b2b2b;           /* texto principal */
+  --muted: rgba(43,43,43,.72);
+  --muted-2: rgba(43,43,43,.55);
+
+  /* Sombras / radios */
+  --radius-xl: 26px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+
+  --shadow-soft: 0 14px 40px rgba(0,0,0,.10);
+  --shadow-card: 0 18px 55px rgba(0,0,0,.14);
+
+  /* Layout centrado tipo invitación */
+  --page-w: 420px;          /* ancho “móvil” */
+  --page-w-lg: 460px;       /* un pelín más en pantallas grandes */
+  --gutter: 18px;
+
+  /* Botón */
+  --btn-bg: rgba(43,43,43,.82);
+  --btn-bg-hover: rgba(43,43,43,.92);
+  --btn-text: #fff;
+
+  /* Intro */
+  --intro-dim: rgba(0,0,0,.52);
+  --intro-blur: 12px;
+
+  /* Sobre */
+  --card-radius: 28px;
+  --card-shadow: 0 30px 90px rgba(0,0,0,.32);
+
+  /* Tipografía base */
+  --font: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+*{ box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body{
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
+}
+
+/* Selección bonita */
+::selection{
+  background: rgba(43,43,43,.18);
+}
+
+/* =========================
+   CONTENEDOR: TODO CENTRADO
+   (PC se ve igual que móvil)
+   ========================= */
+.site{
+  /* centramos como tarjeta vertical */
+  width: min(var(--page-w), calc(100vw - (var(--gutter) * 2)));
+  margin: 0 auto;
+  background: transparent;
+  padding-bottom: 40px;
+  transition: opacity 650ms ease;
+}
+
+@media (min-width: 900px){
+  .site{
+    width: min(var(--page-w-lg), calc(100vw - 48px));
+  }
+}
+
+/* oculto hasta abrir */
+.site--hidden{
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* =========================
+   INTRO (SOBRE)
+   ========================= */
+.intro{
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--intro-dim);
+  backdrop-filter: blur(var(--intro-blur));
+  -webkit-backdrop-filter: blur(var(--intro-blur));
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity 480ms ease;
+}
+
+.intro--closing{ opacity: 0; }
+
+.envelopeBtn{
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  width: min(780px, 92vw); /* más grande en PC */
+  outline: none;
+}
+
+.envelopeCard{
+  position: relative;
+  width: 100%;
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  transform: translateZ(0);
+  transition: transform 900ms cubic-bezier(.2,.8,.2,1), filter 900ms cubic-bezier(.2,.8,.2,1);
+}
+
+.envelopeImg{
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* capa de brillo suave */
+.envelopeCard::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 30% 18%, rgba(255,255,255,.22), rgba(255,255,255,0) 55%),
+    linear-gradient(to bottom, rgba(0,0,0,.10), rgba(0,0,0,0) 40%);
+}
+
+/* textos sobre el sobre */
+.envelopeOverlay{
+  position: absolute;
+  inset: 0;
+  text-align: center;
+  padding: 22px;
+  color: rgba(34,34,34,.84);
+}
+
+.envelopeTextTop{
+  position: absolute;
+  top: 46%;
+  left: 10%;
+  right: 10%;
+  font-size: 20px;
+  font-style: italic;
+  opacity: .85;
+}
+
+.envelopeNames{
+  position: absolute;
+  top: 56%;
+  left: 10%;
+  right: 10%;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+.envelopeDate{
+  position: absolute;
+  top: 64%;
+  left: 10%;
+  right: 10%;
+  font-size: 16px;
+  letter-spacing: .7px;
+  opacity: .9;
+}
+
+.envelopeHint{
+  position: absolute;
+  bottom: 14px;
+  left: 0;
+  right: 0;
+  font-size: 13px;
+  opacity: .7;
+}
+
+@media (hover:hover){
+  .envelopeBtn:hover .envelopeCard{
+    transform: translateY(-6px) scale(1.01);
+  }
+}
+
+.intro--open .envelopeCard{
+  transform: translateY(-10px) rotate(-1.5deg) scale(.985);
+  filter: brightness(1.03);
+}
+
+/* =========================
+   HERO CANVA (pantalla 1)
+   ========================= */
+.canva-hero{
+  margin-top: 14px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  background: #000;
+}
+
+.canva-hero__photo{
+  position: relative;
+}
+
+.canva-hero__photo img{
+  display: block;
+  width: 100%;
+  height: 520px;
+  object-fit: cover;
+}
+
+.canva-hero__overlay{
+  position: absolute;
+  inset: 0;
+  padding: 18px 18px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 10px;
+  color: #fff;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,.58) 0%,
+    rgba(0,0,0,.20) 45%,
+    rgba(0,0,0,0) 78%
+  );
+}
+
+.canva-hero__title{
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: .2px;
+  line-height: 1.05;
+}
+
+.canva-hero__subtitle{
+  font-size: 18px;
+  font-weight: 600;
+  opacity: .95;
+}
+
+.canva-hero__divider{
+  width: 120px;
+  height: 2px;
+  background: rgba(255,255,255,.75);
+  border-radius: 999px;
+  margin: 2px 0 2px 0;
+}
+
+.canva-hero__text{
+  font-size: 13px;
+  opacity: .92;
+  max-width: 320px;
+  line-height: 1.35;
+}
+
+.canva-hero__date-label{
+  margin-top: 4px;
+  font-size: 14px;
+  opacity: .95;
+}
+
+.canva-hero__date{
+  font-size: 40px;
+  letter-spacing: 1px;
+  font-weight: 300;
+  text-shadow: 0 8px 18px rgba(0,0,0,.35);
+}
+
+.canva-hero__scroll{
+  margin-top: 8px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.18);
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  color: #fff;
+  align-self: center;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: transform 180ms ease, background 180ms ease;
+}
+
+.canva-hero__scroll span{
+  font-size: 22px;
+  transform: translateY(-1px);
+}
+
+.canva-hero__scroll:hover{
+  transform: translateY(-2px);
+  background: rgba(255,255,255,.24);
+}
+
+/* Ajuste hero en pantallas muy pequeñas */
+@media (max-width: 380px){
+  .canva-hero__photo img{ height: 480px; }
+  .canva-hero__date{ font-size: 36px; }
+}
+
+/* =========================
+   PANELES (pantallas 2/3)
+   ========================= */
+.panel{
+  margin-top: 14px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(180deg, var(--paper), var(--paper-2));
+  box-shadow: var(--shadow-soft);
+  padding: 16px;
+}
+
+/* =========================
+   GALERÍA (3 mini fotos)
+   ========================= */
+.gallery{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.gallery__img{
+  border-radius: var(--radius-lg);
+  background: rgba(255,255,255,.45);
+  border: 1px solid rgba(43,43,43,.08);
+  min-height: 92px;
+  display: grid;
+  place-items: center;
+  color: var(--muted-2);
+  font-size: 12px;
+  overflow: hidden;
+}
+
+/* Luego: meter <img> dentro y quitar texto */
+
+/* =========================
+   DOS COLUMNAS (pero en móvil, 1)
+   Para que PC se vea como móvil: siempre 1 columna
+   ========================= */
+.two-cols{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+/* =========================
+   CARDS / BLOQUES
+   ========================= */
+.card{
+  background: rgba(255,255,255,.35);
+  border: 1px solid rgba(43,43,43,.10);
+  border-radius: var(--radius-xl);
+  padding: 16px;
+  box-shadow: 0 10px 26px rgba(0,0,0,.06);
+}
+
+.card.center{
+  text-align: center;
+}
+
+.card__badge{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(43,43,43,.12);
+  color: rgba(43,43,43,.82);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+}
+
+.card__title{
+  margin-top: 12px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+.card__title.big{
+  font-size: 20px;
+}
+
+.card__text{
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+/* =========================
+   BOTÓN
+   ========================= */
+.btn{
+  display: inline-block;
+  margin-top: 12px;
+  padding: 11px 14px;
+  border-radius: 14px;
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  transition: transform 140ms ease, background 140ms ease;
+}
+
+.btn:hover{
+  background: var(--btn-bg-hover);
+  transform: translateY(-1px);
+}
+
+/* =========================
+   MAPA placeholder
+   ========================= */
+.map-placeholder{
+  margin-top: 12px;
+  border-radius: var(--radius-lg);
+  background: rgba(255,255,255,.55);
+  border: 1px solid rgba(43,43,43,.10);
+  min-height: 140px;
+  display: grid;
+  place-items: center;
+  color: var(--muted-2);
+  font-size: 12px;
+}
+
+/* =========================
+   TIMELINE (Momentos clave)
+   ========================= */
+.timeline{
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.timeline__row{
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.timeline__icon{
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: rgba(43,43,43,.10);
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+}
+
+.timeline__time{
+  font-weight: 800;
+  font-size: 13px;
+  color: rgba(43,43,43,.92);
+}
+
+.timeline__label{
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* burbuja tipo “habrá sitios...” */
+.bubble{
+  margin-top: 14px;
+  display: inline-block;
+  padding: 10px 12px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.55);
+  border: 1px solid rgba(43,43,43,.10);
+  color: rgba(43,43,43,.78);
+  font-size: 12px;
+  position: relative;
+}
+
+.bubble::before{
+  content:"";
+  position:absolute;
+  left: 18px;
+  top: -8px;
+  width: 14px;
+  height: 14px;
+  background: rgba(255,255,255,.55);
+  border-left: 1px solid rgba(43,43,43,.10);
+  border-top: 1px solid rgba(43,43,43,.10);
+  transform: rotate(45deg);
+}
+
+/* =========================
+   TRES CARDS (pantalla 3)
+   (siempre en columna para PC=móvil)
+   ========================= */
+.three-cards{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+/* Texto “script” (temporal; luego metemos fuente bonita) */
+.script{
+  font-size: 22px;
+  font-weight: 700;
+  color: rgba(43,43,43,.82);
+  margin-top: 4px;
+}
+
+/* Countdown */
+.countdown{
+  margin-top: 12px;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: rgba(43,43,43,.82);
+  font-variant-numeric: tabular-nums;
+}
+
+.countdown__labels{
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  font-size: 11px;
+  color: var(--muted-2);
+  text-transform: uppercase;
+  letter-spacing: .8px;
+}
+
+/* =========================
+   PEQUEÑOS RETOQUES GENERALES
+   ========================= */
+a{ color: inherit; }
+
+strong{ color: rgba(43,43,43,.92); }
+
