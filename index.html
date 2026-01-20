@@ -12,165 +12,226 @@
 
   <!-- INTRO SOBRE -->
   <div id="intro" class="intro" role="dialog" aria-modal="true" aria-label="Invitación">
-  <button id="openEnvelope" class="envelopeBtn" type="button" aria-label="Abrir invitación">
-    <div class="envelopeCard">
-      <img class="envelopeImg" src="assets/img/envelope.png" alt="" aria-hidden="true" />
+    <button id="openEnvelope" class="envelopeBtn" type="button" aria-label="Abrir invitación">
+      <div class="envelopeCard">
+        <img class="envelopeImg" src="assets/img/envelope.png" alt="" aria-hidden="true" />
 
-      <div class="envelopeOverlay">
-        <div class="envelopeTextTop">Esta invitación es exclusiva para ti</div>
-        <div class="envelopeNames">Alberto &amp; Gema</div>
-        <div class="envelopeDate">26.06.2026</div>
-        <div class="envelopeHint">Pulsa para abrir</div>
+        <div class="envelopeOverlay">
+          <div class="envelopeTextTop">Esta invitación es exclusiva para ti</div>
+          <div class="envelopeNames">Alberto &amp; Gema</div>
+          <div class="envelopeDate">26.06.2026</div>
+          <div class="envelopeHint">Pulsa para abrir</div>
+        </div>
+
+        <!-- Opcional: si quieres “sello” encima del sobre.
+             Si no lo tienes en CSS, no pasa nada (no rompe). -->
+        <div class="seal" aria-hidden="true">
+          <span class="sealText">A&amp;G</span>
+        </div>
       </div>
-
-      <div class="seal" aria-hidden="true">
-        <span class="sealText">A&amp;G</span>
-      </div>
-    </div>
-  </button>
-</div>
-
+    </button>
+  </div>
 
   <!-- WEB (vuestra invitación) -->
   <main id="site" class="site site--hidden">
 
-  <!-- ===== PANTALLA 1 (HERO CANVA) ===== -->
-  <section class="canva-hero" id="inicio">
-    <div class="canva-hero__photo">
-      <img src="assets/img/hero.jpg" alt="Alberto y Gema" />
-      <div class="canva-hero__overlay">
-        <div class="canva-hero__title">Alberto y Gema</div>
-        <div class="canva-hero__subtitle">Nos casamos</div>
+    <!-- ===== PANTALLA 1 (HERO CANVA) ===== -->
+    <section class="canva-hero frame" id="inicio">
+      <div class="canva-hero__photo">
+        <img src="assets/img/hero.jpg" alt="Alberto y Gema" />
+        <div class="canva-hero__overlay">
+          <div class="canva-hero__title">Alberto y Gema</div>
+          <div class="canva-hero__subtitle">Nos casamos</div>
 
-        <div class="canva-hero__divider"></div>
+          <div class="canva-hero__divider"></div>
 
-        <div class="canva-hero__text">
-          Un día especial merece ser compartido con personas especiales.<br/>
-          Y nosotros no podemos imaginar nuestro día sin ti.
+          <div class="canva-hero__text">
+            Un día especial merece ser compartido con personas especiales.<br />
+            Y nosotros no podemos imaginar nuestro día sin ti.
+          </div>
+
+          <div class="canva-hero__date-label">Te esperamos el:</div>
+          <div class="canva-hero__date">26.06.2026</div>
+
+          <a class="canva-hero__scroll" href="#info" aria-label="Bajar a la información">
+            <span>⌄</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PANTALLA 2 (INFO) ===== -->
+    <section class="panel frame" id="info">
+
+      <!-- Decor animado (avión/nubes/corazón) -->
+      <div class="decor-sky" aria-hidden="true">
+        <div class="cloud c1"></div>
+        <div class="cloud c2"></div>
+        <div class="cloud c3"></div>
+
+        <div class="plane-path"></div>
+        <div class="plane"></div>
+
+        <div class="heart"></div>
+      </div>
+
+      <!-- Galería 3 fotos -->
+      <div class="gallery">
+        <div class="gallery__img">
+          <img src="assets/img/ga.jpg" alt="Logo G&A" />
+        </div>
+        <div class="gallery__img">
+          <img src="assets/img/hero.jpg" alt="Alberto y Gema" />
+        </div>
+        <div class="gallery__img">
+          <img src="assets/img/ga.jpg" alt="Logo G&A" />
+        </div>
+      </div>
+
+      <div class="two-cols">
+
+        <!-- UBICACIÓN -->
+        <div class="card">
+          <div class="card__badge">📍 UBICACIÓN</div>
+          <div class="card__title">El Hueco Bodas y Banquetes</div>
+          <div class="card__text">Pulsa para abrir la ubicación en Google Maps.</div>
+
+          <a class="btn"
+             href="https://maps.google.com/?q=El+Hueco+Bodas+y+Banquetes"
+             target="_blank"
+             rel="noreferrer">
+            Ver en Maps
+          </a>
+
+          <!-- Mapa real (sin API, funciona en GitHub Pages) -->
+          <div class="map-embed">
+            <iframe
+              title="Mapa El Hueco Bodas y Banquetes"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              src="https://www.google.com/maps?q=El%20Hueco%20Bodas%20y%20Banquetes&output=embed">
+            </iframe>
+          </div>
         </div>
 
-        <div class="canva-hero__date-label">Te esperamos el:</div>
-        <div class="canva-hero__date">26.06.2026</div>
+        <!-- MOMENTOS CLAVE -->
+        <div class="card">
+          <div class="card__title big">Momentos clave</div>
 
-        <a class="canva-hero__scroll" href="#info" aria-label="Bajar a la información">
-          <span>⌄</span>
-        </a>
+          <div class="timeline">
+            <div class="timeline__row reveal">
+              <div class="timeline__icon">🚌</div>
+              <div class="timeline__content">
+                <div class="timeline__time">18:30h</div>
+                <div class="timeline__label">Autobús de ida</div>
+              </div>
+            </div>
+
+            <div class="timeline__row reveal">
+              <div class="timeline__icon">💍</div>
+              <div class="timeline__content">
+                <div class="timeline__time">19:00h</div>
+                <div class="timeline__label">Ceremonia civil</div>
+              </div>
+            </div>
+
+            <div class="timeline__row reveal">
+              <div class="timeline__icon">🍸</div>
+              <div class="timeline__content">
+                <div class="timeline__time">19:45h</div>
+                <div class="timeline__label">Cena tipo cóctel</div>
+              </div>
+            </div>
+
+            <div class="timeline__row reveal">
+              <div class="timeline__icon">🎧</div>
+              <div class="timeline__content">
+                <div class="timeline__time">22:15h</div>
+                <div class="timeline__label">DJ y barra libre</div>
+              </div>
+            </div>
+
+            <div class="timeline__row reveal">
+              <div class="timeline__icon">🚌</div>
+              <div class="timeline__content">
+                <div class="timeline__time">01:15h</div>
+                <div class="timeline__label">Autobús de vuelta</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bubble">Habrá sitios para sentarse.</div>
+        </div>
+
       </div>
+    </section>
+
+    <!-- ===== PANTALLA 3 (MODALES + COUNTDOWN) ===== -->
+    <section class="panel frame" id="asistencia">
+      <div class="three-cards">
+
+        <!-- Pestañas (abren modal) -->
+        <div class="actionGrid">
+          <button class="actionCard" data-modal="dress" type="button">
+            <div class="actionTitle">DRESS CODE</div>
+            <div class="actionSub">Una orientación para tu vestuario</div>
+            <div class="btnFake">Ver más</div>
+          </button>
+
+          <button class="actionCard" data-modal="bus" type="button">
+            <div class="actionTitle">AUTOBÚS</div>
+            <div class="actionSub">Horarios y paradas</div>
+            <div class="btnFake">Ver más</div>
+          </button>
+
+          <button class="actionCard" data-modal="tips" type="button">
+            <div class="actionTitle">TIPS Y NOTAS</div>
+            <div class="actionSub">Información adicional</div>
+            <div class="btnFake">+ Info</div>
+          </button>
+        </div>
+
+        <!-- Cuenta atrás -->
+        <div class="card center">
+          <div class="script">¡Te esperamos!</div>
+
+          <div class="countdownWrap" id="countdown">
+            <div class="cdItem">
+              <div class="cdNum" data-cd="days">000</div>
+              <div class="cdLab">DÍAS</div>
+            </div>
+            <div class="cdSep"></div>
+            <div class="cdItem">
+              <div class="cdNum" data-cd="hours">00</div>
+              <div class="cdLab">HS</div>
+            </div>
+            <div class="cdSep"></div>
+            <div class="cdItem">
+              <div class="cdNum" data-cd="mins">00</div>
+              <div class="cdLab">MIN</div>
+            </div>
+            <div class="cdSep"></div>
+            <div class="cdItem">
+              <div class="cdNum" data-cd="secs">00</div>
+              <div class="cdLab">SEG</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL -->
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__panel" role="dialog" aria-modal="true">
+      <button class="modal__close" data-close aria-label="Cerrar" type="button">✕</button>
+      <div class="modal__content" id="modalContent"></div>
     </div>
-  </section>
-
-  <!-- ===== PANTALLA 2 (INFO) ===== -->
-  <section class="panel" id="info">
-
-    <div class="gallery">
-      <div class="gallery__img">Foto 1</div>
-      <div class="gallery__img">Foto 2</div>
-      <div class="gallery__img">Foto 3</div>
-    </div>
-
-    <div class="two-cols">
-
-      <!-- UBICACIÓN -->
-      <div class="card">
-        <div class="card__badge">📍 UBICACIÓN</div>
-        <div class="card__title">El Hueco Bodas y Banquetes</div>
-        <div class="card__text">Aquí irá dirección y un botón para abrir Google Maps.</div>
-
-        <a class="btn" href="#" target="_blank" rel="noreferrer">Ver en Maps</a>
-
-        <div class="map-placeholder">Mapa (lo metemos luego)</div>
-      </div>
-
-      <!-- MOMENTOS CLAVE -->
-      <div class="card">
-        <div class="card__title big">Momentos clave</div>
-
-        <div class="timeline">
-          <div class="timeline__row">
-            <div class="timeline__icon">🚌</div>
-            <div class="timeline__content">
-              <div class="timeline__time">18:30h</div>
-              <div class="timeline__label">Autobús de ida</div>
-            </div>
-          </div>
-
-          <div class="timeline__row">
-            <div class="timeline__icon">💍</div>
-            <div class="timeline__content">
-              <div class="timeline__time">19:00h</div>
-              <div class="timeline__label">Ceremonia civil</div>
-            </div>
-          </div>
-
-          <div class="timeline__row">
-            <div class="timeline__icon">🍸</div>
-            <div class="timeline__content">
-              <div class="timeline__time">19:45h</div>
-              <div class="timeline__label">Cena tipo cóctel</div>
-            </div>
-          </div>
-
-          <div class="timeline__row">
-            <div class="timeline__icon">🎧</div>
-            <div class="timeline__content">
-              <div class="timeline__time">22:15h</div>
-              <div class="timeline__label">DJ y barra libre</div>
-            </div>
-          </div>
-
-          <div class="timeline__row">
-            <div class="timeline__icon">🚌</div>
-            <div class="timeline__content">
-              <div class="timeline__time">01:15h</div>
-              <div class="timeline__label">Autobús de vuelta</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bubble">Habrá sitios para sentarse.</div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ===== PANTALLA 3 (DRESS + RSVP + COUNTDOWN) ===== -->
-  <section class="panel" id="asistencia">
-
-    <div class="three-cards">
-
-      <div class="card">
-        <div class="card__badge">DRESS CODE</div>
-        <div class="card__text">
-          Sin etiqueta.<br/>
-          Ven cómodo y con tu estilo, con un toque arreglado.<br/>
-          <strong>Evita el blanco</strong> para no coincidir con la novia.
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card__badge">ASISTENCIA</div>
-        <div class="card__text">
-          Para facilitar la organización, responde a este cuestionario y dale a enviar.
-          <br/><br/>
-          Un cuestionario por adulto.
-        </div>
-        <a class="btn" href="#" target="_blank" rel="noreferrer">Cuestionario</a>
-      </div>
-
-      <div class="card center">
-        <div class="script">¡Te esperamos!</div>
-        <div class="countdown" id="countdown">
-          000 : 00 : 00 : 00
-        </div>
-        <div class="countdown__labels">
-          <span>Días</span><span>Horas</span><span>Min</span><span>Seg</span>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-</main>
+  </div>
 
   <script src="js/main.js"></script>
 </body>
