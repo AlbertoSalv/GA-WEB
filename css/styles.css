@@ -19,8 +19,8 @@
   --shadow-card: 0 18px 55px rgba(0,0,0,.14);
 
   /* Layout centrado tipo invitación */
-  --page-w: 420px;          /* ancho “móvil” */
-  --page-w-lg: 460px;       /* un pelín más en pantallas grandes */
+  --page-w: 420px;         /* móvil */
+  --page-w-lg: 980px;      /* PC: permite columnas */
   --gutter: 18px;
 
   /* Botón */
@@ -929,3 +929,48 @@ body{
    ========================= */
 a{ color: inherit; }
 strong{ color: rgba(43,43,43,.92); }
+
+/* ===== En PC: frames estrechos por defecto (look invitación) ===== */
+.frame{
+  width: 100%;
+}
+
+@media (min-width: 900px){
+  .frame{
+    max-width: 460px;   /* casi como antes */
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ===== En PC: SOLO ubicación más ancha para 2 columnas ===== */
+@media (min-width: 900px){
+  #ubicacion.frame{
+    max-width: 980px;
+  }
+}
+
+.split-ubicacion{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.map-embed iframe{
+  width: 100%;
+  height: 220px;
+  border: 0;
+  border-radius: 18px;
+}
+
+@media (min-width: 980px){
+  .split-ubicacion{
+    grid-template-columns: 0.95fr 1.05fr;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .map-embed iframe{
+    height: 260px;
+  }
+}
