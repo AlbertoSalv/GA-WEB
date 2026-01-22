@@ -17,9 +17,8 @@ openBtn.addEventListener("click", () => {
   site.style.opacity = "0";
   site.classList.remove("site--hidden");
 
-  // Esperamos a que “se note” la animación del sobre
   setTimeout(() => {
-    intro.classList.add("intro--closing"); // fade out
+    intro.classList.add("intro--closing");
 
     setTimeout(() => {
       intro.style.display = "none";
@@ -27,10 +26,8 @@ openBtn.addEventListener("click", () => {
         site.style.opacity = "1";
       });
 
-      // Arriba del todo (sin animación)
       window.scrollTo({ top: 0, left: 0, behavior: "instant" });
 
-      // Por si el foco se queda “perdido”
       site.setAttribute("tabindex", "-1");
       site.focus({ preventScroll: true });
       site.removeAttribute("tabindex");
@@ -42,7 +39,7 @@ openBtn.addEventListener("click", () => {
 
 
 // ===============================
-// Scroll reveal + stagger (timeline)
+// Scroll reveal + stagger
 // ===============================
 const revealEls = document.querySelectorAll(".reveal");
 
@@ -51,9 +48,9 @@ if ("IntersectionObserver" in window) {
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
 
-      // Stagger SOLO para timeline rows
-      if (entry.target.classList.contains("timeline__row")) {
-        const rows = Array.from(document.querySelectorAll(".timeline__row.reveal"));
+      // Stagger para items de timeline
+      if (entry.target.classList.contains("tItem")) {
+        const rows = Array.from(document.querySelectorAll(".tItem.reveal"));
         const idx = rows.indexOf(entry.target);
         entry.target.style.transitionDelay = `${idx * 70}ms`;
       } else {
@@ -67,15 +64,13 @@ if ("IntersectionObserver" in window) {
 
   revealEls.forEach((el) => io.observe(el));
 } else {
-  // Fallback navegadores viejos
   revealEls.forEach((el) => el.classList.add("is-visible"));
 }
 
 
 // ===============================
-// Countdown real (26/06/2026)
+// Countdown real (26/06/2026 19:00)
 // ===============================
-// Consejo: para evitar líos de zona horaria, construimos fecha local:
 const targetDate = new Date(2026, 5, 26, 19, 0, 0); // (mes 5 = junio) 19:00
 
 function pad2(n) { return String(n).padStart(2, "0"); }
@@ -108,7 +103,7 @@ setInterval(tickCountdown, 1000);
 
 
 // ===============================
-// Modales (pestañas) - perfecto
+// Modales
 // ===============================
 const modal = document.getElementById("modal");
 const modalContent = document.getElementById("modalContent");
@@ -141,10 +136,8 @@ function openModal(key, openerEl = null) {
   modal.classList.add("is-open");
   modal.setAttribute("aria-hidden", "false");
 
-  // Bloquea scroll del body
   document.body.style.overflow = "hidden";
 
-  // Foco al botón cerrar (mejor UX)
   if (closeBtn) {
     setTimeout(() => closeBtn.focus(), 0);
   }
@@ -157,26 +150,22 @@ function closeModal() {
   modal.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
 
-  // Devuelve el foco a donde estaba
   if (lastFocusedEl && typeof lastFocusedEl.focus === "function") {
     setTimeout(() => lastFocusedEl.focus(), 0);
   }
   lastFocusedEl = null;
 }
 
-// Botones que abren modal
 document.querySelectorAll("[data-modal]").forEach((btn) => {
   btn.addEventListener("click", () => openModal(btn.dataset.modal, btn));
 });
 
-// Cerrar por click fuera o botón X
 if (modal) {
   modal.addEventListener("click", (e) => {
     if (e.target.hasAttribute("data-close")) closeModal();
   });
 }
 
-// Cerrar por ESC
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && modal && modal.classList.contains("is-open")) {
     closeModal();

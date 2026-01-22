@@ -35,77 +35,97 @@
   <!-- WEB -->
   <main id="site" class="site site--hidden">
 
-    <!-- 1) HERO: foto (izq en PC) + texto (dcha en PC) -->
-    <section class="frame heroSplit" id="inicio">
-      <div class="heroSplit__grid">
-        <div class="heroSplit__photo">
-          <img src="assets/img/hero.jpg" alt="Alberto y Gema">
-        </div>
-
-        <div class="heroSplit__text">
-          <div class="heroSplit__names">Alberto y Gema</div>
-          <div class="heroSplit__tag">Nos casamos</div>
-
-          <div class="heroSplit__p">
-            Un día especial merece ser compartido con personas especiales.<br>
-            Y nosotros no podemos imaginar nuestro día sin ti.
+    <!-- HERO -->
+    <section class="section hero" id="inicio">
+      <div class="frame section__inner">
+        <div class="heroGrid">
+          <div class="heroPhoto">
+            <img src="assets/img/hero.jpg" alt="Alberto y Gema">
           </div>
 
-          <div class="heroSplit__dateLabel">Te esperamos el:</div>
-          <div class="heroSplit__date">26.06.2026</div>
+          <div class="heroText">
+            <div class="heroTag">Nos casamos</div>
+            <div class="heroNames">Alberto y Gema</div>
 
-          <a class="heroSplit__scroll" href="#galeria" aria-label="Bajar a la galería">⌄</a>
+            <p class="heroLead">
+              Un día especial merece ser compartido con personas especiales.<br>
+              Y nosotros no podemos imaginar nuestro día sin ti.
+            </p>
+
+            <div class="heroDateLabel">Te esperamos el</div>
+            <div class="heroDate">26.06.2026</div>
+
+            <div class="heroCTA">
+              <a class="scrollCue" href="#galeria" aria-label="Bajar a la galería">⌄</a>
+              <a class="btn btn--ghost" href="#asistencia">Ver info</a>
+            </div>
+
+            <div class="hr-gold" aria-hidden="true"></div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- (Hueco opcional) banda full-width para meter decoraciones animadas entre secciones -->
-    <div class="fullband fullband--soft" aria-hidden="true"></div>
+    <!-- DIVIDER (wave) -->
+    <div class="divider" aria-hidden="true">
+      <svg class="wave" viewBox="0 0 1440 120" preserveAspectRatio="none">
+        <path d="M0,70 C180,110 360,30 540,70 C720,110 900,30 1080,70 C1260,110 1350,70 1440,55 L1440,120 L0,120 Z"></path>
+      </svg>
+    </div>
 
-    <!-- 2) GALERÍA: solo la galería -->
-    <section class="frame panel" id="galeria">
+    <!-- GALERÍA -->
+    <section class="section" id="galeria">
+      <div class="frame section__inner">
+        <div class="kicker">Galería</div>
+        <h2 class="h2">Un pequeño adelanto</h2>
+        <p class="p">Algunos momentos nuestros… y los que quedan por vivir.</p>
 
-      <!-- Decor animado (si quieres, aquí queda bonito) -->
-      <div class="decor-sky" aria-hidden="true">
-        <div class="cloud c1"></div>
-        <div class="cloud c2"></div>
-        <div class="cloud c3"></div>
-        <div class="plane-path"></div>
-        <div class="plane"></div>
-        <div class="heart"></div>
-      </div>
-
-      <div class="gallery">
-        <div class="gallery__img">
-          <img src="assets/img/ga.jpg" alt="Logo G&A" />
-        </div>
-        <div class="gallery__img">
-          <img src="assets/img/hero.jpg" alt="Alberto y Gema" />
-        </div>
-        <div class="gallery__img">
-          <img src="assets/img/ga.jpg" alt="Logo G&A" />
+        <div class="gallery">
+          <div class="gallery__img">
+            <img src="assets/img/ga.jpg" alt="Logo G&A" />
+          </div>
+          <div class="gallery__img">
+            <img src="assets/img/hero.jpg" alt="Alberto y Gema" />
+          </div>
+          <div class="gallery__img">
+            <img src="assets/img/ga.jpg" alt="Logo G&A" />
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- 3) UBICACIÓN: en PC 2 columnas / en móvil vertical -->
-    <section class="frame panel" id="ubicacion">
-      <div class="split-ubicacion">
+    <!-- SKY SEPARATOR (avión como separador real, NO detrás) -->
+    <div class="skyband" aria-hidden="true">
+      <div class="cloud c1"></div>
+      <div class="cloud c2"></div>
+      <div class="cloud c3"></div>
+      <div class="plane-path"></div>
+      <div class="plane"></div>
+      <div class="heart"></div>
+    </div>
 
-        <div class="card">
-          <div class="card__badge">📍 UBICACIÓN</div>
-          <div class="card__title">El Hueco Bodas y Banquetes</div>
-          <div class="card__text">Pulsa para abrir la ubicación en Google Maps.</div>
+    <!-- UBICACIÓN -->
+    <section class="section" id="ubicacion">
+      <div class="frame section__inner">
+        <div class="kicker">Ubicación</div>
+        <h2 class="h2">Dónde será</h2>
+        <p class="p">Todo lo importante, a un clic. Podéis abrir el mapa y guardar la ubicación.</p>
 
-          <a class="btn"
-             href="https://maps.google.com/?q=El+Hueco+Bodas+y+Banquetes"
-             target="_blank"
-             rel="noreferrer">
-            Ver en Maps
-          </a>
-        </div>
+        <div class="split">
+          <div>
+            <h3 class="placeTitle">El Hueco Bodas y Banquetes</h3>
+            <div class="placeMeta">
+              Pulsa en el botón para abrir Google Maps. Si venís en coche, os recomendamos llegar con margen para aparcar con calma.
+            </div>
 
-        <div class="card">
+            <a class="btn"
+               href="https://maps.google.com/?q=El+Hueco+Bodas+y+Banquetes"
+               target="_blank"
+               rel="noreferrer">
+              Ver en Google Maps →
+            </a>
+          </div>
+
           <div class="map-embed">
             <iframe
               title="Mapa El Hueco Bodas y Banquetes"
@@ -115,113 +135,134 @@
             </iframe>
           </div>
         </div>
-
       </div>
     </section>
 
-    <!-- (Hueco opcional) otra banda full-width -->
-    <div class="fullband fullband--soft" aria-hidden="true"></div>
+    <!-- DIVIDER (soft wave) -->
+    <div class="divider" aria-hidden="true">
+      <svg class="wave wave--soft" viewBox="0 0 1440 120" preserveAspectRatio="none">
+        <path d="M0,55 C160,25 320,95 520,60 C720,25 900,95 1100,60 C1280,30 1360,40 1440,55 L1440,120 L0,120 Z"></path>
+      </svg>
+    </div>
 
-    <!-- 4) MOMENTOS CLAVE: solo -->
-    <section class="frame panel" id="momentos">
-      <div class="card">
-        <div class="card__title big">Momentos clave</div>
+    <!-- MOMENTOS CLAVE -->
+    <section class="section" id="momentos">
+      <div class="frame section__inner">
+        <div class="kicker">Momentos clave</div>
+        <h2 class="h2">La línea del día</h2>
+        <p class="p">Horario orientativo. Si hay algún ajuste, lo actualizaremos aquí.</p>
 
-        <div class="timeline">
-          <div class="timeline__row reveal">
-            <div class="timeline__icon">🚌</div>
-            <div>
-              <div class="timeline__time">18:30h</div>
-              <div class="timeline__label">Autobús de ida</div>
+        <div class="timelineWrap">
+          <div class="timeline">
+
+            <div class="tItem reveal">
+              <div class="tDot">🚌</div>
+              <div class="tCard">
+                <div class="tTime">18:30h</div>
+                <div class="tLabel">Autobús de ida</div>
+              </div>
             </div>
-          </div>
 
-          <div class="timeline__row reveal">
-            <div class="timeline__icon">💍</div>
-            <div>
-              <div class="timeline__time">19:00h</div>
-              <div class="timeline__label">Ceremonia civil</div>
+            <div class="tItem reveal">
+              <div class="tDot">💍</div>
+              <div class="tCard">
+                <div class="tTime">19:00h</div>
+                <div class="tLabel">Ceremonia civil</div>
+              </div>
             </div>
-          </div>
 
-          <div class="timeline__row reveal">
-            <div class="timeline__icon">🍸</div>
-            <div>
-              <div class="timeline__time">19:45h</div>
-              <div class="timeline__label">Cena tipo cóctel</div>
+            <div class="tItem reveal">
+              <div class="tDot">🍸</div>
+              <div class="tCard">
+                <div class="tTime">19:45h</div>
+                <div class="tLabel">Cena tipo cóctel</div>
+              </div>
             </div>
-          </div>
 
-          <div class="timeline__row reveal">
-            <div class="timeline__icon">🎧</div>
-            <div>
-              <div class="timeline__time">22:15h</div>
-              <div class="timeline__label">DJ y barra libre</div>
+            <div class="tItem reveal">
+              <div class="tDot">🎧</div>
+              <div class="tCard">
+                <div class="tTime">22:15h</div>
+                <div class="tLabel">DJ y barra libre</div>
+              </div>
             </div>
-          </div>
 
-          <div class="timeline__row reveal">
-            <div class="timeline__icon">🚌</div>
-            <div>
-              <div class="timeline__time">01:15h</div>
-              <div class="timeline__label">Autobús de vuelta</div>
+            <div class="tItem reveal">
+              <div class="tDot">🚌</div>
+              <div class="tCard">
+                <div class="tTime">01:15h</div>
+                <div class="tLabel">Autobús de vuelta</div>
+              </div>
             </div>
+
           </div>
         </div>
+
       </div>
     </section>
 
-    <!-- 5) TARJETAS + COUNTDOWN: separado -->
-    <section class="frame panel" id="asistencia">
+    <!-- SKY SEPARATOR (otro separador bonito) -->
+    <div class="skyband" aria-hidden="true">
+      <div class="cloud c1"></div>
+      <div class="cloud c2"></div>
+      <div class="cloud c3"></div>
+      <div class="plane-path"></div>
+      <div class="plane"></div>
+      <div class="heart"></div>
+    </div>
 
-      <div class="actionGrid">
-        <button class="actionCard" data-modal="dress" type="button">
-          <div class="actionTitle">DRESS CODE</div>
-          <div class="actionSub">Una orientación para tu vestuario</div>
-          <div class="btnFake">Ver más</div>
-        </button>
+    <!-- ASISTENCIA -->
+    <section class="section" id="asistencia">
+      <div class="frame section__inner">
+        <div class="kicker">Asistencia</div>
+        <h2 class="h2">Todo lo que necesitas</h2>
+        <p class="p">Dress code, autobús y notas útiles. (Luego añadimos RSVP si queréis.)</p>
 
-        <button class="actionCard" data-modal="bus" type="button">
-          <div class="actionTitle">AUTOBÚS</div>
-          <div class="actionSub">Horarios y paradas</div>
-          <div class="btnFake">Ver más</div>
-        </button>
+        <div class="actionGrid">
+          <button class="actionCard" data-modal="dress" type="button">
+            <div class="actionTitle">Dress code</div>
+            <div class="actionSub">Una orientación para tu vestuario</div>
+            <div class="actionBtn">Ver más</div>
+          </button>
 
-        <button class="actionCard" data-modal="tips" type="button">
-          <div class="actionTitle">TIPS Y NOTAS</div>
-          <div class="actionSub">Información adicional</div>
-          <div class="btnFake">+ Info</div>
-        </button>
-      </div>
+          <button class="actionCard" data-modal="bus" type="button">
+            <div class="actionTitle">Autobús</div>
+            <div class="actionSub">Horarios y paradas</div>
+            <div class="actionBtn">Ver más</div>
+          </button>
 
-      <div style="height:12px"></div>
+          <button class="actionCard" data-modal="tips" type="button">
+            <div class="actionTitle">Tips y notas</div>
+            <div class="actionSub">Información adicional</div>
+            <div class="actionBtn">+ Info</div>
+          </button>
+        </div>
 
-      <div class="card center">
-        <div class="script">¡Te esperamos!</div>
+        <div class="countdownTitle">Faltan…</div>
 
-        <div class="countdownWrap" id="countdown">
+        <div class="countdownWrap" id="countdown" aria-label="Cuenta atrás">
           <div class="cdItem">
             <div class="cdNum" data-cd="days">000</div>
-            <div class="cdLab">DÍAS</div>
+            <div class="cdLab">Días</div>
           </div>
           <div class="cdSep"></div>
           <div class="cdItem">
             <div class="cdNum" data-cd="hours">00</div>
-            <div class="cdLab">HS</div>
+            <div class="cdLab">Horas</div>
           </div>
           <div class="cdSep"></div>
           <div class="cdItem">
             <div class="cdNum" data-cd="mins">00</div>
-            <div class="cdLab">MIN</div>
+            <div class="cdLab">Min</div>
           </div>
           <div class="cdSep"></div>
           <div class="cdItem">
             <div class="cdNum" data-cd="secs">00</div>
-            <div class="cdLab">SEG</div>
+            <div class="cdLab">Seg</div>
           </div>
         </div>
-      </div>
 
+      </div>
     </section>
 
   </main>
