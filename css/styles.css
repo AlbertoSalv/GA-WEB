@@ -3,23 +3,25 @@
    ========================= */
 :root{
   /* Paleta premium */
-  --ivory: #f5f1e7;        /* blanco roto base */
-  --ivory-2: #efe7d6;      /* blanco roto cálido */
-  --sand: #e7ddc7;         /* apoyo */
-  --ink: #161616;          /* negro elegante */
+  --ivory: #f5f1e7;
+  --ivory-2: #efe7d6;
+  --sand: #e7ddc7;
+
+  --ink: #161616;
   --muted: rgba(22,22,22,.72);
   --muted-2: rgba(22,22,22,.55);
 
-  --gold: #c8a24a;         /* dorado */
-  --gold-2: #b8923f;       /* dorado oscuro */
-  --burgundy: #6b1f2a;     /* granate */
+  --gold: #c8a24a;
+  --gold-2: #b8923f;
+
+  --burgundy: #6b1f2a;
   --burgundy-2: #541720;
 
   /* Tipografía */
   --font: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
 
-  /* Radios / sombras (muy suaves) */
+  /* Radios / sombras */
   --radius-xl: 28px;
   --radius-lg: 20px;
   --radius-md: 14px;
@@ -49,12 +51,12 @@ body{
   font-family: var(--font);
   color: var(--ink);
 
-  /* Fondo continuo premium tipo “lienzo” */
+  /* ✅ Fondo intermedio (más cálido que el blanco, más claro que el beige antiguo) */
   background:
-    radial-gradient(900px 520px at 20% 0%, rgba(200,162,74,.14), rgba(200,162,74,0) 60%),
-    radial-gradient(900px 520px at 80% 10%, rgba(107,31,42,.10), rgba(107,31,42,0) 62%),
-    radial-gradient(1200px 700px at 50% 100%, rgba(255,255,255,.22), rgba(255,255,255,0) 60%),
-    linear-gradient(180deg, var(--ivory), var(--ivory-2));
+    radial-gradient(1100px 640px at 18% 0%, rgba(200,162,74,.12), rgba(200,162,74,0) 62%),
+    radial-gradient(980px 600px at 82% 6%, rgba(107,31,42,.08), rgba(107,31,42,0) 62%),
+    radial-gradient(1400px 820px at 50% 100%, rgba(0,0,0,.05), rgba(0,0,0,0) 60%),
+    linear-gradient(180deg, #f4efe3 0%, #e5d7bf 100%);
   background-attachment: fixed;
 }
 
@@ -85,7 +87,7 @@ strong{ color: rgba(22,22,22,.92); }
 }
 
 /* =========================
-   FRAME (centrado) + SECCIÓN “libre”
+   FRAME + SECTION
    ========================= */
 .frame{
   width: min(var(--content-max), calc(100% - (var(--gutter) * 2)));
@@ -116,7 +118,7 @@ strong{ color: rgba(22,22,22,.92); }
   content:"";
   width: 26px;
   height: 1px;
-  background: rgba(200,162,74,.8);
+  background: rgba(200,162,74,.85);
 }
 
 .h2{
@@ -247,18 +249,15 @@ strong{ color: rgba(22,22,22,.92); }
 @media (hover:hover){
   .envelopeBtn:hover .envelopeCard{ transform: translateY(-6px) scale(1.01); }
 }
-
 .intro--open .envelopeCard{
   transform: translateY(-10px) rotate(-1.5deg) scale(.985);
   filter: brightness(1.03);
 }
 
 /* =========================
-   HERO (Split) — sin “tarjeta”, libre y premium
+   HERO — libre y premium
    ========================= */
-.hero{
-  padding-top: 22px;
-}
+.hero{ padding-top: 22px; }
 
 .heroGrid{
   display: grid;
@@ -266,14 +265,14 @@ strong{ color: rgba(22,22,22,.92); }
   gap: 18px;
   align-items: stretch;
 }
-
 @media (min-width: 980px){
   .heroGrid{
-    grid-template-columns: 1.15fr 0.85fr;
-    gap: 22px;
+    grid-template-columns: 1.12fr 0.88fr;
+    gap: 26px;
   }
 }
 
+/* Foto (más integrada) */
 .heroPhoto{
   border-radius: var(--radius-xl);
   overflow: hidden;
@@ -288,27 +287,50 @@ strong{ color: rgba(22,22,22,.92); }
   object-fit: cover;
   display: block;
 }
-
 @media (min-width: 980px){
   .heroPhoto img{ height: 650px; }
 }
 
+/* ✅ Mimetiza foto con el “lienzo”: leve viñeta cálida */
 .heroPhoto::after{
   content:"";
   position:absolute;
   inset:0;
   pointer-events:none;
   background:
-    radial-gradient(700px 420px at 30% 30%, rgba(200,162,74,.10), rgba(0,0,0,0) 60%),
-    linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,0) 40%);
+    radial-gradient(900px 520px at 65% 18%, rgba(200,162,74,.14), rgba(0,0,0,0) 58%),
+    radial-gradient(900px 520px at 35% 72%, rgba(107,31,42,.10), rgba(0,0,0,0) 60%),
+    linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,0) 50%);
 }
 
+/* Texto (integrado con la foto) */
 .heroText{
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 12px;
   padding: 10px 4px;
+  position: relative;
+}
+
+/* Halo suave detrás del texto para “unir” foto+texto sin ser tarjeta */
+@media (min-width: 980px){
+  .heroText::before{
+    content:"";
+    position:absolute;
+    left: -10px;
+    right: -10px;
+    top: 12px;
+    bottom: 12px;
+    border-radius: 26px;
+    background:
+      radial-gradient(720px 360px at 20% 30%, rgba(255,255,255,.40), rgba(255,255,255,0) 60%),
+      radial-gradient(720px 360px at 80% 40%, rgba(255,255,255,.26), rgba(255,255,255,0) 60%);
+    filter: blur(0px);
+    opacity: .9;
+    z-index: 0;
+  }
+  .heroText > *{ position: relative; z-index: 1; }
 }
 
 .heroNames{
@@ -316,14 +338,6 @@ strong{ color: rgba(22,22,22,.92); }
   font-size: clamp(40px, 3.2vw, 60px);
   line-height: 1.02;
   font-weight: 700;
-}
-
-.heroTag{
-  font-size: 14px;
-  font-weight: 900;
-  letter-spacing: 1.6px;
-  text-transform: uppercase;
-  color: rgba(22,22,22,.70);
 }
 
 .heroLead{
@@ -343,12 +357,87 @@ strong{ color: rgba(22,22,22,.92); }
   text-transform: uppercase;
 }
 
+/* ✅ Fecha centrada SIEMPRE */
 .heroDate{
   font-family: var(--font-display);
-  font-size: clamp(40px, 3vw, 58px);
   letter-spacing: 1px;
   font-weight: 600;
   color: rgba(22,22,22,.92);
+  text-align: center;
+  align-self: center;
+  width: 100%;
+}
+
+/* Fecha “fancy” sin círculos molestos */
+.heroDate--fancy{
+  position: relative;
+  display: inline-block;
+  padding: 0;
+  border-radius: 18px;
+}
+
+/* ✅ Texto con shine + wave/botecitos */
+.heroDate--fancy .heroDate__text{
+  display: inline-flex;
+  gap: 10px;
+  align-items: baseline;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: clamp(46px, 3.2vw, 66px);
+  font-weight: 700;
+  letter-spacing: 1px;
+  line-height: 1.05;
+
+  background: linear-gradient(
+    90deg,
+    rgba(22,22,22,.92),
+    rgba(200,162,74,.98),
+    rgba(22,22,22,.92)
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+
+  animation: dateShine 3.8s ease-in-out infinite;
+}
+
+/* Cada bloque “bote/ola” */
+.heroDate--fancy .heroDate__text span{
+  display: inline-block;
+  transform: translateZ(0);
+  animation: dateBob 1.9s ease-in-out infinite;
+}
+.heroDate--fancy .heroDate__text span:nth-child(1){ animation-delay: 0ms; }
+.heroDate--fancy .heroDate__text span:nth-child(2){ animation-delay: 140ms; }
+.heroDate--fancy .heroDate__text span:nth-child(3){ animation-delay: 280ms; }
+
+@keyframes dateShine{
+  0%{ background-position: 0% 50%; }
+  50%{ background-position: 100% 50%; }
+  100%{ background-position: 0% 50%; }
+}
+
+/* “ola/botecitos” suave */
+@keyframes dateBob{
+  0%,100%{ transform: translateY(0); }
+  50%{ transform: translateY(-6px); }
+}
+
+/* Halo fino detrás de la fecha (sin desplazar nada) */
+.heroDate--fancy::after{
+  content:"";
+  position:absolute;
+  left: 50%;
+  top: 55%;
+  width: 180px;
+  height: 46px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(200,162,74,.16), rgba(200,162,74,0) 70%);
+  filter: blur(2px);
+  pointer-events:none;
+  z-index: -1;
+  opacity: .95;
 }
 
 .heroCTA{
@@ -356,6 +445,7 @@ strong{ color: rgba(22,22,22,.92); }
   display: flex;
   gap: 12px;
   align-items: center;
+  justify-content: flex-start;
 }
 
 .scrollCue{
@@ -390,39 +480,35 @@ strong{ color: rgba(22,22,22,.92); }
   height: 120px;
   display: block;
 }
+.wave path{ fill: rgba(200,162,74,.14); }
+.wave--soft path{ fill: rgba(22,22,22,.06); }
 
-.wave path{
-  fill: rgba(200,162,74,.14);
-}
-
-.wave--soft path{
-  fill: rgba(22,22,22,.06);
-}
-
-/* Sky scene (avión/nubes/corazón) como separador real */
+/* ✅ Skyband más premium */
 .skyband{
   position: relative;
   height: 140px;
   width: 100%;
   overflow: hidden;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,0));
+  background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0));
+  opacity: .90;
 }
 
-/* Nubes */
+/* Nubes más discretas */
 .cloud{
   position: absolute;
   width: 120px;
   height: 46px;
-  background: rgba(255,255,255,.78);
+  background: rgba(255,255,255,.70);
   border-radius: 999px;
-  filter: drop-shadow(0 10px 18px rgba(0,0,0,.08));
+  filter: drop-shadow(0 10px 18px rgba(0,0,0,.06));
+  opacity: .65;
 }
 .cloud::before,
 .cloud::after{
   content:"";
   position:absolute;
-  background: rgba(255,255,255,.78);
+  background: rgba(255,255,255,.70);
   border-radius: 999px;
 }
 .cloud::before{ width: 60px; height: 60px; left: 18px; top: -26px; }
@@ -430,7 +516,7 @@ strong{ color: rgba(22,22,22,.92); }
 
 .c1{ top: 22px; left: 14px; transform: scale(.72); animation: drift 12s linear infinite; }
 .c2{ top: 36px; right: 18px; transform: scale(.60); animation: drift2 14s linear infinite; }
-.c3{ top: 76px; left: 52%; transform: scale(.52); animation: drift 16s linear infinite; opacity:.85; }
+.c3{ top: 76px; left: 52%; transform: scale(.52); animation: drift 16s linear infinite; opacity:.55; }
 
 @keyframes drift{
   0%{ transform: translateX(-20px) scale(.72); }
@@ -441,27 +527,27 @@ strong{ color: rgba(22,22,22,.92); }
   100%{ transform: translateX(-30px) scale(.60); }
 }
 
-/* Línea punteada (más elegante) */
+/* Línea punteada dorada más fina */
 .plane-path{
   position: absolute;
   left: -60px;
   top: 82px;
   width: 130%;
   height: 120px;
-  border-top: 3px dashed rgba(200,162,74,.55);
+  border-top: 2px dashed rgba(200,162,74,.55);
   border-radius: 100%;
   transform: rotate(6deg);
-  opacity: .85;
+  opacity: .70;
 }
 
-/* Avión (dorado) */
+/* “Pieza” dorada (no-avión) minimalista */
 .plane{
   position: absolute;
   top: 72px;
   left: -30px;
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 6px;
   background: rgba(200,162,74,.96);
   transform: rotate(12deg);
   animation: fly 9.5s linear infinite;
@@ -470,19 +556,21 @@ strong{ color: rgba(22,22,22,.92); }
 .plane::before{
   content:"";
   position:absolute;
-  width: 20px; height: 6px;
+  width: 18px; height: 4px;
   left: -6px; top: 6px;
   background: rgba(200,162,74,.96);
   border-radius: 999px;
+  opacity: .85;
 }
 .plane::after{
   content:"";
   position:absolute;
   width: 8px; height: 8px;
-  right: -2px; top: 5px;
+  right: -2px; top: 4px;
   background: rgba(200,162,74,.96);
   transform: rotate(45deg);
   border-radius: 2px;
+  opacity: .55;
 }
 
 @keyframes fly{
@@ -491,30 +579,30 @@ strong{ color: rgba(22,22,22,.92); }
   100%{ transform: translateX(105vw) translateY(-6px) rotate(12deg); }
 }
 
-/* Corazón (granate) */
+/* Corazón granate */
 .heart{
   position: absolute;
   top: 108px;
   left: 54%;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   background: var(--burgundy);
   transform: rotate(45deg);
   border-radius: 4px;
   animation: floaty 2.8s ease-in-out infinite;
   filter: drop-shadow(0 10px 14px rgba(0,0,0,.14));
-  opacity: .95;
+  opacity: .92;
 }
 .heart::before,
 .heart::after{
   content:"";
   position:absolute;
-  width: 18px; height: 18px;
+  width: 16px; height: 16px;
   background: var(--burgundy);
   border-radius: 999px;
 }
-.heart::before{ left: -9px; top: 0; }
-.heart::after{ left: 0; top: -9px; }
+.heart::before{ left: -8px; top: 0; }
+.heart::after{ left: 0; top: -8px; }
 
 @keyframes floaty{
   0%,100%{ transform: translateY(0) rotate(45deg); }
@@ -522,7 +610,7 @@ strong{ color: rgba(22,22,22,.92); }
 }
 
 /* =========================
-   GALERÍA (sin panel)
+   GALERÍA
    ========================= */
 .gallery{
   margin-top: 22px;
@@ -530,11 +618,9 @@ strong{ color: rgba(22,22,22,.92); }
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;
 }
-
 @media (max-width: 720px){
   .gallery{ grid-template-columns: 1fr; }
 }
-
 .gallery__img{
   border-radius: var(--radius-xl);
   overflow: hidden;
@@ -542,7 +628,6 @@ strong{ color: rgba(22,22,22,.92); }
   border: 1px solid rgba(22,22,22,.08);
   background: rgba(255,255,255,.28);
 }
-
 .gallery__img img{
   width: 100%;
   height: 240px;
@@ -550,29 +635,13 @@ strong{ color: rgba(22,22,22,.92); }
   display: block;
   transform: scale(1.01);
 }
-
 @media (min-width: 980px){
   .gallery__img img{ height: 280px; }
 }
 
 /* =========================
-   UBICACIÓN (2 columnas PC) — libre
+   UBICACIÓN — slot elegante (sin mapa)
    ========================= */
-.split{
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 18px;
-  align-items: start;
-  margin-top: 20px;
-}
-
-@media (min-width: 980px){
-  .split{
-    grid-template-columns: 0.92fr 1.08fr;
-    gap: 22px;
-  }
-}
-
 .placeTitle{
   font-family: var(--font-display);
   font-weight: 700;
@@ -585,28 +654,21 @@ strong{ color: rgba(22,22,22,.92); }
   color: var(--muted);
   line-height: 1.65;
   font-size: 14px;
+  max-width: 70ch;
 }
 
-.map-embed{
+/* Si usas un contenedor tipo card */
+.placeCard{
+  margin-top: 18px;
   border-radius: var(--radius-xl);
-  overflow: hidden;
+  background: rgba(255,255,255,.22);
   border: 1px solid rgba(22,22,22,.10);
-  background: rgba(255,255,255,.34);
-  box-shadow: var(--shadow-soft);
-}
-
-.map-embed iframe{
-  width: 100%;
-  height: 240px;
-  border: 0;
-  display: block;
-}
-@media (min-width: 980px){
-  .map-embed iframe{ height: 340px; }
+  box-shadow: 0 18px 52px rgba(0,0,0,.10);
+  padding: 18px 18px 20px;
 }
 
 /* =========================
-   BOTONES (granate) + detalles dorados
+   BOTONES
    ========================= */
 .btn{
   display: inline-flex;
@@ -641,7 +703,7 @@ strong{ color: rgba(22,22,22,.92); }
 }
 
 /* =========================
-   MOMENTOS CLAVE — timeline centrada y pro
+   MOMENTOS CLAVE — timeline alterna (FIX BUG PC)
    ========================= */
 .timelineWrap{
   margin-top: 24px;
@@ -650,7 +712,7 @@ strong{ color: rgba(22,22,22,.92); }
 }
 
 .timeline{
-  width: min(720px, 100%);
+  width: min(820px, 100%);
   position: relative;
   padding: 10px 0;
 }
@@ -667,39 +729,61 @@ strong{ color: rgba(22,22,22,.92); }
   border-radius: 99px;
 }
 
-/* Item alternando lados en desktop, centrado en móvil */
+/* ✅ Item alterna lados en desktop */
 .tItem{
   position: relative;
   display: grid;
   grid-template-columns: 1fr;
   gap: 10px;
-  padding: 16px 0;
+  padding: 18px 0;
 }
 
 @media (min-width: 860px){
   .tItem{
-    grid-template-columns: 1fr 64px 1fr;
+    grid-template-columns: 1fr 72px 1fr;
     align-items: center;
   }
 }
 
 .tDot{
-  width: 52px;
-  height: 52px;
+  width: 56px;
+  height: 56px;
   border-radius: 999px;
   display: grid;
   place-items: center;
-  background: rgba(255,255,255,.42);
-  border: 1px solid rgba(200,162,74,.35);
+  background: rgba(255,255,255,.34);
+  border: 1px solid rgba(200,162,74,.38);
   box-shadow: 0 16px 36px rgba(0,0,0,.08);
   margin: 0 auto;
   font-size: 18px;
   color: rgba(22,22,22,.86);
+  position: relative;
+  animation: iconFloat 2.6s ease-in-out infinite;
+}
+
+/* ring animado tipo Fixdate */
+.tDot::after{
+  content:"";
+  position:absolute;
+  inset:-6px;
+  border-radius: 999px;
+  border: 1px solid rgba(200,162,74,.22);
+  box-shadow: 0 0 0 0 rgba(200,162,74,.10);
+  animation: ringPulse 2.8s ease-in-out infinite;
+}
+
+@keyframes iconFloat{
+  0%,100%{ transform: translateY(0); }
+  50%{ transform: translateY(-6px); }
+}
+@keyframes ringPulse{
+  0%,100%{ box-shadow: 0 0 0 0 rgba(200,162,74,.10); opacity: .75; }
+  50%{ box-shadow: 0 0 0 10px rgba(200,162,74,0); opacity: .95; }
 }
 
 .tCard{
   border-radius: var(--radius-xl);
-  background: rgba(255,255,255,.24);
+  background: rgba(255,255,255,.22);
   border: 1px solid rgba(22,22,22,.08);
   padding: 14px 16px;
   box-shadow: 0 14px 38px rgba(0,0,0,.08);
@@ -720,28 +804,28 @@ strong{ color: rgba(22,22,22,.92); }
   line-height: 1.35;
 }
 
-/* Alternancia en desktop */
+/* ✅ Alternancia real sin ocultar cards */
 @media (min-width: 860px){
-  .tItem:nth-child(odd) .tCard{ grid-column: 1; text-align: right; }
-  .tItem:nth-child(odd) .tDot{ grid-column: 2; }
-  .tItem:nth-child(odd) .tCard:last-child{ display: none; } /* no usado */
+  .tItem .tDot{ grid-column: 2; }
 
-  .tItem:nth-child(even) .tCard{ grid-column: 3; }
-  .tItem:nth-child(even) .tDot{ grid-column: 2; }
+  .tItem:nth-child(odd) .tCard{
+    grid-column: 1;
+    text-align: right;
+  }
+  .tItem:nth-child(even) .tCard{
+    grid-column: 3;
+    text-align: left;
+  }
 }
 
-/* En móvil: dot arriba, tarjeta debajo */
+/* móvil: dot arriba, tarjeta debajo */
 @media (max-width: 859px){
-  .tItem{
-    justify-items: center;
-  }
-  .tCard{
-    width: 100%;
-  }
+  .tItem{ justify-items: center; }
+  .tCard{ width: 100%; }
 }
 
 /* =========================
-   ASISTENCIA — tarjetas pequeñas + countdown libre
+   ASISTENCIA — tarjetas + COUNTDOWN OCTOGONO
    ========================= */
 .actionGrid{
   margin-top: 22px;
@@ -749,7 +833,6 @@ strong{ color: rgba(22,22,22,.92); }
   grid-template-columns: 1fr;
   gap: 14px;
 }
-
 @media (min-width: 980px){
   .actionGrid{ grid-template-columns: repeat(3, 1fr); }
 }
@@ -764,7 +847,6 @@ strong{ color: rgba(22,22,22,.92); }
   box-shadow: 0 16px 44px rgba(0,0,0,.10);
   transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
 }
-
 .actionCard:hover{
   transform: translateY(-2px);
   box-shadow: 0 22px 60px rgba(0,0,0,.14);
@@ -778,14 +860,12 @@ strong{ color: rgba(22,22,22,.92); }
   color: rgba(22,22,22,.82);
   font-size: 12px;
 }
-
 .actionSub{
   margin-top: 10px;
   color: rgba(22,22,22,.62);
   font-size: 14px;
   line-height: 1.4;
 }
-
 .actionBtn{
   margin-top: 14px;
   display: inline-flex;
@@ -800,7 +880,6 @@ strong{ color: rgba(22,22,22,.92); }
   font-size: 13px;
 }
 
-/* Countdown “premium” libre */
 .countdownTitle{
   margin-top: 28px;
   font-family: var(--font-display);
@@ -810,30 +889,76 @@ strong{ color: rgba(22,22,22,.92); }
   color: rgba(22,22,22,.86);
 }
 
+/* ✅ Marco octogonal “premium” */
 .countdownWrap{
   margin: 16px auto 0;
-  width: min(760px, 100%);
+  width: min(780px, 100%);
   display: grid;
   grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
   align-items: center;
   gap: 10px;
-  padding: 16px 14px;
-  border-radius: 24px;
-  background: rgba(255,255,255,.22);
+  padding: 18px 16px;
+  position: relative;
+
+  /* Fondo glass */
+  background: rgba(255,255,255,.24);
   border: 1px solid rgba(22,22,22,.10);
-  box-shadow: 0 18px 52px rgba(0,0,0,.10);
+  box-shadow: 0 18px 52px rgba(0,0,0,.12);
+
+  /* Octógono */
+  clip-path: polygon(
+    6% 0%,
+    94% 0%,
+    100% 18%,
+    100% 82%,
+    94% 100%,
+    6% 100%,
+    0% 82%,
+    0% 18%
+  );
+}
+
+/* Línea interior (octógono dentro) */
+.countdownWrap::before{
+  content:"";
+  position:absolute;
+  inset: 10px;
+  border: 1px solid rgba(200,162,74,.30);
+  clip-path: polygon(
+    6% 0%,
+    94% 0%,
+    100% 18%,
+    100% 82%,
+    94% 100%,
+    6% 100%,
+    0% 82%,
+    0% 18%
+  );
+  pointer-events:none;
+}
+
+/* Glow suave */
+.countdownWrap::after{
+  content:"";
+  position:absolute;
+  inset: -40px;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(200,162,74,.18), rgba(200,162,74,0) 55%),
+    radial-gradient(circle at 80% 40%, rgba(107,31,42,.12), rgba(107,31,42,0) 60%);
+  filter: blur(16px);
+  opacity: .85;
+  pointer-events:none;
+  z-index: -1;
 }
 
 .cdItem{ text-align: center; }
-
 .cdNum{
-  font-size: 34px;
+  font-size: 36px;
   font-weight: 900;
   letter-spacing: 1px;
   font-variant-numeric: tabular-nums;
-  color: rgba(22,22,22,.86);
+  color: rgba(22,22,22,.88);
 }
-
 .cdLab{
   margin-top: 6px;
   font-size: 11px;
@@ -842,7 +967,6 @@ strong{ color: rgba(22,22,22,.92); }
   font-weight: 900;
   text-transform: uppercase;
 }
-
 .cdSep{
   width: 1px;
   height: 44px;
@@ -914,7 +1038,6 @@ strong{ color: rgba(22,22,22,.92); }
   line-height: 1.65;
   font-size: 14px;
 }
-
 .modal__content h2{
   font-family: var(--font-display);
   margin: 0 0 10px;
@@ -943,5 +1066,5 @@ strong{ color: rgba(22,22,22,.92); }
     transform: none !important;
     transition: none !important;
   }
-  .plane, .cloud, .heart{ animation: none !important; }
+  .plane, .cloud, .heart, .tDot, .heroDate__text span{ animation: none !important; }
 }
