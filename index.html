@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gema y Alberto — Nos casamos</title>
   <meta name="description" content="Web de la boda de Alberto y Gema. Información, momentos clave, ubicación y asistencia." />
+
+  <!-- Fuentes elegantes (boda) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 
@@ -22,59 +28,50 @@
           <div class="envelopeDate">26.06.2026</div>
           <div class="envelopeHint">Pulsa para abrir</div>
         </div>
-
-        <!-- Opcional: si quieres “sello” encima del sobre -->
-        <div class="seal" aria-hidden="true">
-          <span class="sealText">A&amp;G</span>
-        </div>
       </div>
     </button>
   </div>
 
-  <!-- WEB (vuestra invitación) -->
+  <!-- WEB -->
   <main id="site" class="site site--hidden">
 
-    <!-- ===== PANTALLA 1A (FOTO) ===== -->
-    <section class="canva-hero frame" id="foto">
-      <div class="canva-hero__photo">
-        <img src="assets/img/hero.jpg" alt="Alberto y Gema" />
-      </div>
-    </section>
-
-    <!-- ===== PANTALLA 1B (TEXTO) ===== -->
-    <section class="panel frame" id="texto">
-      <div class="card center">
-        <div class="heroText__title">Alberto y Gema</div>
-        <div class="heroText__subtitle">Nos casamos</div>
-
-        <div class="heroText__divider" aria-hidden="true"></div>
-
-        <div class="heroText__text">
-          Un día especial merece ser compartido con personas especiales.<br />
-          Y nosotros no podemos imaginar nuestro día sin ti.
+    <!-- 1) HERO: foto (izq en PC) + texto (dcha en PC) -->
+    <section class="frame heroSplit" id="inicio">
+      <div class="heroSplit__grid">
+        <div class="heroSplit__photo">
+          <img src="assets/img/hero.jpg" alt="Alberto y Gema">
         </div>
 
-        <div class="heroText__dateLabel">Te esperamos el:</div>
-        <div class="heroText__date">26.06.2026</div>
+        <div class="heroSplit__text">
+          <div class="heroSplit__names">Alberto y Gema</div>
+          <div class="heroSplit__tag">Nos casamos</div>
 
-        <a class="canva-hero__scroll" href="#info" aria-label="Bajar a la galería">
-          <span>⌄</span>
-        </a>
+          <div class="heroSplit__p">
+            Un día especial merece ser compartido con personas especiales.<br>
+            Y nosotros no podemos imaginar nuestro día sin ti.
+          </div>
+
+          <div class="heroSplit__dateLabel">Te esperamos el:</div>
+          <div class="heroSplit__date">26.06.2026</div>
+
+          <a class="heroSplit__scroll" href="#galeria" aria-label="Bajar a la galería">⌄</a>
+        </div>
       </div>
     </section>
 
-    <!-- ===== PANTALLA 2 (GALERÍA) ===== -->
-    <section class="panel frame" id="info">
+    <!-- (Hueco opcional) banda full-width para meter decoraciones animadas entre secciones -->
+    <div class="fullband fullband--soft" aria-hidden="true"></div>
 
-      <!-- Decor animado (avión/nubes/corazón) -->
+    <!-- 2) GALERÍA: solo la galería -->
+    <section class="frame panel" id="galeria">
+
+      <!-- Decor animado (si quieres, aquí queda bonito) -->
       <div class="decor-sky" aria-hidden="true">
         <div class="cloud c1"></div>
         <div class="cloud c2"></div>
         <div class="cloud c3"></div>
-
         <div class="plane-path"></div>
         <div class="plane"></div>
-
         <div class="heart"></div>
       </div>
 
@@ -91,8 +88,8 @@
       </div>
     </section>
 
-    <!-- ===== PANTALLA 3 (UBICACIÓN) ===== -->
-    <section class="panel frame" id="ubicacion">
+    <!-- 3) UBICACIÓN: en PC 2 columnas / en móvil vertical -->
+    <section class="frame panel" id="ubicacion">
       <div class="split-ubicacion">
 
         <div class="card">
@@ -122,15 +119,18 @@
       </div>
     </section>
 
-    <!-- ===== PANTALLA 4 (MOMENTOS CLAVE) ===== -->
-    <section class="panel frame" id="momentos">
+    <!-- (Hueco opcional) otra banda full-width -->
+    <div class="fullband fullband--soft" aria-hidden="true"></div>
+
+    <!-- 4) MOMENTOS CLAVE: solo -->
+    <section class="frame panel" id="momentos">
       <div class="card">
         <div class="card__title big">Momentos clave</div>
 
         <div class="timeline">
           <div class="timeline__row reveal">
             <div class="timeline__icon">🚌</div>
-            <div class="timeline__content">
+            <div>
               <div class="timeline__time">18:30h</div>
               <div class="timeline__label">Autobús de ida</div>
             </div>
@@ -138,7 +138,7 @@
 
           <div class="timeline__row reveal">
             <div class="timeline__icon">💍</div>
-            <div class="timeline__content">
+            <div>
               <div class="timeline__time">19:00h</div>
               <div class="timeline__label">Ceremonia civil</div>
             </div>
@@ -146,7 +146,7 @@
 
           <div class="timeline__row reveal">
             <div class="timeline__icon">🍸</div>
-            <div class="timeline__content">
+            <div>
               <div class="timeline__time">19:45h</div>
               <div class="timeline__label">Cena tipo cóctel</div>
             </div>
@@ -154,7 +154,7 @@
 
           <div class="timeline__row reveal">
             <div class="timeline__icon">🎧</div>
-            <div class="timeline__content">
+            <div>
               <div class="timeline__time">22:15h</div>
               <div class="timeline__label">DJ y barra libre</div>
             </div>
@@ -162,18 +162,18 @@
 
           <div class="timeline__row reveal">
             <div class="timeline__icon">🚌</div>
-            <div class="timeline__content">
+            <div>
               <div class="timeline__time">01:15h</div>
               <div class="timeline__label">Autobús de vuelta</div>
             </div>
           </div>
         </div>
-
       </div>
     </section>
 
-    <!-- ===== PANTALLA 5 (TARJETAS / INFO EXTRA) ===== -->
-    <section class="panel frame" id="asistencia">
+    <!-- 5) TARJETAS + COUNTDOWN: separado -->
+    <section class="frame panel" id="asistencia">
+
       <div class="actionGrid">
         <button class="actionCard" data-modal="dress" type="button">
           <div class="actionTitle">DRESS CODE</div>
@@ -193,10 +193,9 @@
           <div class="btnFake">+ Info</div>
         </button>
       </div>
-    </section>
 
-    <!-- ===== PANTALLA 6 (COUNTDOWN) ===== -->
-    <section class="panel frame" id="te-esperamos">
+      <div style="height:12px"></div>
+
       <div class="card center">
         <div class="script">¡Te esperamos!</div>
 
@@ -221,8 +220,8 @@
             <div class="cdLab">SEG</div>
           </div>
         </div>
-
       </div>
+
     </section>
 
   </main>
