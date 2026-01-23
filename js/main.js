@@ -4,6 +4,7 @@
    - Scroll reveal + stagger timeline
    - Countdown real (26/06/2026 19:00) con eficiencia y sin drift
    - Modales accesibles + focus trap + ESC + click fuera
+   - Skybands “fixdate-like” (nubes + trazo + pieza + corazón) re-animación segura
    ========================================================= */
 
 (() => {
@@ -18,6 +19,9 @@
   function pad2(n) { return String(n).padStart(2, "0"); }
   function pad3(n) { return String(n).padStart(3, "0"); }
 
+  const prefersReducedMotion = window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   // ===============================
   // Intro (Sobre) -> mostrar sitio
   // ===============================
@@ -27,7 +31,7 @@
 
   let isOpening = false;
 
-  // Bloqueo scroll mientras está la intro (más “premium”)
+  // Bloqueo scroll mientras está la intro
   if (intro) document.documentElement.style.overflow = "hidden";
 
   if (openBtn && intro && site) {
@@ -62,7 +66,7 @@
             window.scrollTo(0, 0);
           }
 
-          // Foco al main (mejor accesibilidad)
+          // Foco al main
           site.setAttribute("tabindex", "-1");
           site.focus({ preventScroll: true });
           site.removeAttribute("tabindex");
@@ -102,14 +106,63 @@
 
   // ===============================
   // Countdown real (26/06/2026 19:00)
-  // - Interval alineado al siguiente segundo (más estable)
+  // - Rellena #countdown si está vacío (tu HTML actual lo usa así)
+  // - Si existen [data-cd], también los actualiza (compatibilidad)
   // ===============================
   const targetDate = new Date(2026, 5, 26, 19, 0, 0); // (mes 5 = junio)
 
-  const dEl = $('[data-cd="days"]');
-  const hEl = $('[data-cd="hours"]');
-  const mEl = $('[data-cd="mins"]');
-  const sEl = $('[data-cd="secs"]');
+  const countdownWrap = $("#countdown");
+
+  // Compatibilidad con el markup antiguo
+  const dElOld = $('[data-cd="days"]');
+  const hElOld = $('[data-cd="hours"]');
+  const mElOld = $('[data-cd="mins"]');
+  const sElOld = $('[data-cd="secs"]');
+
+  function ensureCountdownMarkup() {
+    if (!countdownWrap) return;
+
+    // Si ya viene el markup dentro, no lo pisa
+    if (countdownWrap.children && countdownWrap.children.length) return;
+
+    countdownWrap.innerHTML = `
+      <div class="cdItem">
+        <div class="cdNum" data-cd="days">000</div>
+        <div class="cdLab">Días</div>
+      </div>
+      <div class="cdSep" aria-hidden="true"></div>
+      <div class="cdItem">
+        <div class="cdNum" data-cd="hours">00</div>
+        <div class="cdLab">Horas</div>
+      </div>
+      <div class="cdSep" aria-hidden="true"></div>
+      <div class="cdItem">
+        <div class="cdNum" data-cd="mins">00</div>
+        <div class="cdLab">Min</div>
+      </div>
+      <div class="cdSep" aria-hidden="true"></div>
+      <div class="cdItem">
+        <div class="cdNum" data-cd="secs">00</div>
+        <div class="cdLab">Seg</div>
+      </div>
+    `;
+  }
+
+  function getCountdownEls() {
+    // Primero intenta dentro del wrap (nuevo)
+    const dEl = countdownWrap ? $('[data-cd="days"]', countdownWrap) : null;
+    const hEl = countdownWrap ? $('[data-cd="hours"]', countdownWrap) : null;
+    const mEl = countdownWrap ? $('[data-cd="mins"]', countdownWrap) : null;
+    const sEl = countdownWrap ? $('[data-cd="secs"]', countdownWrap) : null;
+
+    // Si no existen, cae al viejo
+    return {
+      dEl: dEl || dElOld,
+      hEl: hEl || hElOld,
+      mEl: mEl || mElOld,
+      sEl: sEl || sElOld,
+    };
+  }
 
   function tickCountdown() {
     const now = new Date();
@@ -122,21 +175,81 @@
     const mins = Math.floor((totalSecs % 3600) / 60);
     const secs = totalSecs % 60;
 
+    const { dEl, hEl, mEl, sEl } = getCountdownEls();
+
     if (dEl) dEl.textContent = pad3(days);
     if (hEl) hEl.textContent = pad2(hours);
     if (mEl) mEl.textContent = pad2(mins);
     if (sEl) sEl.textContent = pad2(secs);
   }
 
+  // Inicializa markup si hace falta
+  ensureCountdownMarkup();
+
   // Primera ejecución
   tickCountdown();
 
-  // Alinea el refresco al “inicio” del siguiente segundo
+  // Alinea el refresco al inicio del siguiente segundo
   const startDelay = 1000 - (Date.now() % 1000);
   window.setTimeout(() => {
     tickCountdown();
     window.setInterval(tickCountdown, 1000);
   }, startDelay);
+
+  // ===============================
+  // Skyband “de vez en cuando”
+  // - Hace que NO estén siempre visibles, y reaparezcan en “oleadas”
+  // - Sin tocar tu HTML: actúa sobre .skyband existentes (si los añades)
+  // ===============================
+  const skybands = $$(".skyband");
+
+  function setSkybandVisible(el, visible) {
+    if (!el) return;
+    el.style.transition = "opacity 700ms ease";
+    el.style.opacity = visible ? "0.95" : "0";
+    el.style.pointerEvents = "none";
+  }
+
+  function randomBetween(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function scheduleSkybands() {
+    if (!skybands.length) return;
+
+    // Si el usuario prefiere menos movimiento: se queda visible y sin “parpadeos”
+    if (prefersReducedMotion) {
+      skybands.forEach((sb) => setSkybandVisible(sb, true));
+      return;
+    }
+
+    // Arranca oculto y aparece “a ratos”
+    skybands.forEach((sb) => setSkybandVisible(sb, false));
+
+    const loop = (sb) => {
+      // Tiempo oculto (18–36s) + visible (7–12s)
+      const hiddenMs = randomBetween(18000, 36000);
+      const visibleMs = randomBetween(7000, 12000);
+
+      window.setTimeout(() => {
+        setSkybandVisible(sb, true);
+
+        window.setTimeout(() => {
+          setSkybandVisible(sb, false);
+          loop(sb);
+        }, visibleMs);
+
+      }, hiddenMs);
+    };
+
+    // Desfase para que no salgan todos a la vez
+    skybands.forEach((sb, i) => {
+      const initialDelay = 1200 + i * 1400;
+      window.setTimeout(() => loop(sb), initialDelay);
+    });
+  }
+
+  scheduleSkybands();
 
   // ===============================
   // Modales (accesibles + focus trap)
@@ -236,14 +349,12 @@
       const first = focusables[0];
       const last = focusables[focusables.length - 1];
 
-      // Shift+Tab
       if (e.shiftKey) {
         if (document.activeElement === first) {
           e.preventDefault();
           last.focus();
         }
       } else {
-        // Tab
         if (document.activeElement === last) {
           e.preventDefault();
           first.focus();
