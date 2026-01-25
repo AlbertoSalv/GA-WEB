@@ -31,242 +31,75 @@
     </button>
   </div>
 
+  <!-- Corazoncitos SIEMPRE presentes -->
+  <div class="floatHearts" aria-hidden="true">
+    <span class="fh fh1">♥</span>
+<span class="fh fh2">♥</span>
+<span class="fh fh3">♥</span>
+  </div>
+
   <main id="site" class="site site--hidden">
 
     <!-- HERO -->
     <section class="section hero" id="inicio">
-      <div class="frame section__inner">
-        <div class="heroGrid">
+      <div class="heroStage">
+        <!-- FOTO: full-bleed (no tarjeta) -->
+        <div class="heroPhoto heroPhoto--full">
+          <img src="assets/img/hero.jpg" alt="Gema y Alberto">
+          <div class="heroPhoto__veil" aria-hidden="true"></div>
+        </div>
 
-          <div class="heroPhoto">
-            <img src="assets/img/hero.jpg" alt="Gema y Alberto">
-            <!-- Overlay suave para “mimetizar” -->
-            <div class="heroPhoto__veil" aria-hidden="true"></div>
+        <!-- OLA / BANDA vertical entre foto y texto -->
+        <div class="heroSplit" aria-hidden="true">
+          <svg class="heroSplit__svg" viewBox="0 0 120 900" preserveAspectRatio="none">
+            <path class="heroSplit__layer heroSplit__layer--soft"
+                  d="M0,0 C65,90 55,180 110,270 C55,360 70,450 110,540 C60,630 55,720 110,810 C70,870 70,900 110,900 L0,900 Z"></path>
+            <path class="heroSplit__layer heroSplit__layer--edge"
+                  d="M12,0 C70,95 62,180 108,270 C62,360 75,450 108,540 C68,630 62,720 108,810 C78,870 78,900 108,900"></path>
+          </svg>
+        </div>
+
+        <!-- TEXTO -->
+        <div class="heroText">
+          <div class="heroBand heroBand--top" aria-hidden="true"></div>
+
+          <div class="heroNames">Gema y Alberto</div>
+
+          <p class="heroLead">
+            Un día especial merece ser compartido con personas especiales.<br>
+            Y nosotros no podemos imaginar nuestro día sin ti.
+          </p>
+
+          <div class="heroDateLabel">Te esperamos el</div>
+
+          <!-- FECHA: básica y elegante (sin dinámicas) -->
+          <div class="heroDateWrap">
+            <div class="heroDate heroDate--fancy" aria-label="26.06.2026">
+  <span class="heroDate__text">26.06.2026</span>
+</div>
           </div>
 
-          <div class="heroText">
-            <!-- Blend/conector entre foto y texto (se diseña en CSS) -->
-            <div class="heroBlend" aria-hidden="true"></div>
-
-            <div class="heroNames">Gema y Alberto</div>
-
-            <p class="heroLead">
-              Un día especial merece ser compartido con personas especiales.<br>
-              Y nosotros no podemos imaginar nuestro día sin ti.
-            </p>
-
-            <div class="heroDateLabel">Te esperamos el</div>
-
-            <!-- Fecha preparada para animación “olas/botecitos” -->
-            <div class="heroDate heroDate--fancy" aria-label="26 de junio de 2026">
-              <span class="heroDate__text" aria-hidden="true">
-                <span class="heroDate__digit" style="--i:0">26</span>
-                <span class="heroDate__dot"   style="--i:1">.</span>
-                <span class="heroDate__digit" style="--i:2">06</span>
-                <span class="heroDate__dot"   style="--i:3">.</span>
-                <span class="heroDate__digit" style="--i:4">2026</span>
-              </span>
-            </div>
-
-            <div class="heroCTA">
-              <a class="scrollCue" href="#asistencia" aria-label="Bajar a asistencia">⌄</a>
-            </div>
-
-            <div class="hr-gold" aria-hidden="true"></div>
-          </div>
-
+          <div class="hr-gold" aria-hidden="true"></div>
+          <div class="heroBand heroBand--bottom" aria-hidden="true"></div>
         </div>
       </div>
     </section>
 
     <!-- Separador wave -->
-    <div class="divider" aria-hidden="true">
-      <svg class="wave" viewBox="0 0 1440 120" preserveAspectRatio="none">
-        <path d="M0,70 C180,110 360,30 540,70 C720,110 900,30 1080,70 C1260,110 1350,70 1440,55 L1440,120 L0,120 Z"></path>
+    <div class="divider divider--a" aria-hidden="true">
+      <svg class="wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
+        <path d="M0,88 C160,120 320,64 480,88 C640,112 800,64 960,88 C1120,112 1280,80 1440,64 L1440,140 L0,140 Z"></path>
       </svg>
     </div>
 
-    <!-- Skyband (Fixdate vibes) -->
-    <div class="skyband" aria-hidden="true">
-      <div class="cloud c1"></div>
-      <div class="cloud c2"></div>
-      <div class="cloud c3"></div>
-      <div class="plane-path"></div>
-      <div class="plane"></div>
-      <div class="heart"></div>
-    </div>
-
-    <!-- UBICACIÓN (slot único centrado, sin mapa) -->
-    <section class="section" id="ubicacion">
+    <!-- FALTAN... -->
+    <section class="section" id="faltan">
       <div class="frame section__inner">
-        <div class="kicker">Ubicación</div>
-        <h2 class="h2">Dónde será</h2>
-        <p class="p">Todo lo importante, a un clic. Guarda la ubicación y llega con margen.</p>
+        <div class="kicker">Cuenta atrás</div>
+        <h2 class="h2">Faltan…</h2>
+        <p class="p">Y cada día estamos un poquito más cerca.</p>
 
-        <div class="placeSlot">
-          <div class="placeCard">
-            <div class="placeHead">
-              <div class="placePin" aria-hidden="true">
-                <span class="pinDot"></span>
-                <span class="pinPulse"></span>
-              </div>
-
-              <div class="placeHead__text">
-                <h3 class="placeTitle">El Hueco Bodas y Banquetes</h3>
-                <p class="placeMeta">
-                  Plaza Ópera, s/n · 47009 Valladolid<br>
-                  Recomendamos llegar con margen para aparcar con calma.
-                </p>
-              </div>
-            </div>
-
-            <a class="btn"
-              href="https://maps.google.com/?q=El+Hueco+Bodas+y+Banquetes"
-              target="_blank"
-              rel="noreferrer">
-              Abrir en Google Maps →
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Skyband -->
-    <div class="skyband" aria-hidden="true">
-      <div class="cloud c1"></div>
-      <div class="cloud c2"></div>
-      <div class="cloud c3"></div>
-      <div class="plane-path"></div>
-      <div class="plane"></div>
-      <div class="heart"></div>
-    </div>
-
-    <!-- MOMENTOS CLAVE -->
-    <section class="section" id="momentos">
-      <div class="frame section__inner">
-        <div class="kicker">Momentos clave</div>
-        <h2 class="h2">La línea del día</h2>
-        <p class="p">Horario orientativo. Si hay algún ajuste, lo actualizaremos aquí.</p>
-
-        <div class="timelineWrap">
-          <div class="timeline">
-
-            <!-- Item 1 (izquierda en desktop) -->
-            <div class="tItem reveal">
-              <div class="tSide tSide--left">
-                <div class="tCard">
-                  <div class="tTime">18:30h</div>
-                  <div class="tLabel">Autobús de ida</div>
-                </div>
-              </div>
-
-              <div class="tDot" aria-hidden="true">
-                <span class="tIcon tIcon--bus">🚌</span>
-              </div>
-
-              <div class="tSide tSide--right" aria-hidden="true"></div>
-            </div>
-
-            <!-- Item 2 (derecha en desktop) -->
-            <div class="tItem reveal">
-              <div class="tSide tSide--left" aria-hidden="true"></div>
-
-              <div class="tDot" aria-hidden="true">
-                <span class="tIcon tIcon--ring">💍</span>
-              </div>
-
-              <div class="tSide tSide--right">
-                <div class="tCard">
-                  <div class="tTime">19:00h</div>
-                  <div class="tLabel">Ceremonia civil</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Item 3 (izquierda en desktop) -->
-            <div class="tItem reveal">
-              <div class="tSide tSide--left">
-                <div class="tCard">
-                  <div class="tTime">19:45h</div>
-                  <div class="tLabel">Cena tipo cóctel</div>
-                </div>
-              </div>
-
-              <div class="tDot" aria-hidden="true">
-                <span class="tIcon tIcon--drink">🍸</span>
-              </div>
-
-              <div class="tSide tSide--right" aria-hidden="true"></div>
-            </div>
-
-            <!-- Item 4 (derecha en desktop) -->
-            <div class="tItem reveal">
-              <div class="tSide tSide--left" aria-hidden="true"></div>
-
-              <div class="tDot" aria-hidden="true">
-                <span class="tIcon tIcon--dj">🎧</span>
-              </div>
-
-              <div class="tSide tSide--right">
-                <div class="tCard">
-                  <div class="tTime">22:15h</div>
-                  <div class="tLabel">DJ y barra libre</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- (Si luego añadís más momentos, se siguen alternando igual) -->
-
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- Skyband -->
-    <div class="skyband" aria-hidden="true">
-      <div class="cloud c1"></div>
-      <div class="cloud c2"></div>
-      <div class="cloud c3"></div>
-      <div class="plane-path"></div>
-      <div class="plane"></div>
-      <div class="heart"></div>
-    </div>
-
-    <!-- ASISTENCIA -->
-    <section class="section" id="asistencia">
-      <div class="frame section__inner">
-        <div class="kicker">Asistencia</div>
-        <h2 class="h2">Todo lo que necesitas</h2>
-        <p class="p">Dress code, autobús y notas útiles. (Luego añadimos RSVP si queréis.)</p>
-
-        <div class="actionGrid">
-          <button class="actionCard" data-modal="dress" type="button">
-            <div class="actionIcon" aria-hidden="true">👗</div>
-            <div class="actionTitle">Dress code</div>
-            <div class="actionSub">Una orientación para tu vestuario</div>
-            <div class="actionBtn">Ver más</div>
-          </button>
-
-          <button class="actionCard" data-modal="bus" type="button">
-            <div class="actionIcon" aria-hidden="true">🚌</div>
-            <div class="actionTitle">Autobús</div>
-            <div class="actionSub">Horarios y paradas</div>
-            <div class="actionBtn">Ver más</div>
-          </button>
-
-          <button class="actionCard" data-modal="tips" type="button">
-            <div class="actionIcon" aria-hidden="true">✨</div>
-            <div class="actionTitle">Tips</div>
-            <div class="actionSub">Información adicional</div>
-            <div class="actionBtn">+ Info</div>
-          </button>
-        </div>
-
-        <div class="countdownTitle">Faltan…</div>
-
-        <!-- Countdown YA montado (JS rellena números) -->
-        <div class="countdownWrap" id="countdown" aria-label="Cuenta atrás">
+        <div class="countdownWrap countdownWrap--fancy" id="countdown" aria-label="Cuenta atrás">
           <div class="cdItem">
             <div class="cdNum" data-cd="days">000</div>
             <div class="cdLab">Días</div>
@@ -289,32 +122,348 @@
             <div class="cdNum" data-cd="secs">00</div>
             <div class="cdLab">Seg</div>
           </div>
-        </div>
 
-        <!-- Fondo geométrico/sello (se diseña en CSS) -->
-        <div class="countdownSeal" aria-hidden="true"></div>
+          <span class="cdFrame cdFrame--1" aria-hidden="true"></span>
+          <span class="cdFrame cdFrame--2" aria-hidden="true"></span>
+          <span class="cdFrame cdFrame--3" aria-hidden="true"></span>
+        </div>
 
       </div>
     </section>
 
-    <!-- GALERÍA (después de asistencia) -->
+    <!-- Separador wave -->
+    <div class="divider divider--b" aria-hidden="true">
+      <svg class="wave" viewBox="0 0 1440 160" preserveAspectRatio="none">
+        <path d="M0,60 C220,10 420,140 640,95 C860,50 1020,0 1220,50 C1340,80 1400,95 1440,88 L1440,160 L0,160 Z"></path>
+      </svg>
+    </div>
+
+    <!-- UBICACIÓN -->
+    <section class="section" id="ubicacion">
+      <div class="frame section__inner">
+        <div class="kicker">Ubicación</div>
+        <h2 class="h2">Dónde será</h2>
+        <p class="p">Todo lo importante, a un clic. Guarda la ubicación y llega con margen.</p>
+
+        <div class="placeGrid">
+          <!-- CEREMONIA -->
+          <div class="placeCard placeCard--tint">
+            <div class="placeHead">
+              <div class="placePin" aria-hidden="true">
+                <span class="pinDot"></span>
+                <span class="pinPulse"></span>
+              </div>
+              <div class="placeHead__text">
+                <div class="placeTag">Ceremonia</div>
+                <h3 class="placeTitle">Castillo de Fuensaldaña</h3>
+                <p class="placeMeta">
+                  C. del Castillo, s/n · 47194 Fuensaldaña (Valladolid)<br>
+                  Recomendamos llegar con antelación para aparcar con calma.
+                </p>
+              </div>
+            </div>
+
+            <div class="placeBtns">
+              <a class="btn"
+                 href="https://maps.google.com/?q=Castillo+de+Fuensalda%C3%B1a"
+                 target="_blank" rel="noreferrer">
+                Cómo llegar → Google Maps
+              </a>
+            </div>
+          </div>
+
+          <!-- CELEBRACIÓN -->
+          <div class="placeCard placeCard--tint">
+            <div class="placeHead">
+              <div class="placePin" aria-hidden="true">
+                <span class="pinDot"></span>
+                <span class="pinPulse"></span>
+              </div>
+              <div class="placeHead__text">
+                <div class="placeTag">Celebración</div>
+                <h3 class="placeTitle">El Hueco Bodas y Banquetes</h3>
+                <p class="placeMeta">
+                  Plaza Ópera, s/n · 47009 Valladolid<br>
+                  Recomendamos llegar con margen para aparcar con calma.
+                </p>
+              </div>
+            </div>
+
+            <div class="placeBtns">
+              <a class="btn"
+                 href="https://maps.google.com/?q=El+Hueco+Bodas+y+Banquetes"
+                 target="_blank" rel="noreferrer">
+                Cómo llegar → Google Maps
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Separador wave -->
+    <div class="divider divider--c" aria-hidden="true">
+      <svg class="wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
+        <path d="M0,80 C200,120 380,40 560,76 C740,112 920,40 1100,76 C1280,110 1360,92 1440,70 L1440,140 L0,140 Z"></path>
+      </svg>
+    </div>
+
+    <!-- MOMENTOS CLAVE -->
+    <section class="section" id="momentos">
+      <div class="frame section__inner">
+        <div class="kicker">Momentos clave</div>
+        <h2 class="h2">La línea del día</h2>
+        <p class="p">Horario orientativo. Si hay algún ajuste, lo actualizaremos aquí.</p>
+
+        <div class="timelineWrap">
+          <div class="timeline">
+            <div class="tItem">
+              <div class="tSide tSide--left">
+                <div class="tCard tCard--tint">
+                  <div class="tTime">18:30h</div>
+                  <div class="tLabel">Autobús de ida</div>
+                </div>
+              </div>
+              <div class="tDot" aria-hidden="true">
+                <span class="tIcon tIcon--bus">🚌</span>
+                <span class="tPulse"></span>
+              </div>
+              <div class="tSide tSide--right" aria-hidden="true"></div>
+            </div>
+
+            <div class="tItem">
+              <div class="tSide tSide--left" aria-hidden="true"></div>
+              <div class="tDot" aria-hidden="true">
+                <span class="tIcon tIcon--ring">💍</span>
+                <span class="tPulse"></span>
+              </div>
+              <div class="tSide tSide--right">
+                <div class="tCard tCard--tint">
+                  <div class="tTime">19:00h</div>
+                  <div class="tLabel">Ceremonia civil (Castillo de Fuensaldaña)</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tItem">
+              <div class="tSide tSide--left">
+                <div class="tCard tCard--tint">
+                  <div class="tTime">20:00h</div>
+                  <div class="tLabel">Celebración (El Hueco)</div>
+                </div>
+              </div>
+              <div class="tDot" aria-hidden="true">
+                <span class="tIcon tIcon--car">🚗</span>
+                <span class="tPulse"></span>
+              </div>
+              <div class="tSide tSide--right" aria-hidden="true"></div>
+            </div>
+
+            <div class="tItem">
+              <div class="tSide tSide--left" aria-hidden="true"></div>
+              <div class="tDot" aria-hidden="true">
+                <span class="tIcon tIcon--drink">🍸</span>
+                <span class="tPulse"></span>
+              </div>
+              <div class="tSide tSide--right">
+                <div class="tCard tCard--tint">
+                  <div class="tTime">20:15h</div>
+                  <div class="tLabel">Cóctel</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tItem">
+              <div class="tSide tSide--left">
+                <div class="tCard tCard--tint">
+                  <div class="tTime">22:15h</div>
+                  <div class="tLabel">DJ y barra libre</div>
+                </div>
+              </div>
+              <div class="tDot" aria-hidden="true">
+                <span class="tIcon tIcon--dj">🎧</span>
+                <span class="tPulse"></span>
+              </div>
+              <div class="tSide tSide--right" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RSVP: botón que abre panel (solo aquí) -->
+        <div class="rsvpInline" aria-label="Confirmación de asistencia">
+          <button class="rsvpToggle" id="rsvpToggle" type="button" aria-expanded="false" aria-controls="rsvpPanel">
+            Confirmar asistencia
+          </button>
+
+          <div class="rsvpPanel" id="rsvpPanel" aria-hidden="true">
+            <div class="rsvpHead">
+              <div class="kicker">Confirmación</div>
+              <h3 class="h3">Confirmar asistencia</h3>
+              <p class="p">Nombre, asistencia, alergias, autobús y (opcional) canción sugerida.</p>
+            </div>
+
+            <form class="rsvpForm" id="rsvpForm" method="POST" action="#" autocomplete="on">
+              <div class="rsvpGrid">
+                <label class="field">
+                  <span class="field__label">Nombre y apellidos</span>
+                  <input class="field__input" type="text" name="nombre" required placeholder="Tu nombre completo" />
+                </label>
+
+                <label class="field">
+                  <span class="field__label">¿Asistirás?</span>
+                  <select class="field__input" name="asistencia" required>
+                    <option value="" selected disabled>Selecciona</option>
+                    <option value="Si">Sí</option>
+                    <option value="No">No</option>
+                  </select>
+                </label>
+
+                <label class="field field--full">
+                  <span class="field__label">Alergias / intolerancias (si no tienes, escribe “Ninguna”)</span>
+                  <textarea class="field__input" name="alergias" rows="3" placeholder="Ej. frutos secos, gluten, lactosa…"></textarea>
+                </label>
+
+                <label class="field">
+                  <span class="field__label">¿Necesitas autobús?</span>
+                  <select class="field__input" name="autobus" required>
+                    <option value="" selected disabled>Selecciona</option>
+                    <option value="Si">Sí</option>
+                    <option value="No">No</option>
+                  </select>
+                </label>
+
+                <label class="field field--full">
+                  <span class="field__label">Canción sugerida (opcional)</span>
+                  <input class="field__input" type="text" name="cancion" placeholder="Artista — Título" />
+                </label>
+              </div>
+
+              <div class="rsvpActions">
+                <button class="btn btn--primary" type="submit">Enviar</button>
+                <button class="btn btn--ghost" type="button" id="rsvpCloseBtn">Cerrar</button>
+              </div>
+
+              <p class="rsvpFine">
+                * Para recibir respuestas automáticamente, lo más fácil es conectar este formulario a Google Forms/Sheets.
+              </p>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Separador wave -->
+    <div class="divider divider--d" aria-hidden="true">
+      <svg class="wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
+        <path d="M0,95 C180,120 360,60 540,88 C720,116 900,56 1080,82 C1260,108 1350,96 1440,76 L1440,140 L0,140 Z"></path>
+      </svg>
+    </div>
+
+    <!-- ASISTENCIA (INFO ÚTIL) -->
+    <section class="section" id="asistencia">
+      <div class="frame section__inner">
+        <div class="kicker">Asistencia</div>
+        <h2 class="h2">Todo lo que necesitas</h2>
+        <p class="p">Dress code, autobús y notas útiles.</p>
+
+        <div class="actionGrid">
+          <button class="actionCard actionCard--tint" data-modal="dress" type="button">
+            <div class="actionIcon" aria-hidden="true">👗</div>
+            <div class="actionTitle">Dress code</div>
+            <div class="actionSub">Una orientación para tu vestuario</div>
+            <div class="actionBtn">Ver más</div>
+          </button>
+
+          <button class="actionCard actionCard--tint" data-modal="bus" type="button">
+            <div class="actionIcon" aria-hidden="true">🚌</div>
+            <div class="actionTitle">Autobús</div>
+            <div class="actionSub">Horarios y paradas</div>
+            <div class="actionBtn">Ver más</div>
+          </button>
+
+          <button class="actionCard actionCard--tint" data-modal="tips" type="button">
+            <div class="actionIcon" aria-hidden="true">✨</div>
+            <div class="actionTitle">Tips</div>
+            <div class="actionSub">Información adicional</div>
+            <div class="actionBtn">+ Info</div>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Separador wave -->
+    <div class="divider divider--e" aria-hidden="true">
+      <svg class="wave" viewBox="0 0 1440 150" preserveAspectRatio="none">
+        <path d="M0,80 C240,40 380,140 620,92 C860,45 1010,20 1220,60 C1350,85 1400,95 1440,86 L1440,150 L0,150 Z"></path>
+      </svg>
+    </div>
+
+    <!-- GALERÍA -->
     <section class="section" id="galeria">
       <div class="frame section__inner">
         <div class="kicker">Galería</div>
         <h2 class="h2">Nuestros momentos</h2>
         <p class="p">Un pequeño adelanto de lo que hemos vivido… y lo que viene.</p>
 
-        <div class="gallery">
-          <div class="gallery__img"><img src="assets/img/ga.jpg" alt="Logo G&A"></div>
-          <div class="gallery__img"><img src="assets/img/hero.jpg" alt="Gema y Alberto"></div>
-          <div class="gallery__img"><img src="assets/img/ga.jpg" alt="Logo G&A"></div>
+        <div class="gallery gallery--scroll" aria-label="Galería">
+          <div class="galleryTrack">
+            <figure class="galleryItem">
+              <img src="assets/img/ga.jpg" alt="Logo G&A">
+            </figure>
+
+            <figure class="galleryItem">
+              <img src="assets/img/hero.jpg" alt="Gema y Alberto">
+            </figure>
+
+            <figure class="galleryItem">
+              <img src="assets/img/ga.jpg" alt="Logo G&A">
+            </figure>
+          </div>
+
+          <div class="galleryHint" aria-hidden="true">Desliza →</div>
         </div>
+
       </div>
     </section>
 
+    <!-- Separador wave -->
+    <div class="divider divider--f" aria-hidden="true">
+      <svg class="wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
+        <path d="M0,88 C190,120 360,60 560,90 C760,120 920,55 1100,80 C1280,105 1360,95 1440,75 L1440,140 L0,140 Z"></path>
+      </svg>
+    </div>
+
+    <!-- FOOTER FINAL: solo confirmar + calendario -->
+    <footer class="footer" id="final">
+      <div class="frame footer__inner">
+        <div class="footerTop">
+          <div class="footerBrand">
+            <div class="footerNames">Gema &amp; Alberto</div>
+            <div class="footerDate">26.06.2026</div>
+          </div>
+
+          <nav class="footerLinks" aria-label="Accesos rápidos">
+            <a class="footerLink" href="#" id="footerRSVPLink">Confirmar asistencia</a>
+            <a class="footerLink" href="#"
+               id="addToCalendarLink"
+               aria-label="Añadir la fecha al calendario">
+              Añadir al calendario
+            </a>
+          </nav>
+        </div>
+
+        <div class="footerBottom">
+          <div class="footerNote">Hecho con cariño para un día que recordaremos siempre ♥</div>
+        </div>
+      </div>
+    </footer>
+
   </main>
 
-  <!-- MODAL (tu JS lo necesita) -->
+  <!-- MODAL -->
   <div class="modal" id="modal" aria-hidden="true">
     <div class="modal__backdrop" data-close></div>
     <div class="modal__panel" role="dialog" aria-modal="true" aria-label="Información">

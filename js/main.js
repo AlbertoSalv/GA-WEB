@@ -1,10 +1,13 @@
 /* =========================================================
-   GA WEB — main.js (PRO)
-   - Intro sobre → muestra web + desbloquea scroll
-   - Scroll reveal + stagger timeline
-   - Countdown real (26/06/2026 19:00) con eficiencia y sin drift
-   - Modales accesibles + focus trap + ESC + click fuera
-   - Skybands “fixdate-like” (nubes + trazo + pieza + corazón) re-animación segura
+   GA WEB — main.js (STEP)
+   Cambios:
+   - Sin CTAs que “lleven” a secciones (salvo link final opcional)
+   - Fecha: sin animaciones (solo se muestra en HTML)
+   - RSVP: se abre/cierra bajo "La línea del día" (panel desplegable)
+   - RSVP incluye: nombre + asistencia (sí/no) + alergias + autobús (sí/no) + canción (opcional)
+   - Envío: placeholder hasta conectar (Google Forms / Sheets recomendado)
+   - Modales accesibles (Dress/Bus/Tips)
+   - Add to Calendar (.ics)
    ========================================================= */
 
 (() => {
@@ -16,11 +19,11 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  function pad2(n) { return String(n).padStart(2, "0"); }
-  function pad3(n) { return String(n).padStart(3, "0"); }
-
   const prefersReducedMotion = window.matchMedia &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function pad2(n) { return String(n).padStart(2, "0"); }
+  function pad3(n) { return String(n).padStart(3, "0"); }
 
   // ===============================
   // Intro (Sobre) -> mostrar sitio
@@ -31,7 +34,6 @@
 
   let isOpening = false;
 
-  // Bloqueo scroll mientras está la intro
   if (intro) document.documentElement.style.overflow = "hidden";
 
   if (openBtn && intro && site) {
@@ -40,33 +42,26 @@
       isOpening = true;
 
       intro.classList.add("intro--open");
-
-      // Preparamos el sitio
       site.style.opacity = "0";
       site.classList.remove("site--hidden");
 
-      // Cierre del sobre
       window.setTimeout(() => {
         intro.classList.add("intro--closing");
 
         window.setTimeout(() => {
           intro.style.display = "none";
-
-          // Desbloquea scroll al entrar
           document.documentElement.style.overflow = "";
 
           requestAnimationFrame(() => {
             site.style.opacity = "1";
           });
 
-          // Arriba del todo (sin animación)
           try {
             window.scrollTo({ top: 0, left: 0, behavior: "instant" });
           } catch {
             window.scrollTo(0, 0);
           }
 
-          // Foco al main
           site.setAttribute("tabindex", "-1");
           site.focus({ preventScroll: true });
           site.removeAttribute("tabindex");
@@ -76,24 +71,13 @@
   }
 
   // ===============================
-  // Scroll reveal + stagger (tItem)
+  // (Opcional) Reveal (si usas .reveal)
   // ===============================
   const revealEls = $$(".reveal");
-
   if ("IntersectionObserver" in window && revealEls.length) {
     const io = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
-
-        // Stagger SOLO para items de timeline
-        if (entry.target.classList.contains("tItem")) {
-          const rows = $$(".tItem.reveal");
-          const idx = rows.indexOf(entry.target);
-          entry.target.style.transitionDelay = `${idx * 70}ms`;
-        } else {
-          entry.target.style.transitionDelay = "0ms";
-        }
-
         entry.target.classList.add("is-visible");
         io.unobserve(entry.target);
       });
@@ -105,66 +89,22 @@
   }
 
   // ===============================
-  // Countdown real (26/06/2026 19:00)
-  // - Rellena #countdown si está vacío (tu HTML actual lo usa así)
-  // - Si existen [data-cd], también los actualiza (compatibilidad)
+  // Countdown real (si existe #countdown con [data-cd])
   // ===============================
-  const targetDate = new Date(2026, 5, 26, 19, 0, 0); // (mes 5 = junio)
-
+  const targetDate = new Date(2026, 5, 26, 19, 0, 0);
   const countdownWrap = $("#countdown");
 
-  // Compatibilidad con el markup antiguo
-  const dElOld = $('[data-cd="days"]');
-  const hElOld = $('[data-cd="hours"]');
-  const mElOld = $('[data-cd="mins"]');
-  const sElOld = $('[data-cd="secs"]');
-
-  function ensureCountdownMarkup() {
+  function tickCountdown() {
     if (!countdownWrap) return;
 
-    // Si ya viene el markup dentro, no lo pisa
-    if (countdownWrap.children && countdownWrap.children.length) return;
+    const dEl = $('[data-cd="days"]', countdownWrap);
+    const hEl = $('[data-cd="hours"]', countdownWrap);
+    const mEl = $('[data-cd="mins"]', countdownWrap);
+    const sEl = $('[data-cd="secs"]', countdownWrap);
 
-    countdownWrap.innerHTML = `
-      <div class="cdItem">
-        <div class="cdNum" data-cd="days">000</div>
-        <div class="cdLab">Días</div>
-      </div>
-      <div class="cdSep" aria-hidden="true"></div>
-      <div class="cdItem">
-        <div class="cdNum" data-cd="hours">00</div>
-        <div class="cdLab">Horas</div>
-      </div>
-      <div class="cdSep" aria-hidden="true"></div>
-      <div class="cdItem">
-        <div class="cdNum" data-cd="mins">00</div>
-        <div class="cdLab">Min</div>
-      </div>
-      <div class="cdSep" aria-hidden="true"></div>
-      <div class="cdItem">
-        <div class="cdNum" data-cd="secs">00</div>
-        <div class="cdLab">Seg</div>
-      </div>
-    `;
-  }
+    // Si no existe markup, no hacemos nada (tu HTML ya lo trae)
+    if (!dEl || !hEl || !mEl || !sEl) return;
 
-  function getCountdownEls() {
-    // Primero intenta dentro del wrap (nuevo)
-    const dEl = countdownWrap ? $('[data-cd="days"]', countdownWrap) : null;
-    const hEl = countdownWrap ? $('[data-cd="hours"]', countdownWrap) : null;
-    const mEl = countdownWrap ? $('[data-cd="mins"]', countdownWrap) : null;
-    const sEl = countdownWrap ? $('[data-cd="secs"]', countdownWrap) : null;
-
-    // Si no existen, cae al viejo
-    return {
-      dEl: dEl || dElOld,
-      hEl: hEl || hElOld,
-      mEl: mEl || mElOld,
-      sEl: sEl || sElOld,
-    };
-  }
-
-  function tickCountdown() {
     const now = new Date();
     let diff = targetDate.getTime() - now.getTime();
     if (diff < 0) diff = 0;
@@ -175,21 +115,13 @@
     const mins = Math.floor((totalSecs % 3600) / 60);
     const secs = totalSecs % 60;
 
-    const { dEl, hEl, mEl, sEl } = getCountdownEls();
-
-    if (dEl) dEl.textContent = pad3(days);
-    if (hEl) hEl.textContent = pad2(hours);
-    if (mEl) mEl.textContent = pad2(mins);
-    if (sEl) sEl.textContent = pad2(secs);
+    dEl.textContent = pad3(days);
+    hEl.textContent = pad2(hours);
+    mEl.textContent = pad2(mins);
+    sEl.textContent = pad2(secs);
   }
 
-  // Inicializa markup si hace falta
-  ensureCountdownMarkup();
-
-  // Primera ejecución
   tickCountdown();
-
-  // Alinea el refresco al inicio del siguiente segundo
   const startDelay = 1000 - (Date.now() % 1000);
   window.setTimeout(() => {
     tickCountdown();
@@ -197,62 +129,163 @@
   }, startDelay);
 
   // ===============================
-  // Skyband “de vez en cuando”
-  // - Hace que NO estén siempre visibles, y reaparezcan en “oleadas”
-  // - Sin tocar tu HTML: actúa sobre .skyband existentes (si los añades)
+  // RSVP desplegable bajo "La línea del día"
+  // - #rsvpToggle (botón)
+  // - #rsvpPanel  (panel)
+  // - #rsvpForm   (form)
   // ===============================
-  const skybands = $$(".skyband");
+  const rsvpToggle = $("#rsvpToggle");
+  const rsvpPanel = $("#rsvpPanel");
+  const rsvpForm = $("#rsvpForm");
 
-  function setSkybandVisible(el, visible) {
-    if (!el) return;
-    el.style.transition = "opacity 700ms ease";
-    el.style.opacity = visible ? "0.95" : "0";
-    el.style.pointerEvents = "none";
-  }
+  function openRSVP({ scrollIntoView = false } = {}) {
+    if (!rsvpPanel) return;
 
-  function randomBetween(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
+    rsvpPanel.classList.add("is-open");
+    rsvpPanel.setAttribute("aria-hidden", "false");
+    if (rsvpToggle) rsvpToggle.setAttribute("aria-expanded", "true");
 
-  function scheduleSkybands() {
-    if (!skybands.length) return;
-
-    // Si el usuario prefiere menos movimiento: se queda visible y sin “parpadeos”
-    if (prefersReducedMotion) {
-      skybands.forEach((sb) => setSkybandVisible(sb, true));
-      return;
+    if (scrollIntoView) {
+      const top = rsvpPanel.getBoundingClientRect().top + window.pageYOffset - 10;
+      if (prefersReducedMotion) window.scrollTo(0, top);
+      else window.scrollTo({ top, behavior: "smooth" });
     }
 
-    // Arranca oculto y aparece “a ratos”
-    skybands.forEach((sb) => setSkybandVisible(sb, false));
+    // foco al primer input
+    const firstInput = $("input, select, textarea, button", rsvpPanel);
+    if (firstInput) window.setTimeout(() => firstInput.focus(), 80);
+  }
 
-    const loop = (sb) => {
-      // Tiempo oculto (18–36s) + visible (7–12s)
-      const hiddenMs = randomBetween(18000, 36000);
-      const visibleMs = randomBetween(7000, 12000);
+  function closeRSVP() {
+    if (!rsvpPanel) return;
 
-      window.setTimeout(() => {
-        setSkybandVisible(sb, true);
+    rsvpPanel.classList.remove("is-open");
+    rsvpPanel.setAttribute("aria-hidden", "true");
+    if (rsvpToggle) rsvpToggle.setAttribute("aria-expanded", "false");
+  }
 
-        window.setTimeout(() => {
-          setSkybandVisible(sb, false);
-          loop(sb);
-        }, visibleMs);
+  function toggleRSVP() {
+    if (!rsvpPanel) return;
+    const isOpen = rsvpPanel.classList.contains("is-open");
+    if (isOpen) closeRSVP();
+    else openRSVP();
+  }
 
-      }, hiddenMs);
-    };
+  if (rsvpToggle && rsvpPanel) {
+    rsvpToggle.addEventListener("click", toggleRSVP);
+  }
 
-    // Desfase para que no salgan todos a la vez
-    skybands.forEach((sb, i) => {
-      const initialDelay = 1200 + i * 1400;
-      window.setTimeout(() => loop(sb), initialDelay);
+  // Cerrar RSVP con ESC si está abierto
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (rsvpPanel && rsvpPanel.classList.contains("is-open")) closeRSVP();
+  });
+
+  // Envío: placeholder hasta conectar action real (Google Forms recomendado)
+  function toast(msg) {
+    try { alert(msg); } catch {}
+  }
+
+  if (rsvpForm) {
+    rsvpForm.addEventListener("submit", (e) => {
+      const action = (rsvpForm.getAttribute("action") || "").trim();
+      const isPlaceholder = action === "" || action === "#";
+
+      if (isPlaceholder) {
+        e.preventDefault();
+        toast("✅ Enviado (modo demo). Para que os llegue de verdad, hay que conectar el formulario a Google Forms/Sheets o similar.");
+      }
     });
   }
 
-  scheduleSkybands();
+  // Link del footer para abrir RSVP (opcional)
+  // - En tu HTML pon: <a id="footerRSVPLink" href="#">Confirmar asistencia</a>
+  const footerRSVPLink = $("#footerRSVPLink");
+  if (footerRSVPLink) {
+    footerRSVPLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      openRSVP({ scrollIntoView: true }); // si no quieres scroll, pon false
+    });
+  }
 
   // ===============================
-  // Modales (accesibles + focus trap)
+  // Add to Calendar (.ics)
+  // ===============================
+  const addToCal = $("#addToCalendarLink");
+
+  const eventTitle = "Boda de Gema & Alberto";
+  const eventLocation = "Castillo de Fuensaldaña (Ceremonia) / El Hueco Bodas y Banquetes (Celebración)";
+  const eventDescription =
+    "Boda de Gema y Alberto.\n\nCeremonia: 19:00 — Castillo de Fuensaldaña.\nCelebración: 20:00 — El Hueco Bodas y Banquetes.\n\n¡Nos vemos allí!";
+
+  function toICSDateUTC(date) {
+    const y = date.getUTCFullYear();
+    const m = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const d = String(date.getUTCDate()).padStart(2, "0");
+    const hh = String(date.getUTCHours()).padStart(2, "0");
+    const mm = String(date.getUTCMinutes()).padStart(2, "0");
+    const ss = String(date.getUTCSeconds()).padStart(2, "0");
+    return `${y}${m}${d}T${hh}${mm}${ss}Z`;
+  }
+
+  function escapeICS(text) {
+    return String(text)
+      .replace(/\\/g, "\\\\")
+      .replace(/\n/g, "\\n")
+      .replace(/,/g, "\\,")
+      .replace(/;/g, "\\;");
+  }
+
+  function downloadICS() {
+    const start = new Date(2026, 5, 26, 19, 0, 0);
+    const end = new Date(2026, 5, 26, 19, 45, 0);
+
+    const dtStamp = toICSDateUTC(new Date());
+    const dtStart = toICSDateUTC(new Date(start.getTime() - start.getTimezoneOffset() * 60000));
+    const dtEnd = toICSDateUTC(new Date(end.getTime() - end.getTimezoneOffset() * 60000));
+
+    const uid = `gaweb-${Date.now()}@ga-web`;
+
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//GA WEB//ES",
+      "CALSCALE:GREGORIAN",
+      "METHOD:PUBLISH",
+      "BEGIN:VEVENT",
+      `UID:${uid}`,
+      `DTSTAMP:${dtStamp}`,
+      `DTSTART:${dtStart}`,
+      `DTEND:${dtEnd}`,
+      `SUMMARY:${escapeICS(eventTitle)}`,
+      `LOCATION:${escapeICS(eventLocation)}`,
+      `DESCRIPTION:${escapeICS(eventDescription)}`,
+      "END:VEVENT",
+      "END:VCALENDAR"
+    ].join("\r\n");
+
+    const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Gema-y-Alberto-26-06-2026.ics";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    URL.revokeObjectURL(url);
+  }
+
+  if (addToCal) {
+    addToCal.addEventListener("click", (e) => {
+      e.preventDefault();
+      downloadICS();
+    });
+  }
+
+  // ===============================
+  // Modales (Dress/Bus/Tips)
   // ===============================
   const modal = $("#modal");
   const modalContent = $("#modalContent");
@@ -276,16 +309,14 @@
     `
   };
 
-  // Focus trap
   function getFocusable(container) {
-    const focusables = $$(
+    return $$(
       'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
       container
     ).filter((el) => {
       const style = window.getComputedStyle(el);
       return style.visibility !== "hidden" && style.display !== "none";
     });
-    return focusables;
   }
 
   function openModal(key, openerEl = null) {
@@ -296,11 +327,8 @@
     modalContent.innerHTML = modalTemplates[key] || "<p>Contenido no disponible.</p>";
     modal.classList.add("is-open");
     modal.setAttribute("aria-hidden", "false");
-
-    // Bloquea scroll del body
     document.body.style.overflow = "hidden";
 
-    // Foco al botón cerrar
     if (closeBtn) window.setTimeout(() => closeBtn.focus(), 0);
   }
 
@@ -311,26 +339,23 @@
     modal.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
 
-    // Devuelve foco
     if (lastFocusedEl && typeof lastFocusedEl.focus === "function") {
       window.setTimeout(() => lastFocusedEl.focus(), 0);
     }
     lastFocusedEl = null;
   }
 
-  // Botones que abren modal
   $$("[data-modal]").forEach((btn) => {
     btn.addEventListener("click", () => openModal(btn.dataset.modal, btn));
   });
 
-  // Cerrar por click fuera / botón X
   if (modal) {
     modal.addEventListener("click", (e) => {
       if (e.target && e.target.hasAttribute("data-close")) closeModal();
     });
   }
+  if (closeBtn) closeBtn.addEventListener("click", closeModal);
 
-  // ESC + TAB trap
   document.addEventListener("keydown", (e) => {
     if (!modal || !modal.classList.contains("is-open")) return;
 
