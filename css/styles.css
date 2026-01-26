@@ -1,14 +1,11 @@
 /* =========================
    GA WEB — styles.css (PRO)
-   - Hero full-bleed + ola vertical
-   - Separadores wave pro
-   - Corazoncitos siempre (sin avión / sin nubes)
-   - Countdown “Faltan…” con reborditos
-   - Ubicación en 2 tarjetas (Ceremonia / Celebración)
-   - Timeline mejorado (pulsos + cards tintadas)
-   - RSVP integrado (form bonito)
-   - Galería horizontal (móvil + web)
-   - Footer final con accesos + sugerir canción
+   OPTIMIZADO: PORTADA (HERO) FIXDATE-STYLE
+   - Hero 100vh (PC + móvil)
+   - Separador ola vertical sin tapar la foto
+   - Foto visible + encuadre para salir enteros
+   - Texto centrado y “Gema y Alberto” con el mismo brillo que la fecha
+   - El resto se mantiene igual
    ========================= */
 
 /* =========================
@@ -55,10 +52,14 @@
   --card-radius: 28px;
   --card-shadow: 0 30px 90px rgba(0,0,0,.32);
 
-  /* Cards tint (para que “resalten”) */
+  /* Cards tint */
   --card-tint: rgba(255,255,255,.32);
   --card-tint-2: rgba(245,241,231,.78);
   --card-border: rgba(22,22,22,.10);
+
+  /* HERO tuning (para encuadre “pies”) */
+  --hero-focus-y-desktop: 78%; /* SUBE/BAJA esto si quieres más pies/cabeza */
+  --hero-focus-y-mobile: 68%;
 }
 
 /* =========================
@@ -72,7 +73,6 @@ body{
   font-family: var(--font);
   color: var(--ink);
 
-  /* Fondo premium cálido */
   background:
     radial-gradient(1100px 640px at 18% 0%, rgba(200,162,74,.12), rgba(200,162,74,0) 62%),
     radial-gradient(980px 600px at 82% 6%, rgba(107,31,42,.08), rgba(107,31,42,0) 62%),
@@ -158,7 +158,7 @@ strong{ color: rgba(22,22,22,.92); }
    ========================= */
 .site{
   width: 100%;
-  padding: 18px 0 0;
+  padding: 0;              /* HERO pegado arriba */
   transition: opacity 650ms ease;
 }
 .site--hidden{
@@ -275,191 +275,241 @@ strong{ color: rgba(22,22,22,.92); }
 }
 
 /* =========================
-   CORAZONES (SIEMPRE)
+   CORAZONES (SIEMPRE, “EN VACÍO”)
    ========================= */
 .floatHearts{
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 3; /* por encima del fondo, por debajo de modal/intro */
-  opacity: .85;
+  z-index: 2;
+  opacity: .9;
 }
-.site:not(.site--hidden) + .modal{ /* nada */ }
 
 .fh{
   position: absolute;
-  font-size: 16px;
-  color: rgba(107,31,42,.85);
-  text-shadow: 0 12px 22px rgba(0,0,0,.10);
-  filter: drop-shadow(0 10px 14px rgba(0,0,0,.10));
-  animation: fhFloat 7.8s ease-in-out infinite;
-  transform: translateZ(0);
-  opacity: .9;
+  font-size: 14px;
+  color: rgba(200,162,74,.85);
+  opacity: 0;
+  filter: drop-shadow(0 10px 16px rgba(0,0,0,.08));
 }
-.fh1{ left: 8%;  top: 18%; font-size: 14px; animation-duration: 8.8s; }
-.fh2{ left: 72%; top: 12%; font-size: 16px; animation-duration: 9.6s; color: rgba(200,162,74,.85); }
-.fh3{ left: 48%; top: 34%; font-size: 12px; animation-duration: 7.4s; opacity: .65; }
-.fh4{ left: 18%; top: 64%; font-size: 13px; animation-duration: 10.2s; opacity:.75; color: rgba(200,162,74,.78); }
-.fh5{ left: 84%; top: 72%; font-size: 15px; animation-duration: 8.4s; }
-.fh6{ left: 56%; top: 82%; font-size: 12px; animation-duration: 9.2s; opacity:.65; }
 
-@keyframes fhFloat{
-  0%,100%{ transform: translateY(0) translateX(0) scale(1); }
-  50%{ transform: translateY(-12px) translateX(6px) scale(1.03); }
+/* Colócalos en zonas “sin contenido” (arriba derecha, etc.) */
+.fh1{ left: 7%;  top: 16%; animation: floatA 8.4s ease-in-out infinite; }
+.fh2{ right: 8%; top: 10%; animation: floatB 9.2s ease-in-out infinite; }
+.fh3{ right: 14%; top: 36%; animation: floatC 10.0s ease-in-out infinite; color: rgba(107,31,42,.80); font-size: 13px;}
+.fh4{ left: 14%; bottom: 18%; animation: floatD 9.6s ease-in-out infinite; font-size: 12px; opacity:.0;}
+/* si tienes más corazones en HTML, no pasa nada: se quedarán quietos si no tienen clase */
+
+@keyframes floatA{
+  0%{ transform: translate(0,0) scale(.92); opacity: 0; }
+  18%{ opacity: .55; }
+  55%{ transform: translate(22px,-16px) scale(1); opacity: .55; }
+  85%{ opacity: 0; }
+  100%{ transform: translate(28px,-6px) scale(.92); opacity: 0; }
+}
+@keyframes floatB{
+  0%{ transform: translate(0,0) scale(.92); opacity: 0; }
+  20%{ opacity: .55; }
+  55%{ transform: translate(-26px,12px) scale(1); opacity: .55; }
+  85%{ opacity: 0; }
+  100%{ transform: translate(-16px,24px) scale(.92); opacity: 0; }
+}
+@keyframes floatC{
+  0%{ transform: translate(0,0) scale(.92); opacity: 0; }
+  24%{ opacity: .45; }
+  55%{ transform: translate(-12px,-18px) scale(1); opacity: .45; }
+  85%{ opacity: 0; }
+  100%{ transform: translate(-6px,-26px) scale(.92); opacity: 0; }
+}
+@keyframes floatD{
+  0%{ transform: translate(0,0) scale(.92); opacity: 0; }
+  20%{ opacity: .28; }
+  55%{ transform: translate(14px,-10px) scale(1); opacity: .28; }
+  85%{ opacity: 0; }
+  100%{ transform: translate(20px,-2px) scale(.92); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .fh{ animation: none !important; opacity: 0 !important; }
 }
 
 /* =========================
-   HERO (full-bleed + ola)
+   HERO (PORTADA) — FIXDATE STYLE
    ========================= */
-.hero{ padding: 10px 0 0; }
+.hero{
+  padding: 0 !important;
+}
 
 .heroStage{
-  width: min(var(--content-max), calc(100% - (var(--gutter) * 2)));
-  margin: 0 auto;
+  width: 100vw;
+  min-height: 100svh;
+  min-height: 100vh;
+  margin-left: calc(50% - 50vw);
   display: grid;
   grid-template-columns: 1fr;
-  gap: 18px;
   align-items: stretch;
   position: relative;
+  overflow: hidden;
+  background: transparent;
 }
 
 @media (min-width: 980px){
   .heroStage{
-    grid-template-columns: 1.18fr 0.82fr;
-    gap: 0;
-    align-items: stretch;
+    grid-template-columns: 1.07fr .93fr; /* un poquito más de texto visible */
+    height: 100vh;
   }
 }
 
-/* Foto: full-bleed dentro del “stage” (sin tarjeta visible) */
+/* ---- FOTO ---- */
 .heroPhoto--full{
   position: relative;
   overflow: hidden;
-  border-radius: var(--radius-xl);
   background: #000;
-  box-shadow: var(--shadow-photo);
 }
 
 .heroPhoto--full img{
   width: 100%;
-  height: 540px;
-  object-fit: cover;
+  height: 100%;
   display: block;
-}
-@media (min-width: 980px){
-  .heroPhoto--full{
-    border-radius: var(--radius-xl) 0 0 var(--radius-xl);
-  }
-  .heroPhoto--full img{ height: 720px; }
+  object-fit: cover;
+  /* Para que salgáis enteros: prioriza parte baja (pies) */
+  object-position: 50% var(--hero-focus-y-mobile);
 }
 
-/* Viñeta cálida */
+/* MÓVIL: foto pegada arriba, altura portada */
+@media (max-width: 979px){
+  .heroPhoto--full{
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .heroPhoto--full img{
+    height: 64svh;          /* portada */
+    min-height: 520px;
+    object-position: 50% var(--hero-focus-y-mobile);
+  }
+}
+
+/* PC: foto ocupa toda la columna y todo el alto */
+@media (min-width: 980px){
+  .heroPhoto--full img{
+    height: 100%;
+    object-position: 50% var(--hero-focus-y-desktop);
+  }
+}
+
+/* Viñeta MUY suave (no “difumina”) */
 .heroPhoto--full::after{
   content:"";
   position:absolute;
   inset:0;
   pointer-events:none;
   background:
-    radial-gradient(900px 520px at 65% 18%, rgba(200,162,74,.14), rgba(0,0,0,0) 58%),
-    radial-gradient(900px 520px at 35% 72%, rgba(107,31,42,.10), rgba(0,0,0,0) 60%),
-    linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,0) 55%);
+    radial-gradient(900px 520px at 65% 18%, rgba(200,162,74,.10), rgba(0,0,0,0) 58%),
+    radial-gradient(900px 520px at 35% 72%, rgba(107,31,42,.06), rgba(0,0,0,0) 60%),
+    linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,0) 55%);
+  opacity: .75;
 }
 
-.heroPhoto__veil{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  opacity:.9;
-  background:
-    radial-gradient(900px 520px at 70% 50%, rgba(244,239,227,.55), rgba(244,239,227,0) 60%),
-    linear-gradient(90deg, rgba(244,239,227,0) 38%, rgba(244,239,227,.40) 88%, rgba(244,239,227,0) 100%);
-  mix-blend-mode: soft-light;
-}
+/* (opcional) si tenías un .heroPhoto__veil en HTML, lo dejamos MUY bajo */
+.heroPhoto__veil{ opacity: .12; }
 
-/* Ola vertical */
-.heroSplit{
-  display: none;
-}
-@media (min-width: 980px){
-  .heroSplit{
-    display: block;
-    position: absolute;
-    left: calc(1.18 / (1.18 + 0.82) * 100% - 60px);
-    top: 0;
-    bottom: 0;
-    width: 120px;
-    pointer-events: none;
-    z-index: 2;
+/* ---- SEPARADOR VERTICAL “OLA” EN PC (SIN TAPAR FOTO) ----
+
+    /* SVG inline: curva + transición suave */
+    background-repeat: no-repeat;
+    background-size: 140px 100%;
+    background-position: center;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='1200' viewBox='0 0 140 1200'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23ffffff' stop-opacity='0'/%3E%3Cstop offset='0.38' stop-color='%23f5f1e7' stop-opacity='0.0'/%3E%3Cstop offset='0.64' stop-color='%23f5f1e7' stop-opacity='0.88'/%3E%3Cstop offset='1' stop-color='%23f5f1e7' stop-opacity='1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M140,0 C70,120 70,240 140,360 C210,480 210,600 140,720 C70,840 70,960 140,1080 L140,1200 L0,1200 L0,0 Z' fill='url(%23g)'/%3E%3Cpath d='M96,0 C56,140 56,240 96,360 C136,480 136,600 96,720 C56,840 56,960 96,1080' fill='none' stroke='rgba(200,162,74,0.28)' stroke-width='1.2'/%3E%3C/svg%3E");
   }
 }
-.heroSplit__svg{
-  width: 120px;
-  height: 100%;
-  display: block;
-}
-.heroSplit__layer--soft{
-  fill: rgba(244,239,227,.82);
-}
-.heroSplit__layer--edge{
-  fill: none;
-  stroke: rgba(200,162,74,.35);
-  stroke-width: 1.2;
-  opacity: .9;
-}
 
-/* Texto */
+/* ---- TEXTO ---- */
 .heroText{
   position: relative;
-  padding: 18px 8px 16px;
-  display: flex;
+  display:flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 12px;
-  isolation: isolate;
+  align-items: center;     /* centrado horizontal */
+  justify-content: center; /* centrado vertical */
+  text-align: center;
+  padding: 24px var(--gutter) 28px;
+  background: rgba(245,241,231,.78); /* “papel” uniforme */
 }
 
 @media (min-width: 980px){
   .heroText{
-    padding: 26px 28px 22px;
-    border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
-    background: rgba(244,239,227,.62);
-    box-shadow: 0 26px 80px rgba(0,0,0,.08);
-    border: 1px solid rgba(22,22,22,.08);
-    border-left: 0;
+    height: 100%;
+    padding: 0 74px;
+    background: rgba(245,241,231,.84);
   }
 }
 
-/* Bandas decorativas (sutil) */
+/* Banditas decorativas centradas */
 .heroBand{
   height: 10px;
   border-radius: 999px;
   width: 120px;
   opacity: .85;
-  background: linear-gradient(90deg, rgba(200,162,74,.55), rgba(107,31,42,.18), rgba(200,162,74,0));
+  background: linear-gradient(90deg, rgba(200,162,74,.55), rgba(107,31,42,.12), rgba(200,162,74,0));
+  margin: 0 auto;
 }
-.heroBand--top{ margin-bottom: 6px; }
-.heroBand--bottom{ margin-top: 8px; width: 140px; opacity:.65; }
+.heroBand--top{ margin-bottom: 10px; }
+.heroBand--bottom{ margin-top: 10px; width: 140px; opacity:.65; }
 
+/* “Gema y Alberto” con MISMO estilo/iluminación que la fecha */
 .heroNames{
   font-family: var(--font-display);
   font-size: clamp(44px, 3.4vw, 64px);
   line-height: 1.02;
   font-weight: 700;
   letter-spacing: .15px;
-  color: rgba(22,22,22,.94);
-  text-shadow: 0 10px 28px rgba(0,0,0,.06);
+
+  background: linear-gradient(
+    90deg,
+    rgba(22,22,22,.92),
+    rgba(200,162,74,.98),
+    rgba(22,22,22,.92)
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+
+  animation: titleShine 3.6s ease-in-out infinite;
+  position: relative;
+}
+.heroNames::after{
+  content:"";
+  position:absolute;
+  left: 50%;
+  top: 62%;
+  width: 320px;
+  height: 70px;
+  transform: translate(-50%,-50%);
+  background: radial-gradient(circle, rgba(200,162,74,.16), rgba(200,162,74,0) 70%);
+  filter: blur(2px);
+  pointer-events:none;
+  z-index: -1;
+  opacity: .95;
+}
+@keyframes titleShine{
+  0%{ background-position: 0% 50%; }
+  50%{ background-position: 100% 50%; }
+  100%{ background-position: 0% 50%; }
 }
 
 .heroLead{
-  margin-top: 4px;
+  margin-top: 6px;
   color: var(--muted);
   line-height: 1.65;
   font-size: 15px;
   max-width: 62ch;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .heroDateLabel{
-  margin-top: 10px;
+  margin-top: 16px;
   font-size: 12px;
   color: rgba(22,22,22,.60);
   font-weight: 900;
@@ -467,36 +517,31 @@ strong{ color: rgba(22,22,22,.92); }
   text-transform: uppercase;
 }
 
-/* Fecha */
-.heroDateWrap{ display:flex; justify-content:flex-start; }
+/* Fecha centrada */
+.heroDateWrap{
+  display:flex;
+  justify-content:center;
+}
 .heroDate{
   font-family: var(--font-display);
   letter-spacing: 1px;
   font-weight: 700;
   color: rgba(22,22,22,.92);
-  text-align: left;
+  text-align: center;
 }
-.heroDate__fallback{
-  display:none;
-  font-size: clamp(44px, 3vw, 62px);
-  letter-spacing: .8px;
-}
+
+/* Fecha fancy */
 .heroDate--fancy{
   position: relative;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 10px;
-  padding: 0;
+  display: inline-block;
 }
 
 .heroDate--fancy .heroDate__text{
-  display: inline-flex;
-  gap: 10px;
-  align-items: baseline;
-
-  font-size: clamp(46px, 3.2vw, 66px);
+  display: inline-block;
+  font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: 1px;
+  font-size: clamp(44px, 4.2vw, 72px);
+  letter-spacing: .8px;
   line-height: 1.05;
 
   background: linear-gradient(
@@ -510,31 +555,7 @@ strong{ color: rgba(22,22,22,.92); }
   background-clip: text;
   color: transparent;
 
-  animation: dateShine 3.8s ease-in-out infinite;
-}
-
-.heroDate__digit,
-.heroDate__dot{
-  display:inline-block;
-  transform: translateZ(0);
-  animation: dateWave 2.1s ease-in-out infinite;
-  animation-delay: calc(var(--i, 0) * 120ms);
-}
-
-/* Halo detrás */
-.heroDate--fancy::after{
-  content:"";
-  position:absolute;
-  left: 0;
-  top: 60%;
-  width: 260px;
-  height: 64px;
-  transform: translateY(-50%);
-  background: radial-gradient(circle, rgba(200,162,74,.18), rgba(200,162,74,0) 72%);
-  filter: blur(2px);
-  pointer-events:none;
-  z-index: -1;
-  opacity: .95;
+  animation: dateShine 3.6s ease-in-out infinite;
 }
 
 @keyframes dateShine{
@@ -542,38 +563,46 @@ strong{ color: rgba(22,22,22,.92); }
   50%{ background-position: 100% 50%; }
   100%{ background-position: 0% 50%; }
 }
-@keyframes dateWave{
-  0%,100%{ transform: translateY(0); }
-  50%{ transform: translateY(-6px); }
+
+.heroDate--fancy::after{
+  content:"";
+  position:absolute;
+  left: 50%;
+  top: 60%;
+  width: 280px;
+  height: 70px;
+  transform: translate(-50%,-50%);
+  background: radial-gradient(circle, rgba(200,162,74,.18), rgba(200,162,74,0) 70%);
+  filter: blur(2px);
+  pointer-events:none;
+  z-index: -1;
 }
 
-.heroCTA{
-  margin-top: 12px;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  justify-content: flex-start;
-  flex-wrap: wrap;
+/* Barrita dorada centrada */
+.hr-gold{
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.scrollCue{
-  width: 46px;
-  height: 46px;
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
-  background: rgba(200,162,74,.16);
-  border: 1px solid rgba(200,162,74,.35);
-  font-size: 20px;
-  transition: transform 160ms ease, background 160ms ease;
-}
-.scrollCue:hover{
-  transform: translateY(-2px);
-  background: rgba(200,162,74,.22);
+/* ---- SEPARACIÓN FOTO→TEXTO EN MÓVIL (OLA ABAJO) ---- */
+@media (max-width: 979px){
+  .heroPhoto--full::before{
+    content:"";
+    position:absolute;
+    left: 0; right: 0; bottom: -1px;
+    height: 70px;
+    pointer-events:none;
+    background:
+      radial-gradient(140px 44px at 12% 10%, rgba(245,241,231,1) 55%, rgba(245,241,231,0) 56%),
+      radial-gradient(180px 54px at 42% 30%, rgba(245,241,231,1) 55%, rgba(245,241,231,0) 56%),
+      radial-gradient(160px 46px at 72% 20%, rgba(245,241,231,1) 55%, rgba(245,241,231,0) 56%),
+      radial-gradient(240px 68px at 92% 40%, rgba(245,241,231,1) 55%, rgba(245,241,231,0) 56%),
+      linear-gradient(180deg, rgba(245,241,231,0) 0%, rgba(245,241,231,1) 92%);
+  }
 }
 
 /* =========================
-   DIVIDERS (WAVES)
+   DIVIDERS (WAVES) — RESTO IGUAL
    ========================= */
 .divider{
   width: 100%;
@@ -1471,7 +1500,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 .modal__content p{ margin: 10px 0; }
 
 /* =========================
-   REVEAL (si tu JS lo usa)
+   REVEAL
    ========================= */
 .reveal{
   opacity: 0;
@@ -1492,463 +1521,50 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
     transform: none !important;
     transition: none !important;
   }
-  .fh, .tDot, .actionIcon, .heroDate__digit, .heroDate__dot{
+  .tDot, .actionIcon{
     animation: none !important;
   }
 }
 
+/* =========================================
+   FIX URGENTE: quitar triángulo negro + recuperar texto
+   ========================================= */
 
-/* ===== HERO DATE: grande + brillo elegante ===== */
-.heroDate--fancy{
-  position: relative;
-  display: inline-block;
-}
-
-.heroDate--fancy .heroDate__text{
-  display: inline-block;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(44px, 4.2vw, 72px);
-  letter-spacing: .8px;
-  line-height: 1.05;
-
-  /* Negro + Dorado (sin granate) */
-  background: linear-gradient(
-    90deg,
-    rgba(22,22,22,.92),
-    rgba(200,162,74,.98),
-    rgba(22,22,22,.92)
-  );
-  background-size: 220% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-
-  /* Brillo continuo suave */
-  animation: dateShine 3.6s ease-in-out infinite;
-}
-
-@keyframes dateShine{
-  0%{ background-position: 0% 50%; }
-  50%{ background-position: 100% 50%; }
-  100%{ background-position: 0% 50%; }
-}
-
-/* halo finito detrás */
-.heroDate--fancy::after{
-  content:"";
-  position:absolute;
-  left: 0;
-  top: 60%;
-  width: 280px;
-  height: 70px;
-  transform: translateY(-50%);
-  background: radial-gradient(circle, rgba(200,162,74,.18), rgba(200,162,74,0) 70%);
-  filter: blur(2px);
-  pointer-events:none;
-  z-index: -1;
-}
-
-/* ===== HERO SPLIT: desactivamos el SVG actual ===== */
-.heroSplit{ display:none !important; }
-
-/* ===== Separación orgánica: la hace la propia foto con un fade ===== */
-@media (min-width: 980px){
-  .heroPhoto--full{
-    border-radius: var(--radius-xl) 0 0 var(--radius-xl);
-    position: relative;
-  }
-
-  /* ===== HERO SEPARATOR (PC): curva limpia SIN TAPAR FOTO ===== */
+/* Asegura grid en PC */
 @media (min-width: 980px){
   .heroStage{
-    grid-template-columns: 1.06fr .94fr;
-    gap: 0;
-    min-height: 100vh;
-  }
-
-  .heroPhoto--full{
-    position: relative;
+    display: grid;
+    grid-template-columns: 1.07fr .93fr;
+    height: 100vh;
     overflow: hidden;
   }
-
-  /* Curva: más pequeña y pegada al borde (no invade la foto) */
-  .heroPhoto--full::before{
-    content:"";
-    position:absolute;
-    top: -8%;
-    right: -30%;
-    width: 58%;
-    height: 116%;
-    background: var(--ivory);
-    border-radius: 999px;
-    z-index: 3;           /* IMPORTANTE: solo “por encima” lo justo */
-    pointer-events:none;
-  }
-
-  /* Línea fina */
-  .heroPhoto--full::after{
-    content:"";
-    position:absolute;
-    top: 0;
-    right: 12%;
-    width: 2px;
-    height: 100%;
-    background: rgba(22,22,22,.10);
-    z-index: 4;
-    pointer-events:none;
-  }
 }
 
-  /* La caja del texto: que “abrace” el borde */
-  .heroText{
-    background: rgba(245,241,231,.72);
-    border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
-    border: 1px solid rgba(22,22,22,.08);
-    border-left: 0;
-    box-shadow: 0 26px 80px rgba(0,0,0,.08);
-  }
-}
-
-/* ===== HERO MOBILE: foto full width sin reborde ===== */
-@media (max-width: 979px){
-  .heroStage{
-    width: 100%;
-    margin: 0;
-    padding: 0;
-  }
-
-  .heroPhoto--full{
-    border-radius: 0 !important;
-    box-shadow: none;
-  }
-
-  .heroPhoto--full img{
-    border-radius: 0 !important;
-    width: 100%;
-    height: min(78vh, 720px);
-    object-fit: cover;
-  }
-
-  /* El texto que respire, con marco suave */
-  .heroText{
-    margin: 0 var(--gutter);
-    border-radius: var(--radius-xl);
-    background: rgba(245,241,231,.74);
-    border: 1px solid rgba(22,22,22,.08);
-    box-shadow: 0 18px 52px rgba(0,0,0,.10);
-    padding: 18px 18px 16px;
-  }
-}
-
-/* ===== HERO FULLSCREEN (PC + móvil) ===== */
-.hero{
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-}
-
-.heroStage{
-  width: 100vw;
-  min-height: 100svh; /* móvil moderno */
-  min-height: 100vh;  /* fallback */
-  margin-left: calc(50% - 50vw); /* full-bleed sin romper el resto */
-  display: grid;
-  align-items: stretch;
+/* La foto NO puede tener capas raras encima */
+.heroPhoto--full{
   position: relative;
-  overflow: hidden;
+  z-index: 1;
 }
 
-/* PC: 2 columnas como Fixdate */
-@media (min-width: 980px){
-  .heroStage{
-    grid-template-columns: 1.12fr .88fr;
-  }
+/* Si tenías un ::before/::after problemático, lo anulamos */
+.heroPhoto--full::before{ content: none !important; }
+.heroStage::after{ content: none !important; }
+
+/* Imagen siempre visible y a pantalla */
+.heroPhoto--full img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-/* Quita el aire superior solo en el HERO */
-.site{ padding-top: 0 !important; } /* para que arranque pegado arriba */
-
-/* Si luego quieres recuperar padding para el resto:
-   lo hacemos con padding en la sección siguiente (faltan) */
-
-   /* ===== HERO TEXT: libre (sin tarjeta) ===== */
+/* Texto siempre por encima y visible */
 .heroText{
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
-
-/* Móvil: texto con padding y halo suave (no tarjeta) */
-@media (max-width: 979px){
-  .heroText{
-    padding: 22px var(--gutter) 26px;
-    border-radius: 0 !important;
-    margin: 0 !important;
-    position: relative;
-  }
-
-  /* halo suave detrás para legibilidad */
-  .heroText::before{
-    content:"";
-    position:absolute;
-    left: 0; right: 0; top: -40px; bottom: -10px;
-    background: linear-gradient(
-      180deg,
-      rgba(245,241,231,0) 0%,
-      rgba(245,241,231,.78) 22%,
-      rgba(245,241,231,.92) 55%,
-      rgba(245,241,231,1) 100%
-    );
-    pointer-events:none;
-    z-index: -1;
-  }
-}
-
-/* ===== Separación foto -> texto con ola (móvil) ===== */
-@media (max-width: 979px){
-  .heroPhoto--full{
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    position: relative;
-  }
-
-  .heroPhoto--full::after{
-    content:"";
-    position:absolute;
-    left: 0; right: 0; bottom: -1px;
-    height: 64px;
-    background:
-      radial-gradient(120px 44px at 12% 10%, rgba(245,241,231,1) 55%, rgba(245,241,231,0) 56%) ,
-      radial-gradient(160px 54px at 42% 30%, rgba(245,241,231,1) 55%, rgba(245,241,231,0) 56%) ,
-      radial-gradient(140px 46px at 72% 20%, rgba(245,241,231,1) 55%, rgba(245,241,231,0) 56%) ,
-      radial-gradient(220px 68px at 92% 40%, rgba(245,241,231,1) 55%, rgba(245,241,231,0) 56%),
-      linear-gradient(180deg, rgba(245,241,231,0) 0%, rgba(245,241,231,1) 90%);
-    opacity: 1;
-    pointer-events:none;
-  }
-
-  .heroPhoto--full img{
-    width: 100%;
-    height: 62svh;  /* más “portada” */
-    min-height: 520px;
-    object-fit: cover;
-    display: block;
-  }
-}
-
-@media (min-width: 980px){
-  /* que la foto ocupe toda la altura */
-  .heroPhoto--full{
-    height: 100%;
-    border-radius: 0;
-  }
-
-  .heroPhoto--full img{
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
-  }
-
-/* ===== HERO SEPARATOR (PC): curva limpia tipo Fixdate ===== */
-@media (min-width: 980px){
-  .heroStage{
-    grid-template-columns: 1.08fr .92fr; /* un pelín más texto visible */
-    gap: 0;
-  }
-
-  .heroPhoto--full{
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* Curva grande (recorte) */
-  .heroPhoto--full::before{
-    content:"";
-    position:absolute;
-    top: -12%;
-    right: -18%;
-    width: 62%;
-    height: 124%;
-    background: var(--ivory);
-    border-radius: 999px;
-    z-index: 4;
-  }
-
-  /* Línea vertical fina como separador */
-  .heroPhoto--full::after{
-    content:"";
-    position:absolute;
-    top: 0;
-    right: 8%;
-    width: 2px;
-    height: 100%;
-    background: rgba(22,22,22,.12);
-    z-index: 5;
-  }
-
-  /* Quita velo excesivo */
-  .heroPhoto__veil{ opacity: .18 !important; }
-}
-
-  /* texto libre pero con un “papel” muy leve, no tarjeta */
-  .heroText{
-    padding: 80px 70px 80px 70px;
-    display:flex;
-    justify-content:center;
-    background: rgba(245,241,231,.84);
-    border-radius: 0;
-  }
-
-  /* quita efectos “difuminados” fuertes */
-  .heroPhoto__veil{ opacity: .35; } /* antes estaba demasiado alto */
-}
-
-/* ===== FLOAT HEARTS: aparecen/desaparecen y se mueven “en vacío” ===== */
-.floatHearts{
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.fh{
-  position: absolute;
-  font-size: 14px;
-  color: var(--gold);
-  opacity: 0;
-  filter: drop-shadow(0 10px 16px rgba(0,0,0,.08));
-}
-
-/* Rutas: márgenes y esquina superior derecha */
-.fh1{
-  top: 12%;
-  left: 6%;
-  animation: floatA 7.8s ease-in-out infinite;
-}
-.fh2{
-  top: 18%;
-  right: 8%;
-  animation: floatB 8.6s ease-in-out infinite;
-}
-.fh3{
-  bottom: 10%;
-  right: 16%;
-  animation: floatC 9.4s ease-in-out infinite;
-}
-
-@keyframes floatA{
-  0%{ transform: translate(0,0) scale(.92); opacity: 0; }
-  15%{ opacity: .55; }
-  55%{ transform: translate(22px,-18px) scale(1); opacity: .55; }
-  85%{ opacity: 0; }
-  100%{ transform: translate(28px,-8px) scale(.92); opacity: 0; }
-}
-@keyframes floatB{
-  0%{ transform: translate(0,0) scale(.92); opacity: 0; }
-  20%{ opacity: .55; }
-  55%{ transform: translate(-28px,14px) scale(1); opacity: .55; }
-  85%{ opacity: 0; }
-  100%{ transform: translate(-18px,26px) scale(.92); opacity: 0; }
-}
-@keyframes floatC{
-  0%{ transform: translate(0,0) scale(.92); opacity: 0; }
-  25%{ opacity: .45; }
-  55%{ transform: translate(-16px,-22px) scale(1); opacity: .45; }
-  85%{ opacity: 0; }
-  100%{ transform: translate(-8px,-30px) scale(.92); opacity: 0; }
-}
-
-/* Contenido siempre por encima */
-#site, .section, .footer, .divider{ position: relative; z-index: 1; }
-
-@media (prefers-reduced-motion: reduce){
-  .fh{ animation: none !important; opacity: 0 !important; }
-}
-
-/* ===== HERO PHOTO: encuadre más bonito (PC) ===== */
-@media (min-width: 980px){
-  .heroPhoto--full img{
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
-    object-position: 50% 35%; /* sube un poco el encuadre */
-  }
-
-  /* Si aún se ve “muy grande”, baja un poco el zoom percibido */
-  .heroPhoto--full{
-    filter: saturate(0.98) contrast(0.98);
-  }
-}
-
-/* ===== HERO TEXT: todo centrado ===== */
-.heroText{
-  text-align: center;
-  align-items: center;
-}
-
-.heroLead{
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* la fecha y etiqueta centradas */
-.heroDateLabel, .heroDateWrap, .heroDate{
-  text-align: center;
+  position: relative;
+  z-index: 5;
+  display: flex;
   justify-content: center;
-}
-
-/* la barrita dorada centrada */
-.hr-gold{
-  margin-left: auto;
-  margin-right: auto;
-}
-
-
-/* ===== HERO MOBILE: foto pegada arriba ===== */
-@media (max-width: 979px){
-  body{ margin:0; }
-  .site{ padding-top: 0 !important; }
-
-  .heroStage{
-    min-height: 100svh;
-    min-height: 100vh;
-  }
-
-  .heroPhoto--full img{
-    height: 64svh;     /* portada más “equilibrada” */
-    min-height: 520px; /* para móviles altos */
-    object-position: 50% 30%;
-  }
-}
-
-/* aseguramos que no hay separador antiguo */
-.heroSplit{ display:none !important; }
-
-/* ===== HERO: nada se sale del 100vh en PC ===== */
-@media (min-width: 980px){
-  .heroStage{
-    height: 100vh;     /* hero exacto */
-    overflow: hidden;  /* no permite que se “baje” */
-  }
-
-  .heroPhoto--full{
-    height: 100%;
-  }
-
-  .heroPhoto--full img{
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
-    object-position: 50% 35%;
-    display:block;
-  }
-
-  /* Texto centrado verticalmente para que siempre se vea entero */
-  .heroText{
-    height: 100%;
-    display:flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 70px;
-  }
+  align-items: center;
+  text-align: center;
+  background: rgba(245,241,231,.84);
 }
