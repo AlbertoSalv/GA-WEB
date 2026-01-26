@@ -31,35 +31,26 @@
     </button>
   </div>
 
-  <!-- Corazoncitos SIEMPRE presentes -->
+  <!-- Corazoncitos (decoración ligera) -->
   <div class="floatHearts" aria-hidden="true">
     <span class="fh fh1">♥</span>
-<span class="fh fh2">♥</span>
-<span class="fh fh3">♥</span>
+    <span class="fh fh2">♥</span>
+    <span class="fh fh3">♥</span>
   </div>
 
   <main id="site" class="site site--hidden">
 
-    <!-- HERO -->
+    <!-- HERO (Portada: 1 pantalla completa) -->
     <section class="section hero" id="inicio">
       <div class="heroStage">
-        <!-- FOTO: full-bleed (no tarjeta) -->
+
+        <!-- FOTO (PC izquierda / Móvil arriba) -->
         <div class="heroPhoto heroPhoto--full">
           <img src="assets/img/hero.jpg" alt="Gema y Alberto">
           <div class="heroPhoto__veil" aria-hidden="true"></div>
         </div>
 
-        <!-- OLA / BANDA vertical entre foto y texto -->
-        <div class="heroSplit" aria-hidden="true">
-          <svg class="heroSplit__svg" viewBox="0 0 120 900" preserveAspectRatio="none">
-            <path class="heroSplit__layer heroSplit__layer--soft"
-                  d="M0,0 C65,90 55,180 110,270 C55,360 70,450 110,540 C60,630 55,720 110,810 C70,870 70,900 110,900 L0,900 Z"></path>
-            <path class="heroSplit__layer heroSplit__layer--edge"
-                  d="M12,0 C70,95 62,180 108,270 C62,360 75,450 108,540 C68,630 62,720 108,810 C78,870 78,900 108,900"></path>
-          </svg>
-        </div>
-
-        <!-- TEXTO -->
+        <!-- TEXTO (PC derecha / Móvil abajo) -->
         <div class="heroText">
           <div class="heroBand heroBand--top" aria-hidden="true"></div>
 
@@ -72,16 +63,17 @@
 
           <div class="heroDateLabel">Te esperamos el</div>
 
-          <!-- FECHA: básica y elegante (sin dinámicas) -->
+          <!-- Fecha (básica en HTML; el brillo/estilo lo hará CSS) -->
           <div class="heroDateWrap">
             <div class="heroDate heroDate--fancy" aria-label="26.06.2026">
-  <span class="heroDate__text">26.06.2026</span>
-</div>
+              <span class="heroDate__text">26.06.2026</span>
+            </div>
           </div>
 
           <div class="hr-gold" aria-hidden="true"></div>
           <div class="heroBand heroBand--bottom" aria-hidden="true"></div>
         </div>
+
       </div>
     </section>
 
@@ -99,33 +91,33 @@
         <h2 class="h2">Faltan…</h2>
         <p class="p">Y cada día estamos un poquito más cerca.</p>
 
-        <div class="countdownWrap countdownWrap--fancy" id="countdown" aria-label="Cuenta atrás">
+        <!-- Countdown (el look “octógonos/círculos minimal” lo hacemos en CSS) -->
+        <div class="countdownWrap" id="countdown" aria-label="Cuenta atrás">
           <div class="cdItem">
             <div class="cdNum" data-cd="days">000</div>
             <div class="cdLab">Días</div>
           </div>
+
           <div class="cdSep" aria-hidden="true"></div>
 
           <div class="cdItem">
             <div class="cdNum" data-cd="hours">00</div>
             <div class="cdLab">Horas</div>
           </div>
+
           <div class="cdSep" aria-hidden="true"></div>
 
           <div class="cdItem">
             <div class="cdNum" data-cd="mins">00</div>
             <div class="cdLab">Min</div>
           </div>
+
           <div class="cdSep" aria-hidden="true"></div>
 
           <div class="cdItem">
             <div class="cdNum" data-cd="secs">00</div>
             <div class="cdLab">Seg</div>
           </div>
-
-          <span class="cdFrame cdFrame--1" aria-hidden="true"></span>
-          <span class="cdFrame cdFrame--2" aria-hidden="true"></span>
-          <span class="cdFrame cdFrame--3" aria-hidden="true"></span>
         </div>
 
       </div>
@@ -164,9 +156,7 @@
             </div>
 
             <div class="placeBtns">
-              <a class="btn"
-                 href="https://maps.google.com/?q=Castillo+de+Fuensalda%C3%B1a"
-                 target="_blank" rel="noreferrer">
+              <a class="btn" href="https://maps.google.com/?q=Castillo+de+Fuensalda%C3%B1a" target="_blank" rel="noreferrer">
                 Cómo llegar → Google Maps
               </a>
             </div>
@@ -190,9 +180,7 @@
             </div>
 
             <div class="placeBtns">
-              <a class="btn"
-                 href="https://maps.google.com/?q=El+Hueco+Bodas+y+Banquetes"
-                 target="_blank" rel="noreferrer">
+              <a class="btn" href="https://maps.google.com/?q=El+Hueco+Bodas+y+Banquetes" target="_blank" rel="noreferrer">
                 Cómo llegar → Google Maps
               </a>
             </div>
@@ -290,65 +278,72 @@
           </div>
         </div>
 
-        <!-- RSVP: botón que abre panel (solo aquí) -->
-        <div class="rsvpInline" aria-label="Confirmación de asistencia">
-          <button class="rsvpToggle" id="rsvpToggle" type="button" aria-expanded="false" aria-controls="rsvpPanel">
+        <!-- Bloque “IMPORTANTE” + botón -->
+        <div class="rsvpCallout" aria-label="Información importante">
+          <div class="rsvpCallout__kicker">IMPORTANTE</div>
+          <p class="rsvpCallout__text">
+            Nos haría muchísima ilusión contar contigo este día. Por favor, confirma tu asistencia para poder organizarlo todo con cariño.
+          </p>
+
+          <button class="btn btn--primary rsvpToggle" id="rsvpToggle"
+                  type="button" aria-expanded="false" aria-controls="rsvpPanel">
             Confirmar asistencia
           </button>
+        </div>
 
-          <div class="rsvpPanel" id="rsvpPanel" aria-hidden="true">
-            <div class="rsvpHead">
-              <div class="kicker">Confirmación</div>
-              <h3 class="h3">Confirmar asistencia</h3>
-              <p class="p">Nombre, asistencia, alergias, autobús y (opcional) canción sugerida.</p>
+        <!-- RSVP: panel oculto que se despliega -->
+        <div class="rsvpPanel" id="rsvpPanel" aria-hidden="true">
+          <div class="rsvpHead">
+            <div class="kicker">Confirmación</div>
+            <h3 class="h3">Confirmar asistencia</h3>
+            <p class="p">Nombre, asistencia, alergias, autobús y (opcional) canción sugerida.</p>
+          </div>
+
+          <form class="rsvpForm" id="rsvpForm" method="POST" action="#" autocomplete="on">
+            <div class="rsvpGrid">
+              <label class="field">
+                <span class="field__label">Nombre y apellidos</span>
+                <input class="field__input" type="text" name="nombre" required placeholder="Tu nombre completo" />
+              </label>
+
+              <label class="field">
+                <span class="field__label">¿Asistirás?</span>
+                <select class="field__input" name="asistencia" required>
+                  <option value="" selected disabled>Selecciona</option>
+                  <option value="Si">Sí</option>
+                  <option value="No">No</option>
+                </select>
+              </label>
+
+              <label class="field field--full">
+                <span class="field__label">Alergias / intolerancias (si no tienes, escribe “Ninguna”)</span>
+                <textarea class="field__input" name="alergias" rows="3" placeholder="Ej. frutos secos, gluten, lactosa…"></textarea>
+              </label>
+
+              <label class="field">
+                <span class="field__label">¿Necesitas autobús?</span>
+                <select class="field__input" name="autobus" required>
+                  <option value="" selected disabled>Selecciona</option>
+                  <option value="Si">Sí</option>
+                  <option value="No">No</option>
+                </select>
+              </label>
+
+              <label class="field field--full">
+                <span class="field__label">Canción sugerida (opcional)</span>
+                <input class="field__input" type="text" name="cancion" placeholder="Artista — Título" />
+              </label>
             </div>
 
-            <form class="rsvpForm" id="rsvpForm" method="POST" action="#" autocomplete="on">
-              <div class="rsvpGrid">
-                <label class="field">
-                  <span class="field__label">Nombre y apellidos</span>
-                  <input class="field__input" type="text" name="nombre" required placeholder="Tu nombre completo" />
-                </label>
+            <div class="rsvpActions">
+              <button class="btn btn--primary" type="submit">Enviar</button>
+              <button class="btn btn--ghost" type="button" id="rsvpCloseBtn">Cerrar</button>
+            </div>
 
-                <label class="field">
-                  <span class="field__label">¿Asistirás?</span>
-                  <select class="field__input" name="asistencia" required>
-                    <option value="" selected disabled>Selecciona</option>
-                    <option value="Si">Sí</option>
-                    <option value="No">No</option>
-                  </select>
-                </label>
-
-                <label class="field field--full">
-                  <span class="field__label">Alergias / intolerancias (si no tienes, escribe “Ninguna”)</span>
-                  <textarea class="field__input" name="alergias" rows="3" placeholder="Ej. frutos secos, gluten, lactosa…"></textarea>
-                </label>
-
-                <label class="field">
-                  <span class="field__label">¿Necesitas autobús?</span>
-                  <select class="field__input" name="autobus" required>
-                    <option value="" selected disabled>Selecciona</option>
-                    <option value="Si">Sí</option>
-                    <option value="No">No</option>
-                  </select>
-                </label>
-
-                <label class="field field--full">
-                  <span class="field__label">Canción sugerida (opcional)</span>
-                  <input class="field__input" type="text" name="cancion" placeholder="Artista — Título" />
-                </label>
-              </div>
-
-              <div class="rsvpActions">
-                <button class="btn btn--primary" type="submit">Enviar</button>
-                <button class="btn btn--ghost" type="button" id="rsvpCloseBtn">Cerrar</button>
-              </div>
-
-              <p class="rsvpFine">
-                * Para recibir respuestas automáticamente, lo más fácil es conectar este formulario a Google Forms/Sheets.
-              </p>
-            </form>
-          </div>
+            <p class="rsvpFine">
+              * Para recibir respuestas automáticamente, lo más fácil es conectar este formulario a Google Forms/Sheets (o Formspree / Netlify Forms).
+            </p>
+          </form>
         </div>
 
       </div>
@@ -361,7 +356,7 @@
       </svg>
     </div>
 
-    <!-- ASISTENCIA (INFO ÚTIL) -->
+    <!-- ASISTENCIA -->
     <section class="section" id="asistencia">
       <div class="frame section__inner">
         <div class="kicker">Asistencia</div>
@@ -390,7 +385,6 @@
             <div class="actionBtn">+ Info</div>
           </button>
         </div>
-
       </div>
     </section>
 
@@ -425,7 +419,6 @@
 
           <div class="galleryHint" aria-hidden="true">Desliza →</div>
         </div>
-
       </div>
     </section>
 
@@ -446,7 +439,7 @@
           </div>
 
           <nav class="footerLinks" aria-label="Accesos rápidos">
-            <a class="footerLink" href="#" id="footerRSVPLink">Confirmar asistencia</a>
+            <a class="footerLink" href="#momentos" id="footerRSVPLink" data-open-rsvp="true">Confirmar asistencia</a>
             <a class="footerLink" href="#"
                id="addToCalendarLink"
                aria-label="Añadir la fecha al calendario">
