@@ -1,38 +1,28 @@
 /* =========================================================
-   GA WEB — main.js (PRO / LIMPIO)
-   - Intro sobre → desbloquea scroll + focus
-   - Reveal (IntersectionObserver)
-   - Countdown real (26/06/2026 19:00) sin drift
-   - RSVP: botón abre/cierra panel (aria), ESC, link footer abre + scroll suave
-   - Envío RSVP: modo demo si action="#" o vacío (alert)
-   - Add to Calendar (.ics)
-   - Modales accesibles + focus trap + ESC + click backdrop
+   GA WEB — main.js (PRO)
+   - Intro sobre
+   - Countdown exacta: 26/06/2026 19:00 España
+   - RSVP: abre/cierra + estado “recibido” (modo demo)
+   - Timeline: línea se dibuja al entrar en pantalla
+   - Música: toggle sin autoplay
+   - Microparallax suave en portada (solo desktop)
+   - Modales accesibles + Add to Calendar + Guardar web
    ========================================================= */
 
 (() => {
   "use strict";
 
-  // ===============================
-  // Helpers
-  // ===============================
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  const prefersReducedMotion =
-    window.matchMedia &&
+  const prefersReducedMotion = window.matchMedia &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  const pad2 = (n) => String(n).padStart(2, "0");
-  const pad3 = (n) => String(n).padStart(3, "0");
+  const isCoarsePointer = window.matchMedia &&
+    window.matchMedia("(pointer: coarse)").matches;
 
-  function scrollToY(y) {
-    if (prefersReducedMotion) window.scrollTo(0, y);
-    else window.scrollTo({ top: y, behavior: "smooth" });
-  }
-
-  function safeAlert(msg) {
-    try { window.alert(msg); } catch {}
-  }
+  function pad2(n) { return String(n).padStart(2, "0"); }
+  function pad3(n) { return String(n).padStart(3, "0"); }
 
   // ===============================
   // Intro (Sobre) -> mostrar sitio
@@ -51,12 +41,9 @@
       isOpening = true;
 
       intro.classList.add("intro--open");
-
-      // Prepara el site
       site.style.opacity = "0";
       site.classList.remove("site--hidden");
 
-      // Espera un poco a la animación del sobre
       window.setTimeout(() => {
         intro.classList.add("intro--closing");
 
@@ -68,46 +55,18 @@
             site.style.opacity = "1";
           });
 
-          // Arriba del todo sin animación
-          try {
-            window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-          } catch {
-            window.scrollTo(0, 0);
-          }
-
-          // Focus amable
-          site.setAttribute("tabindex", "-1");
-          site.focus({ preventScroll: true });
-          site.removeAttribute("tabindex");
+          window.scrollTo(0, 0);
         }, 520);
       }, 750);
     });
   }
 
   // ===============================
-  // Reveal (si usas .reveal)
+  // Countdown (26/06/2026 19:00 España)
   // ===============================
-  const revealEls = $$(".reveal");
-  if ("IntersectionObserver" in window && revealEls.length) {
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add("is-visible");
-          io.unobserve(entry.target);
-        });
-      },
-      { threshold: 0.14 }
-    );
-    revealEls.forEach((el) => io.observe(el));
-  } else {
-    revealEls.forEach((el) => el.classList.add("is-visible"));
-  }
-
-  // ===============================
-  // Countdown real (si existe #countdown con [data-cd])
-  // ===============================
-  const targetDate = new Date(2026, 5, 26, 19, 0, 0); // 26/06/2026 19:00
+  // Ojo: Date() usa tu zona local del usuario. Para “España”, asumimos que el invitado está en España.
+  // Si quieres fijarlo siempre a Europe/Madrid aunque estén fuera, habría que usar luxon o similar.
+  const targetDate = new Date(2026, 5, 26, 19, 0, 0);
   const countdownWrap = $("#countdown");
 
   function tickCountdown() {
@@ -117,6 +76,7 @@
     const hEl = $('[data-cd="hours"]', countdownWrap);
     const mEl = $('[data-cd="mins"]', countdownWrap);
     const sEl = $('[data-cd="secs"]', countdownWrap);
+
     if (!dEl || !hEl || !mEl || !sEl) return;
 
     const now = new Date();
@@ -135,88 +95,82 @@
     sEl.textContent = pad2(secs);
   }
 
-  if (countdownWrap) {
+  tickCountdown();
+  const startDelay = 1000 - (Date.now() % 1000);
+  window.setTimeout(() => {
     tickCountdown();
-    const startDelay = 1000 - (Date.now() % 1000);
-    window.setTimeout(() => {
-      tickCountdown();
-      window.setInterval(tickCountdown, 1000);
-    }, startDelay);
+    window.setInterval(tickCountdown, 1000);
+  }, startDelay);
+
+  // ===============================
+  // Timeline line draw (stroke-dash)
+  // ===============================
+  const timeline = $("#timeline");
+  if (timeline && "IntersectionObserver" in window && !prefersReducedMotion) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        timeline.classList.add("is-drawn");
+        io.disconnect();
+      });
+    }, { threshold: 0.25 });
+    io.observe(timeline);
+  } else if (timeline) {
+    timeline.classList.add("is-drawn");
   }
 
   // ===============================
-  // RSVP (panel desplegable)
+  // RSVP desplegable + estado recibido
   // ===============================
   const rsvpToggle = $("#rsvpToggle");
   const rsvpPanel = $("#rsvpPanel");
   const rsvpForm = $("#rsvpForm");
   const rsvpCloseBtn = $("#rsvpCloseBtn");
-  const footerRSVPLink = $("#footerRSVPLink");
-
-  function isRSVPOpen() {
-    if (!rsvpPanel) return false;
-    return rsvpPanel.getAttribute("aria-hidden") === "false";
-  }
+  const rsvpStatus = $("#rsvpStatus");
 
   function openRSVP({ scrollIntoView = false } = {}) {
     if (!rsvpPanel) return;
 
+    rsvpPanel.classList.add("is-open");
     rsvpPanel.setAttribute("aria-hidden", "false");
     if (rsvpToggle) rsvpToggle.setAttribute("aria-expanded", "true");
 
     if (scrollIntoView) {
       const top = rsvpPanel.getBoundingClientRect().top + window.pageYOffset - 12;
-      scrollToY(top);
+      window.scrollTo({ top, behavior: prefersReducedMotion ? "auto" : "smooth" });
     }
 
-    const firstInput = $("input, select, textarea, button", rsvpPanel);
+    const firstInput = $("input, select, textarea", rsvpPanel);
     if (firstInput) window.setTimeout(() => firstInput.focus(), 80);
   }
 
-  function closeRSVP({ returnFocus = true } = {}) {
+  function closeRSVP() {
     if (!rsvpPanel) return;
-
+    rsvpPanel.classList.remove("is-open");
     rsvpPanel.setAttribute("aria-hidden", "true");
     if (rsvpToggle) rsvpToggle.setAttribute("aria-expanded", "false");
-
-    if (returnFocus && rsvpToggle) {
-      window.setTimeout(() => rsvpToggle.focus(), 0);
-    }
-  }
-
-  function toggleRSVP() {
-    if (!rsvpPanel) return;
-    if (isRSVPOpen()) closeRSVP({ returnFocus: false });
-    else openRSVP();
   }
 
   if (rsvpToggle && rsvpPanel) {
-    // Estado inicial coherente
-    if (!rsvpPanel.hasAttribute("aria-hidden")) rsvpPanel.setAttribute("aria-hidden", "true");
-    if (!rsvpToggle.hasAttribute("aria-expanded")) rsvpToggle.setAttribute("aria-expanded", "false");
-
-    rsvpToggle.addEventListener("click", () => toggleRSVP());
-  }
-
-  if (rsvpCloseBtn) {
-    rsvpCloseBtn.addEventListener("click", () => closeRSVP());
-  }
-
-  // ESC cierra RSVP si está abierto
-  document.addEventListener("keydown", (e) => {
-    if (e.key !== "Escape") return;
-    if (rsvpPanel && isRSVPOpen()) closeRSVP();
-  });
-
-  // Footer link abre RSVP (y hace scroll suave)
-  if (footerRSVPLink) {
-    footerRSVPLink.addEventListener("click", (e) => {
-      e.preventDefault();
-      openRSVP({ scrollIntoView: true });
+    rsvpToggle.addEventListener("click", () => {
+      const isOpen = rsvpPanel.classList.contains("is-open");
+      if (isOpen) closeRSVP();
+      else openRSVP();
     });
   }
+  if (rsvpCloseBtn) rsvpCloseBtn.addEventListener("click", closeRSVP);
 
-  // Envío: modo demo si no hay action real
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (rsvpPanel && rsvpPanel.classList.contains("is-open")) closeRSVP();
+  });
+
+  function setRSVPStatus(msg) {
+    if (!rsvpStatus) return;
+    rsvpStatus.textContent = msg;
+    rsvpStatus.classList.add("is-ok");
+  }
+
   if (rsvpForm) {
     rsvpForm.addEventListener("submit", (e) => {
       const action = (rsvpForm.getAttribute("action") || "").trim();
@@ -224,10 +178,86 @@
 
       if (isPlaceholder) {
         e.preventDefault();
-        safeAlert("✅ Enviado (modo demo). Para que os llegue de verdad, conectaremos este formulario a Google Forms/Sheets o similar.");
-        closeRSVP({ returnFocus: false });
+        setRSVPStatus("✅ ¡Recibido! Gracias por confirmarlo. (Modo demo: después lo conectamos para que llegue de verdad)");
+        closeRSVP();
+
+        try { rsvpForm.reset(); } catch {}
       }
     });
+  }
+
+  // Footer link abre RSVP
+  const footerRSVPLink = $("#footerRSVPLink");
+  if (footerRSVPLink) {
+    footerRSVPLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      openRSVP({ scrollIntoView: true });
+    });
+  }
+
+  // ===============================
+  // Música (toggle)
+  // ===============================
+  const musicBtn = $("#musicToggle");
+  const bgMusic = $("#bgMusic");
+
+  function setMusic(on) {
+    if (!musicBtn) return;
+    musicBtn.classList.toggle("is-on", on);
+    musicBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    musicBtn.setAttribute("aria-label", on ? "Pausar música" : "Activar música");
+  }
+
+  if (musicBtn && bgMusic) {
+    musicBtn.addEventListener("click", async () => {
+      try {
+        if (bgMusic.paused) {
+          await bgMusic.play();
+          setMusic(true);
+        } else {
+          bgMusic.pause();
+          setMusic(false);
+        }
+      } catch {
+        // Si no hay source o el navegador lo bloquea
+        setMusic(false);
+      }
+    });
+
+    bgMusic.addEventListener("pause", () => setMusic(false));
+    bgMusic.addEventListener("play", () => setMusic(true));
+  }
+
+  // ===============================
+  // Microparallax (solo desktop, muy suave)
+  // ===============================
+  const heroPhoto = $(".heroPhoto--full");
+  if (heroPhoto && !prefersReducedMotion && !isCoarsePointer) {
+    const bg = $(".heroPhoto__bg", heroPhoto);
+
+    if (bg) {
+      let raf = 0;
+      function onMove(e) {
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          const rect = heroPhoto.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width;  // 0..1
+          const y = (e.clientY - rect.top) / rect.height; // 0..1
+
+          // rango pequeño
+          const tx = (x - 0.5) * 10; // px
+          const ty = (y - 0.5) * 10; // px
+
+          bg.style.transform = `scale(1.06) translate(${tx}px, ${ty}px)`;
+        });
+      }
+
+      heroPhoto.addEventListener("mousemove", onMove);
+      heroPhoto.addEventListener("mouseleave", () => {
+        bg.style.transform = "scale(1.06) translate(0px, 0px)";
+      });
+    }
   }
 
   // ===============================
@@ -236,8 +266,7 @@
   const addToCal = $("#addToCalendarLink");
 
   const eventTitle = "Boda de Gema & Alberto";
-  const eventLocation =
-    "Castillo de Fuensaldaña (Ceremonia) / El Hueco Bodas y Banquetes (Celebración)";
+  const eventLocation = "Castillo de Fuensaldaña (Ceremonia) / El Hueco Bodas y Banquetes (Celebración)";
   const eventDescription =
     "Boda de Gema y Alberto.\n\nCeremonia: 19:00 — Castillo de Fuensaldaña.\nCelebración: 20:00 — El Hueco Bodas y Banquetes.\n\n¡Nos vemos allí!";
 
@@ -260,17 +289,14 @@
   }
 
   function downloadICS() {
-    // 19:00 - 19:45 (puedes cambiarlo)
-    const startLocal = new Date(2026, 5, 26, 19, 0, 0);
-    const endLocal = new Date(2026, 5, 26, 19, 45, 0);
+    // Evento: 19:00–19:45 (ajústalo si quieres)
+    const start = new Date(2026, 5, 26, 19, 0, 0);
+    const end = new Date(2026, 5, 26, 19, 45, 0);
 
-    // Convertimos a UTC “equivalente” a hora local
-    const startUTC = new Date(startLocal.getTime() - startLocal.getTimezoneOffset() * 60000);
-    const endUTC = new Date(endLocal.getTime() - endLocal.getTimezoneOffset() * 60000);
-
+    // Convertimos a “UTC”
     const dtStamp = toICSDateUTC(new Date());
-    const dtStart = toICSDateUTC(startUTC);
-    const dtEnd = toICSDateUTC(endUTC);
+    const dtStart = toICSDateUTC(new Date(start.getTime() - start.getTimezoneOffset() * 60000));
+    const dtEnd = toICSDateUTC(new Date(end.getTime() - end.getTimezoneOffset() * 60000));
 
     const uid = `gaweb-${Date.now()}@ga-web`;
 
@@ -313,11 +339,12 @@
   }
 
   // ===============================
-  // Modales (Dress/Bus/Tips) — accesibles
+  // Modales (Dress/Bus/Tips + Guardar web)
   // ===============================
   const modal = $("#modal");
   const modalContent = $("#modalContent");
   const closeBtn = modal ? $(".modal__close", modal) : null;
+
   let lastFocusedEl = null;
 
   const modalTemplates = {
@@ -333,6 +360,12 @@
     tips: `
       <h2>Tips y notas</h2>
       <p>Información adicional: alojamientos, recomendaciones, etc.</p>
+    `,
+    save: `
+      <h2>Guardar la web</h2>
+      <p>Así la tendrás como si fuera una app:</p>
+      <p><strong>iPhone (Safari):</strong> Compartir → “Añadir a pantalla de inicio”.</p>
+      <p><strong>Android (Chrome):</strong> Menú (⋮) → “Añadir a pantalla de inicio”.</p>
     `
   };
 
@@ -375,6 +408,15 @@
   $$("[data-modal]").forEach((btn) => {
     btn.addEventListener("click", () => openModal(btn.dataset.modal, btn));
   });
+
+  // Guardar web (footer)
+  const saveToHomeLink = $("#saveToHomeLink");
+  if (saveToHomeLink) {
+    saveToHomeLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      openModal("save", saveToHomeLink);
+    });
+  }
 
   if (modal) {
     modal.addEventListener("click", (e) => {

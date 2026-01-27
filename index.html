@@ -31,6 +31,15 @@
     </button>
   </div>
 
+  <!-- Música (no autoplay) -->
+  <button class="musicBtn" id="musicToggle" type="button" aria-pressed="false" aria-label="Activar música">
+    ♪
+  </button>
+  <audio id="bgMusic" preload="none" loop>
+    <!-- Pon aquí tu canción: -->
+    <!-- <source src="assets/audio/cancion.mp3" type="audio/mpeg"> -->
+  </audio>
+
   <!-- Corazoncitos (decoración ligera) -->
   <div class="floatHearts" aria-hidden="true">
     <span class="fh fh1">♥</span>
@@ -40,17 +49,16 @@
 
   <main id="site" class="site site--hidden">
 
-    <!-- HERO (Portada: 1 pantalla completa) -->
+    <!-- HERO (Portada: 1 pantalla completa, SIN recortar nunca) -->
     <section class="section hero" id="inicio">
       <div class="heroStage">
-
-        <!-- FOTO (PC izquierda / Móvil arriba) -->
-        <div class="heroPhoto heroPhoto--full">
-          <img src="assets/img/hero.jpg" alt="Gema y Alberto">
-          <div class="heroPhoto__veil" aria-hidden="true"></div>
+        <!-- FOTO -->
+        <div class="heroPhoto heroPhoto--full" style="--hero-image:url('../assets/img/hero.jpg');">
+          <div class="heroPhoto__bg" aria-hidden="true"></div>
+          <img class="heroPhoto__img" src="assets/img/hero.jpg" alt="Gema y Alberto">
         </div>
 
-        <!-- TEXTO (PC derecha / Móvil abajo) -->
+        <!-- TEXTO -->
         <div class="heroText">
           <div class="heroBand heroBand--top" aria-hidden="true"></div>
 
@@ -63,7 +71,6 @@
 
           <div class="heroDateLabel">Te esperamos el</div>
 
-          <!-- Fecha (básica en HTML; el brillo/estilo lo hará CSS) -->
           <div class="heroDateWrap">
             <div class="heroDate heroDate--fancy" aria-label="26.06.2026">
               <span class="heroDate__text">26.06.2026</span>
@@ -73,16 +80,11 @@
           <div class="hr-gold" aria-hidden="true"></div>
           <div class="heroBand heroBand--bottom" aria-hidden="true"></div>
         </div>
-
       </div>
-    </section>
 
-    <!-- Separador wave -->
-    <div class="divider divider--a" aria-hidden="true">
-      <svg class="wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
-        <path d="M0,88 C160,120 320,64 480,88 C640,112 800,64 960,88 C1120,112 1280,80 1440,64 L1440,140 L0,140 Z"></path>
-      </svg>
-    </div>
+      <!-- Fade de papel (bridge suave al siguiente bloque) -->
+      <div class="heroFade" aria-hidden="true"></div>
+    </section>
 
     <!-- FALTAN... -->
     <section class="section" id="faltan">
@@ -91,44 +93,30 @@
         <h2 class="h2">Faltan…</h2>
         <p class="p">Y cada día estamos un poquito más cerca.</p>
 
-        <!-- Countdown (el look “octógonos/círculos minimal” lo hacemos en CSS) -->
+        <!-- Countdown (octógonos minimal, SIEMPRE en una línea) -->
         <div class="countdownWrap" id="countdown" aria-label="Cuenta atrás">
-          <div class="cdItem">
+          <div class="cdUnit">
             <div class="cdNum" data-cd="days">000</div>
             <div class="cdLab">Días</div>
           </div>
 
-          <div class="cdSep" aria-hidden="true"></div>
-
-          <div class="cdItem">
+          <div class="cdUnit">
             <div class="cdNum" data-cd="hours">00</div>
             <div class="cdLab">Horas</div>
           </div>
 
-          <div class="cdSep" aria-hidden="true"></div>
-
-          <div class="cdItem">
+          <div class="cdUnit">
             <div class="cdNum" data-cd="mins">00</div>
             <div class="cdLab">Min</div>
           </div>
 
-          <div class="cdSep" aria-hidden="true"></div>
-
-          <div class="cdItem">
+          <div class="cdUnit">
             <div class="cdNum" data-cd="secs">00</div>
             <div class="cdLab">Seg</div>
           </div>
         </div>
-
       </div>
     </section>
-
-    <!-- Separador wave -->
-    <div class="divider divider--b" aria-hidden="true">
-      <svg class="wave" viewBox="0 0 1440 160" preserveAspectRatio="none">
-        <path d="M0,60 C220,10 420,140 640,95 C860,50 1020,0 1220,50 C1340,80 1400,95 1440,88 L1440,160 L0,160 Z"></path>
-      </svg>
-    </div>
 
     <!-- UBICACIÓN -->
     <section class="section" id="ubicacion">
@@ -138,7 +126,6 @@
         <p class="p">Todo lo importante, a un clic. Guarda la ubicación y llega con margen.</p>
 
         <div class="placeGrid">
-          <!-- CEREMONIA -->
           <div class="placeCard placeCard--tint">
             <div class="placeHead">
               <div class="placePin" aria-hidden="true">
@@ -154,7 +141,6 @@
                 </p>
               </div>
             </div>
-
             <div class="placeBtns">
               <a class="btn" href="https://maps.google.com/?q=Castillo+de+Fuensalda%C3%B1a" target="_blank" rel="noreferrer">
                 Cómo llegar → Google Maps
@@ -162,7 +148,6 @@
             </div>
           </div>
 
-          <!-- CELEBRACIÓN -->
           <div class="placeCard placeCard--tint">
             <div class="placeHead">
               <div class="placePin" aria-hidden="true">
@@ -178,7 +163,6 @@
                 </p>
               </div>
             </div>
-
             <div class="placeBtns">
               <a class="btn" href="https://maps.google.com/?q=El+Hueco+Bodas+y+Banquetes" target="_blank" rel="noreferrer">
                 Cómo llegar → Google Maps
@@ -186,16 +170,8 @@
             </div>
           </div>
         </div>
-
       </div>
     </section>
-
-    <!-- Separador wave -->
-    <div class="divider divider--c" aria-hidden="true">
-      <svg class="wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
-        <path d="M0,80 C200,120 380,40 560,76 C740,112 920,40 1100,76 C1280,110 1360,92 1440,70 L1440,140 L0,140 Z"></path>
-      </svg>
-    </div>
 
     <!-- MOMENTOS CLAVE -->
     <section class="section" id="momentos">
@@ -205,7 +181,12 @@
         <p class="p">Horario orientativo. Si hay algún ajuste, lo actualizaremos aquí.</p>
 
         <div class="timelineWrap">
-          <div class="timeline">
+          <div class="timeline" id="timeline">
+            <!-- Línea animada -->
+            <svg class="timelineLine" viewBox="0 0 10 1000" preserveAspectRatio="none" aria-hidden="true">
+              <path class="timelineLine__path" d="M5 0 L5 1000"></path>
+            </svg>
+
             <div class="tItem">
               <div class="tSide tSide--left">
                 <div class="tCard tCard--tint">
@@ -214,7 +195,7 @@
                 </div>
               </div>
               <div class="tDot" aria-hidden="true">
-                <span class="tIcon tIcon--bus">🚌</span>
+                <span class="tIcon">🚌</span>
                 <span class="tPulse"></span>
               </div>
               <div class="tSide tSide--right" aria-hidden="true"></div>
@@ -223,7 +204,7 @@
             <div class="tItem">
               <div class="tSide tSide--left" aria-hidden="true"></div>
               <div class="tDot" aria-hidden="true">
-                <span class="tIcon tIcon--ring">💍</span>
+                <span class="tIcon">💍</span>
                 <span class="tPulse"></span>
               </div>
               <div class="tSide tSide--right">
@@ -242,7 +223,7 @@
                 </div>
               </div>
               <div class="tDot" aria-hidden="true">
-                <span class="tIcon tIcon--car">🚗</span>
+                <span class="tIcon">🚗</span>
                 <span class="tPulse"></span>
               </div>
               <div class="tSide tSide--right" aria-hidden="true"></div>
@@ -251,7 +232,7 @@
             <div class="tItem">
               <div class="tSide tSide--left" aria-hidden="true"></div>
               <div class="tDot" aria-hidden="true">
-                <span class="tIcon tIcon--drink">🍸</span>
+                <span class="tIcon">🍸</span>
                 <span class="tPulse"></span>
               </div>
               <div class="tSide tSide--right">
@@ -270,7 +251,7 @@
                 </div>
               </div>
               <div class="tDot" aria-hidden="true">
-                <span class="tIcon tIcon--dj">🎧</span>
+                <span class="tIcon">🎧</span>
                 <span class="tPulse"></span>
               </div>
               <div class="tSide tSide--right" aria-hidden="true"></div>
@@ -278,7 +259,7 @@
           </div>
         </div>
 
-        <!-- Bloque “IMPORTANTE” + botón -->
+        <!-- Bloque IMPORTANTE + botón -->
         <div class="rsvpCallout" aria-label="Información importante">
           <div class="rsvpCallout__kicker">IMPORTANTE</div>
           <p class="rsvpCallout__text">
@@ -289,9 +270,11 @@
                   type="button" aria-expanded="false" aria-controls="rsvpPanel">
             Confirmar asistencia
           </button>
+
+          <div class="rsvpStatus" id="rsvpStatus" aria-live="polite"></div>
         </div>
 
-        <!-- RSVP: panel oculto que se despliega -->
+        <!-- RSVP panel -->
         <div class="rsvpPanel" id="rsvpPanel" aria-hidden="true">
           <div class="rsvpHead">
             <div class="kicker">Confirmación</div>
@@ -349,13 +332,6 @@
       </div>
     </section>
 
-    <!-- Separador wave -->
-    <div class="divider divider--d" aria-hidden="true">
-      <svg class="wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
-        <path d="M0,95 C180,120 360,60 540,88 C720,116 900,56 1080,82 C1260,108 1350,96 1440,76 L1440,140 L0,140 Z"></path>
-      </svg>
-    </div>
-
     <!-- ASISTENCIA -->
     <section class="section" id="asistencia">
       <div class="frame section__inner">
@@ -388,13 +364,6 @@
       </div>
     </section>
 
-    <!-- Separador wave -->
-    <div class="divider divider--e" aria-hidden="true">
-      <svg class="wave" viewBox="0 0 1440 150" preserveAspectRatio="none">
-        <path d="M0,80 C240,40 380,140 620,92 C860,45 1010,20 1220,60 C1350,85 1400,95 1440,86 L1440,150 L0,150 Z"></path>
-      </svg>
-    </div>
-
     <!-- GALERÍA -->
     <section class="section" id="galeria">
       <div class="frame section__inner">
@@ -422,14 +391,7 @@
       </div>
     </section>
 
-    <!-- Separador wave -->
-    <div class="divider divider--f" aria-hidden="true">
-      <svg class="wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
-        <path d="M0,88 C190,120 360,60 560,90 C760,120 920,55 1100,80 C1280,105 1360,95 1440,75 L1440,140 L0,140 Z"></path>
-      </svg>
-    </div>
-
-    <!-- FOOTER FINAL: solo confirmar + calendario -->
+    <!-- FOOTER FINAL -->
     <footer class="footer" id="final">
       <div class="frame footer__inner">
         <div class="footerTop">
@@ -440,11 +402,8 @@
 
           <nav class="footerLinks" aria-label="Accesos rápidos">
             <a class="footerLink" href="#momentos" id="footerRSVPLink" data-open-rsvp="true">Confirmar asistencia</a>
-            <a class="footerLink" href="#"
-               id="addToCalendarLink"
-               aria-label="Añadir la fecha al calendario">
-              Añadir al calendario
-            </a>
+            <a class="footerLink" href="#" id="addToCalendarLink">Añadir al calendario</a>
+            <a class="footerLink" href="#" id="saveToHomeLink">Guardar la web</a>
           </nav>
         </div>
 
