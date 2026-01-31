@@ -1,10 +1,12 @@
 /* =========================
    GA WEB — styles.css (PRO)
-   - HERO 100vh sin recortar (contain + fondo blur cover)
-   - Fade de papel al siguiente bloque
-   - Countdown octógonos minimal (1 línea siempre)
-   - Timeline línea animada (stroke-dash)
-   - Paleta negro + dorado (sin granate)
+   Ajustes (31/01):
+   - HERO: PC y móvil contain + blur behind (NUNCA recorta)
+   - Fix "fecha apagada" (evitar opacity/filter en padres del texto)
+   - Separadores más sutiles (menos molestos)
+   - Timeline móvil: rediseño PRO (apilado + conector fino)
+   - Modal galería: imagen en contain sin cortar pies (cuando JS la inserte)
+   - Sobre: lacre.jpeg visible (sin blend raro)
    ========================= */
 
 /* =========================
@@ -42,6 +44,10 @@
 
   --card-tint: rgba(255,255,255,.32);
   --card-border: rgba(22,22,22,.10);
+
+  /* Timeline */
+  --timeline-line: rgba(200,162,74,.35);
+  --timeline-line-strong: rgba(200,162,74,.52);
 }
 
 /* =========================
@@ -144,7 +150,7 @@ a{ color: inherit; text-decoration: none; }
 }
 
 /* =========================
-   INTRO (SOBRE)
+   INTRO (SOBRE) — PRO
    ========================= */
 .intro{
   position: fixed;
@@ -177,7 +183,6 @@ a{ color: inherit; text-decoration: none; }
   transform: translateZ(0);
   transition: transform 900ms cubic-bezier(.2,.8,.2,1), filter 900ms cubic-bezier(.2,.8,.2,1);
 }
-
 .envelopeImg{ display:block; width:100%; height:auto; }
 
 .envelopeCard::after{
@@ -193,14 +198,89 @@ a{ color: inherit; text-decoration: none; }
 .envelopeOverlay{
   position: absolute;
   inset: 0;
-  text-align: center;
-  padding: 22px;
   color: rgba(34,34,34,.84);
+  padding: 18px;
+  text-align: center;
 }
-.envelopeTextTop{ position:absolute; top:46%; left:10%; right:10%; font-size:18px; font-style:italic; opacity:.85; }
-.envelopeNames{ position:absolute; top:56%; left:10%; right:10%; font-size:34px; font-weight:800; font-family:var(--font-display); }
-.envelopeDate{ position:absolute; top:64%; left:10%; right:10%; font-size:16px; letter-spacing:.7px; opacity:.9; }
-.envelopeHint{ position:absolute; bottom:14px; left:0; right:0; font-size:13px; opacity:.7; }
+
+/* Top names */
+.envelopeTop{
+  position:absolute;
+  top: 10%;
+  left: 8%;
+  right: 8%;
+  display:flex;
+  justify-content:center;
+  pointer-events:none;
+}
+.envelopeNamesTop{
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(20px, 3.6vw, 36px);
+  letter-spacing: .2px;
+  color: rgba(22,22,22,.72);
+  text-shadow: 0 10px 22px rgba(0,0,0,.06);
+}
+
+/* Seal (lacre) */
+.envelopeSeal{
+  position:absolute;
+  left: 50%;
+  top: 52%;
+  transform: translate(-50%,-50%);
+  width: min(140px, 22vw);
+  height: min(140px, 22vw);
+  display:grid;
+  place-items:center;
+  pointer-events:none;
+}
+
+/* OJO: aquí ya NO es "logo" con blend. Es el lacre como imagen principal */
+.envelopeSeal__logo{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 1;
+  filter: drop-shadow(0 10px 16px rgba(0,0,0,.12));
+  mix-blend-mode: normal;
+}
+
+/* Bottom text + hint */
+.envelopeBottom{
+  position:absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 10%;
+  display:grid;
+  gap: 10px;
+  pointer-events:none;
+}
+.envelopeTextBottom{
+  font-size: clamp(14px, 2.6vw, 18px);
+  font-style: italic;
+  opacity: .84;
+  color: rgba(22,22,22,.62);
+}
+.envelopeHint{
+  font-size: 13px;
+  letter-spacing: .6px;
+  opacity: .7;
+  color: rgba(22,22,22,.62);
+}
+
+/* Date (safe spot) */
+.envelopeDate{
+  position:absolute;
+  left: 0;
+  right: 0;
+  bottom: 4%;
+  font-size: 12px;
+  letter-spacing: 1.8px;
+  font-weight: 900;
+  text-transform: uppercase;
+  opacity: .55;
+  pointer-events:none;
+}
 
 @media (hover:hover){
   .envelopeBtn:hover .envelopeCard{ transform: translateY(-6px) scale(1.01); }
@@ -228,6 +308,7 @@ a{ color: inherit; text-decoration: none; }
   font-weight: 900;
   color: rgba(22,22,22,.86);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 .musicBtn.is-on{
   border-color: rgba(200,162,74,.55);
@@ -282,12 +363,14 @@ a{ color: inherit; text-decoration: none; }
 }
 
 /* =========================
-   HERO (PRO: sin recortar)
+   HERO (PRO: contain + blur behind en PC y móvil)
    ========================= */
 .hero{ padding: 0 !important; }
+
 .heroStage{
   width: 100vw;
   min-height: 100svh;
+  min-height: 100dvh;
   min-height: 100vh;
   margin-left: calc(50% - 50vw);
   display: grid;
@@ -299,24 +382,28 @@ a{ color: inherit; text-decoration: none; }
 @media (min-width: 980px){
   .heroStage{
     grid-template-columns: 1.07fr .93fr;
+    height: 100svh;
+    height: 100dvh;
     height: 100vh;
   }
 }
 
-/* Foto con fondo blur cover + foto real contain */
+/* Contenedor foto */
 .heroPhoto--full{
   position: relative;
   overflow: hidden;
   background: #000;
 }
+
+/* Fondo blur */
 .heroPhoto--full .heroPhoto__bg{
   position:absolute;
   inset:0;
   background-image: var(--hero-image);
   background-size: cover;
   background-position: center;
-  transform: scale(1.06);
-  filter: blur(14px) saturate(1.04) brightness(.85);
+  transform: scale(1.08);
+  filter: blur(18px) saturate(1.06) brightness(.84);
   opacity: .95;
 }
 .heroPhoto--full .heroPhoto__bg::after{
@@ -325,19 +412,30 @@ a{ color: inherit; text-decoration: none; }
   inset:0;
   background:
     radial-gradient(900px 520px at 65% 18%, rgba(200,162,74,.12), rgba(0,0,0,0) 58%),
-    linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,0) 60%);
+    linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,0) 62%);
 }
+
+/* Imagen principal: SIEMPRE contain (no recorta nunca) */
 .heroPhoto__img{
   position: relative;
   z-index: 1;
   width: 100%;
   height: 100%;
-  object-fit: contain; /* clave: nunca recorta */
+  object-fit: contain;
   object-position: center bottom;
   display: block;
 }
 
-/* Texto */
+/* En PC el blur se baja para que no "ensucie" */
+@media (min-width: 980px){
+  .heroPhoto--full .heroPhoto__bg{
+    filter: blur(12px) saturate(1.03) brightness(.88);
+    opacity: .62;
+    transform: scale(1.06);
+  }
+}
+
+/* Texto hero (IMPORTANTÍSIMO: sin opacity/filter/backdrop en padres del texto) */
 .heroText{
   display:flex;
   flex-direction: column;
@@ -345,7 +443,10 @@ a{ color: inherit; text-decoration: none; }
   justify-content: center;
   text-align: center;
   padding: 22px var(--gutter) 26px;
-  background: rgba(245,241,231,.86);
+  background: rgba(245,241,231,.94);
+  isolation: isolate;
+  position: relative;
+  z-index: 2;
 }
 @media (min-width: 980px){
   .heroText{ padding: 0 74px; }
@@ -362,7 +463,7 @@ a{ color: inherit; text-decoration: none; }
 .heroBand--top{ margin-bottom: 10px; }
 .heroBand--bottom{ margin-top: 10px; width: 140px; opacity:.65; }
 
-/* Nombres y fecha con mismo brillo */
+/* Nombres + fecha (fix Android: -webkit-text-fill-color) */
 .heroNames{
   font-family: var(--font-display);
   font-size: clamp(42px, 3.2vw, 64px);
@@ -375,10 +476,12 @@ a{ color: inherit; text-decoration: none; }
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  -webkit-text-fill-color: transparent;
 
   animation: shine 3.6s ease-in-out infinite;
   padding: 2px 0 6px;
 }
+
 .heroLead{
   margin-top: 6px;
   color: var(--muted);
@@ -386,6 +489,7 @@ a{ color: inherit; text-decoration: none; }
   font-size: 15px;
   max-width: 62ch;
 }
+
 .heroDateLabel{
   margin-top: 16px;
   font-size: 12px;
@@ -394,7 +498,9 @@ a{ color: inherit; text-decoration: none; }
   letter-spacing: 1.6px;
   text-transform: uppercase;
 }
+
 .heroDateWrap{ display:flex; justify-content:center; }
+
 .heroDate--fancy .heroDate__text{
   display: inline-block;
   font-family: var(--font-display);
@@ -408,9 +514,11 @@ a{ color: inherit; text-decoration: none; }
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  -webkit-text-fill-color: transparent;
 
   animation: shine 3.6s ease-in-out infinite;
 }
+
 @keyframes shine{
   0%{ background-position: 0% 50%; }
   50%{ background-position: 100% 50%; }
@@ -421,9 +529,67 @@ a{ color: inherit; text-decoration: none; }
 .heroFade{
   position: absolute;
   left: 0; right: 0; bottom: -1px;
-  height: 160px;
+  height: 150px;
   pointer-events:none;
-  background: linear-gradient(180deg, rgba(245,241,231,0) 0%, rgba(245,241,231,.92) 60%, rgba(245,241,231,1) 100%);
+  background: linear-gradient(180deg, rgba(245,241,231,0) 0%, rgba(245,241,231,.90) 55%, rgba(245,241,231,1) 100%);
+}
+
+/* =========================
+   SEPARADORES PRO (más sutiles)
+   ========================= */
+.sectionSep{
+  position: relative;
+  height: 120px;
+  width: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  margin-top: -1px;
+}
+
+.sectionSep__wash{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(900px 260px at 50% 25%, rgba(255,255,255,.30), rgba(255,255,255,0) 65%),
+    linear-gradient(180deg, rgba(245,241,231,.82) 0%, rgba(245,241,231,0) 72%);
+  opacity: .92;
+}
+
+.sectionSep__line{
+  position:absolute;
+  left: 50%;
+  top: 20px;
+  width: min(1200px, 92vw);
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, rgba(200,162,74,0), rgba(200,162,74,.64), rgba(200,162,74,0));
+  opacity: .85;
+}
+
+.sectionSep__wave{
+  position:absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  width: 100%;
+  height: 92px;
+}
+.sectionSep__wave path{
+  fill: rgba(255,255,255,.14);
+  stroke: rgba(200,162,74,.18);
+  stroke-width: 1.1;
+  vector-effect: non-scaling-stroke;
+}
+
+.sectionSep--strong{
+  height: 138px;
+}
+.sectionSep--strong .sectionSep__wave{
+  height: 110px;
+}
+.sectionSep--strong .sectionSep__wave path{
+  fill: rgba(255,255,255,.18);
+  stroke: rgba(200,162,74,.22);
 }
 
 /* =========================
@@ -459,47 +625,56 @@ a{ color: inherit; text-decoration: none; }
 }
 
 /* =========================
-   COUNTDOWN — octógonos (1 línea)
+   COUNTDOWN — 1 SOLO CHIP (1 línea SIEMPRE)
    ========================= */
 .countdownWrap{
   margin: 18px auto 0;
-  width: min(900px, 100%);
+  width: min(980px, 100%);
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: clamp(8px, 1.8vw, 18px);
-  flex-wrap: nowrap;
-  padding: 14px 6px;
+  padding: 12px 0;
 }
 
-.cdUnit{
-  position: relative;
-  width: clamp(74px, 14vw, 120px);
-  aspect-ratio: 1.08 / 1;
+/* Contenedor único */
+.cdChip{
+  width: min(820px, 100%);
   display: grid;
-  place-items: center;
-  background: rgba(255,255,255,.26);
+  grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+  align-items: center;
+  gap: 0;
+  padding: 14px 14px;
+  border-radius: 26px;
+
+  background: rgba(255,255,255,.22);
   border: 1px solid rgba(22,22,22,.10);
-  box-shadow: 0 16px 44px rgba(0,0,0,.10);
+  box-shadow: 0 18px 52px rgba(0,0,0,.10);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 
-  /* Octógono */
-  clip-path: polygon(18% 0%, 82% 0%, 100% 18%, 100% 82%, 82% 100%, 18% 100%, 0% 82%, 0% 18%);
+  position: relative;
+  clip-path: polygon(3% 0%, 97% 0%, 100% 18%, 100% 82%, 97% 100%, 3% 100%, 0% 82%, 0% 18%);
 }
-
-.cdUnit::before{
+.cdChip::before{
   content:"";
   position:absolute;
   inset: 8px;
-  border: 1px solid rgba(200,162,74,.55);
+  border: 1px solid rgba(200,162,74,.40);
   clip-path: inherit;
   pointer-events:none;
-  opacity:.85;
+  opacity:.9;
 }
 
+/* Unidades */
+.cdUnit{
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  padding: 10px 6px;
+  min-width: 0;
+}
 .cdNum{
-  font-size: clamp(22px, 3.1vw, 38px);
+  font-size: clamp(22px, 3.0vw, 38px);
   font-weight: 900;
   letter-spacing: .5px;
   font-variant-numeric: tabular-nums;
@@ -515,17 +690,27 @@ a{ color: inherit; text-decoration: none; }
   text-transform: uppercase;
 }
 
-/* Si la pantalla es MUY estrecha, apretamos aún más */
+/* Separadores internos */
+.cdDivider{
+  width: 1px;
+  height: 44px;
+  background: linear-gradient(180deg, rgba(200,162,74,0), rgba(200,162,74,.55), rgba(200,162,74,0));
+  opacity: .9;
+}
+
+@media (max-width: 520px){
+  .cdChip{ padding: 12px 10px; border-radius: 22px; }
+  .cdDivider{ height: 38px; }
+}
 @media (max-width: 360px){
-  .countdownWrap{ gap: 6px; }
-  .cdUnit{ width: 68px; }
+  .cdNum{ font-size: 20px; }
+  .cdLab{ font-size: 9px; }
 }
 
 /* =========================
-   UBICACIÓN (igual que tenías)
+   UBICACIÓN (ahora 1 tarjeta)
    ========================= */
 .placeGrid{ margin-top: 18px; display:grid; grid-template-columns: 1fr; gap: 14px; }
-@media (min-width: 980px){ .placeGrid{ grid-template-columns: 1fr 1fr; gap: 16px; } }
 
 .placeCard{
   border-radius: var(--radius-xl);
@@ -559,14 +744,17 @@ a{ color: inherit; text-decoration: none; }
 @keyframes pinPulse{ 0%{ transform: scale(1); opacity:.75; } 70%{ transform: scale(3.2); opacity:0; } 100%{ transform: scale(3.2); opacity:0; } }
 
 /* =========================
-   TIMELINE + línea animada
+   TIMELINE + línea animada (PRO)
    ========================= */
 .timelineWrap{ margin-top: 24px; display:grid; place-items:center; }
+
 .timeline{
   width: min(920px, 100%);
   position: relative;
   padding: 10px 0;
 }
+
+/* Línea central (desktop) */
 .timelineLine{
   position:absolute;
   left: 50%;
@@ -579,7 +767,7 @@ a{ color: inherit; text-decoration: none; }
 }
 .timelineLine__path{
   fill: none;
-  stroke: rgba(200,162,74,.40);
+  stroke: var(--timeline-line);
   stroke-width: 2.2;
   stroke-linecap: round;
   stroke-dasharray: 1200;
@@ -589,21 +777,28 @@ a{ color: inherit; text-decoration: none; }
 .timeline.is-drawn .timelineLine__path{
   animation: drawLine 1.25s ease-out forwards;
 }
-@keyframes drawLine{
-  to{ stroke-dashoffset: 0; }
-}
+@keyframes drawLine{ to{ stroke-dashoffset: 0; } }
 
-.tItem{ position: relative; display:grid; grid-template-columns: 1fr; gap:12px; padding:18px 0; z-index:1; }
+/* Items */
+.tItem{
+  position: relative;
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  padding: 18px 0;
+  z-index: 1;
+}
 @media (min-width: 860px){
   .tItem{ grid-template-columns: 1fr 72px 1fr; align-items:center; }
   .tSide--left{ grid-column: 1; }
   .tDot{ grid-column: 2; }
   .tSide--right{ grid-column: 3; }
 }
+
 .tDot{
   width: 58px; height: 58px; border-radius: 999px; display:grid; place-items:center;
   background: rgba(255,255,255,.40);
-  border: 1px solid rgba(200,162,74,.38);
+  border: 1px solid rgba(200,162,74,.30);
   box-shadow: 0 16px 36px rgba(0,0,0,.08);
   margin: 0 auto;
   position: relative;
@@ -627,7 +822,7 @@ a{ color: inherit; text-decoration: none; }
   border: 1px solid rgba(22,22,22,.08);
   padding: 14px 16px;
   box-shadow: 0 14px 38px rgba(0,0,0,.08);
-  max-width: 440px;
+  max-width: 460px;
   position: relative;
 }
 .tCard--tint{ background: var(--card-tint); border-color: rgba(22,22,22,.10); }
@@ -636,11 +831,71 @@ a{ color: inherit; text-decoration: none; }
   .tItem:nth-child(odd) .tCard{ margin-left: auto; text-align: right; }
   .tItem:nth-child(even) .tCard{ margin-right: auto; text-align: left; }
 }
-.tTime{ font-weight: 900; letter-spacing: .8px; font-size: 12px; color: rgba(22,22,22,.82); text-transform: uppercase; }
-.tLabel{ margin-top: 6px; font-size: 14px; color: rgba(22,22,22,.70); line-height: 1.35; }
+
+.tTime{
+  font-weight: 900;
+  letter-spacing: .8px;
+  font-size: 12px;
+  color: rgba(22,22,22,.82);
+  text-transform: uppercase;
+}
+.tLabel{
+  margin-top: 6px;
+  font-size: 14px;
+  color: rgba(22,22,22,.70);
+  line-height: 1.35;
+}
+
+/* ✅ MÓVIL PRO (rediseño real): apilado + conector fino + dots menos dominantes */
 @media (max-width: 859px){
-  .tItem{ justify-items: center; }
-  .tCard{ width: 100%; max-width: 560px; text-align: left; }
+  .timeline{
+    padding-left: 0;
+  }
+
+  /* Línea a la izquierda, fina y elegante */
+  .timelineLine{
+    left: 26px;
+    transform: none;
+    width: 10px;
+  }
+  .timelineLine__path{
+    stroke: var(--timeline-line-strong);
+    stroke-width: 2.0;
+  }
+
+  .tItem{
+    grid-template-columns: 56px 1fr;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 0;
+  }
+
+  /* Dot más pequeño y menos dominante */
+  .tDot{
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    justify-self: start;
+    background: rgba(255,255,255,.44);
+    border-color: rgba(200,162,74,.28);
+  }
+  .tIcon{ font-size: 16px; }
+
+  /* Card full-width */
+  .tSide{
+    width: 100%;
+  }
+  .tCard{
+    width: 100%;
+    max-width: 680px;
+    text-align: left;
+    margin: 0;
+    padding: 14px 14px;
+  }
+
+  /* todo a la derecha */
+  .tSide--left[aria-hidden="true"]{ display:none; }
+  .tSide--right[aria-hidden="true"]{ display:none; }
 }
 
 /* =========================
@@ -782,7 +1037,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 }
 
 /* =========================
-   GALERÍA
+   GALERÍA (snap + click)
    ========================= */
 .gallery{ margin-top: 22px; }
 .galleryTrack{
@@ -804,7 +1059,13 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   background: rgba(255,255,255,.28);
   scroll-snap-align: start;
 }
-.galleryItem img{ width:100%; height:260px; object-fit: cover; display:block; }
+.galleryItem img{
+  width:100%;
+  height:260px;
+  object-fit: cover;
+  display:block;
+  cursor: pointer;
+}
 @media (min-width: 980px){
   .galleryTrack{ grid-auto-columns: minmax(320px, 1fr); }
   .galleryItem img{ height: 320px; }
@@ -859,8 +1120,10 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 .modal__backdrop{ position:absolute; inset:0; background: rgba(0,0,0,.58); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 .modal__panel{
   position: relative;
-  width: min(600px, calc(100vw - 32px));
-  margin: 10vh auto;
+  width: min(820px, calc(100vw - 32px));
+  margin: 8svh auto;
+  margin: 8dvh auto;
+  margin: 8vh auto;
   border-radius: 26px;
   background: rgba(245,241,231,.96);
   border: 1px solid rgba(200,162,74,.22);
@@ -883,9 +1146,25 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 .modal__content h2{ font-family: var(--font-display); margin: 0 0 10px; font-size: 26px; line-height: 1.1; }
 .modal__content p{ margin: 10px 0; }
 
+/* ✅ Modal imagen grande (galería): contain, sin recortar pies */
+.modal__content .modalImage{
+  width: 100%;
+  max-height: 72svh;
+  max-height: 72dvh;
+  max-height: 72vh;
+  object-fit: contain;
+  object-position: center center;
+  border-radius: 18px;
+  display:block;
+  box-shadow: 0 18px 44px rgba(0,0,0,.16);
+  border: 1px solid rgba(22,22,22,.10);
+  background: rgba(255,255,255,.20);
+}
+
 /* =========================
    REDUCE MOTION
    ========================= */
 @media (prefers-reduced-motion: reduce){
   .timeline.is-drawn .timelineLine__path{ animation: none !important; stroke-dashoffset: 0 !important; }
+  .heroNames, .heroDate--fancy .heroDate__text{ animation: none !important; }
 }

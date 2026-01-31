@@ -1,12 +1,14 @@
 /* =========================================================
    GA WEB — main.js (PRO)
    - Intro sobre
-   - Countdown exacta: 26/06/2026 19:00 España
+   - Countdown exacta: 26/06/2026 19:00 Europe/Madrid (aunque el invitado esté fuera)
    - RSVP: abre/cierra + estado “recibido” (modo demo)
-   - Timeline: línea se dibuja al entrar en pantalla
-   - Música: toggle sin autoplay
-   - Microparallax suave en portada (solo desktop)
-   - Modales accesibles + Add to Calendar + Guardar web
+   - Timeline: línea se dibuja al entrar en pantalla (stroke-dash)
+   - Música: toggle sin autoplay + estado real (sin “ON falso”)
+   - Microparallax suave (hero + countdown, solo desktop)
+   - Modales accesibles + Galería click-to-open (imagen contain, no recorta)
+   - Add to Calendar (.ics) compatible
+   - Guardar web
    ========================================================= */
 
 (() => {
@@ -21,6 +23,7 @@
   const isCoarsePointer = window.matchMedia &&
     window.matchMedia("(pointer: coarse)").matches;
 
+  // Helpers
   function pad2(n) { return String(n).padStart(2, "0"); }
   function pad3(n) { return String(n).padStart(3, "0"); }
 
@@ -62,12 +65,86 @@
   }
 
   // ===============================
-  // Countdown (26/06/2026 19:00 España)
+  // Countdown exacta Europe/Madrid
   // ===============================
-  // Ojo: Date() usa tu zona local del usuario. Para “España”, asumimos que el invitado está en España.
-  // Si quieres fijarlo siempre a Europe/Madrid aunque estén fuera, habría que usar luxon o similar.
-  const targetDate = new Date(2026, 5, 26, 19, 0, 0);
   const countdownWrap = $("#countdown");
+
+  // Evento fijo en Madrid:
+  const EVENT = {
+    year: 2026,
+    month: 6,   // 1..12
+    day: 26,
+    hour: 19,
+    minute: 0,
+    second: 0,
+    timeZone: "Europe/Madrid"
+  };
+
+  // Devuelve partes de una fecha interpretada en timeZone (sin literales).
+  function formatPartsInTZ(date, timeZone) {
+    // en-GB tiende a ser más estable con 24h
+    const dtf = new Intl.DateTimeFormat("en-GB", {
+      timeZone,
+      hour12: false,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+
+    const parts = dtf.formatToParts(date);
+    const map = {};
+    for (const p of parts) {
+      if (p.type !== "literal") map[p.type] = p.value;
+    }
+    return map;
+  }
+
+  // Offset (ms) de timeZone respecto a UTC para un instante (date)
+  function getTimeZoneOffsetMs(date, timeZone) {
+    const parts = formatPartsInTZ(date, timeZone);
+
+    // Algunos motores pueden devolver hour="24" en casos límite: normalizamos.
+    let y = Number(parts.year);
+    let mo = Number(parts.month);
+    let d = Number(parts.day);
+    let h = Number(parts.hour);
+    let mi = Number(parts.minute);
+    let s = Number(parts.second);
+
+    if (h === 24) {
+      h = 0;
+      // sumar 1 día en UTC (lo más simple: crear un Date UTC y añadir un día)
+      const tmp = new Date(Date.UTC(y, mo - 1, d, 0, mi, s));
+      tmp.setUTCDate(tmp.getUTCDate() + 1);
+      y = tmp.getUTCFullYear();
+      mo = tmp.getUTCMonth() + 1;
+      d = tmp.getUTCDate();
+    }
+
+    // "Como se vería date en Madrid" convertido a UTC
+    const asTZ = Date.UTC(y, mo - 1, d, h, mi, s);
+    const utc = date.getTime();
+
+    // offset = (hora en TZ) - (hora en UTC)
+    return asTZ - utc;
+  }
+
+  // Convierte una fecha/hora en Europe/Madrid a timestamp UTC (ms)
+  function tzDateToUtcMs({ year, month, day, hour, minute, second, timeZone }) {
+    // 1) creamos un "guess" en UTC con esos componentes
+    const utcGuess = Date.UTC(year, month - 1, day, hour, minute, second);
+
+    // 2) calculamos offset real del TZ en ese instante guess
+    const offsetMs = getTimeZoneOffsetMs(new Date(utcGuess), timeZone);
+
+    // 3) para que "Madrid 19:00" sea correcto: restamos offset
+    return utcGuess - offsetMs;
+  }
+
+  const targetUtcMs = tzDateToUtcMs(EVENT);
 
   function tickCountdown() {
     if (!countdownWrap) return;
@@ -79,8 +156,8 @@
 
     if (!dEl || !hEl || !mEl || !sEl) return;
 
-    const now = new Date();
-    let diff = targetDate.getTime() - now.getTime();
+    const nowMs = Date.now();
+    let diff = targetUtcMs - nowMs;
     if (diff < 0) diff = 0;
 
     const totalSecs = Math.floor(diff / 1000);
@@ -196,79 +273,144 @@
   }
 
   // ===============================
-  // Música (toggle)
+  // Música (toggle) — solo suena con click, UI real
   // ===============================
   const musicBtn = $("#musicToggle");
   const bgMusic = $("#bgMusic");
+  const MUSIC_KEY = "gaweb_music_on";
 
-  function setMusic(on) {
+  function hasAudioSource(audioEl) {
+    if (!audioEl) return false;
+    const srcAttr = (audioEl.getAttribute("src") || "").trim();
+    if (srcAttr) return true;
+    const source = audioEl.querySelector("source");
+    return !!(source && (source.getAttribute("src") || "").trim());
+  }
+
+  function setMusicUI(on) {
     if (!musicBtn) return;
     musicBtn.classList.toggle("is-on", on);
     musicBtn.setAttribute("aria-pressed", on ? "true" : "false");
     musicBtn.setAttribute("aria-label", on ? "Pausar música" : "Activar música");
   }
 
+  function saveMusicPref(on) {
+    try { localStorage.setItem(MUSIC_KEY, on ? "1" : "0"); } catch {}
+  }
+
+  function loadMusicPref() {
+    try { return localStorage.getItem(MUSIC_KEY) === "1"; } catch { return false; }
+  }
+
   if (musicBtn && bgMusic) {
+    // Estado inicial: nunca reproducimos, solo UI si hay source y pref guardada
+    const canPlay = hasAudioSource(bgMusic);
+    const wantsOn = loadMusicPref();
+
+    setMusicUI(!!(canPlay && wantsOn && !bgMusic.paused));
+
     musicBtn.addEventListener("click", async () => {
+      const canPlayNow = hasAudioSource(bgMusic);
+
+      if (!canPlayNow) {
+        // No hay canción cargada todavía
+        setMusicUI(false);
+        saveMusicPref(false);
+        return;
+      }
+
       try {
         if (bgMusic.paused) {
           await bgMusic.play();
-          setMusic(true);
+          setMusicUI(true);
+          saveMusicPref(true);
         } else {
           bgMusic.pause();
-          setMusic(false);
+          setMusicUI(false);
+          saveMusicPref(false);
         }
       } catch {
-        // Si no hay source o el navegador lo bloquea
-        setMusic(false);
+        // Bloqueo del navegador o error
+        setMusicUI(false);
+        saveMusicPref(false);
       }
     });
 
-    bgMusic.addEventListener("pause", () => setMusic(false));
-    bgMusic.addEventListener("play", () => setMusic(true));
+    bgMusic.addEventListener("pause", () => setMusicUI(false));
+    bgMusic.addEventListener("play", () => setMusicUI(true));
   }
 
   // ===============================
-  // Microparallax (solo desktop, muy suave)
+  // Microparallax (hero + countdown, desktop, suave)
   // ===============================
-  const heroPhoto = $(".heroPhoto--full");
-  if (heroPhoto && !prefersReducedMotion && !isCoarsePointer) {
-    const bg = $(".heroPhoto__bg", heroPhoto);
+  function createMicroParallax({ rootSel, targetSel, scale = 1.06, strength = 10 }) {
+    const root = $(rootSel);
+    if (!root || prefersReducedMotion || isCoarsePointer) return;
 
-    if (bg) {
-      let raf = 0;
-      function onMove(e) {
-        if (raf) return;
-        raf = requestAnimationFrame(() => {
-          raf = 0;
-          const rect = heroPhoto.getBoundingClientRect();
-          const x = (e.clientX - rect.left) / rect.width;  // 0..1
-          const y = (e.clientY - rect.top) / rect.height; // 0..1
+    const target = targetSel ? $(targetSel, root) : root;
+    if (!target) return;
 
-          // rango pequeño
-          const tx = (x - 0.5) * 10; // px
-          const ty = (y - 0.5) * 10; // px
+    let raf = 0;
+    let lastX = 0;
+    let lastY = 0;
 
-          bg.style.transform = `scale(1.06) translate(${tx}px, ${ty}px)`;
-        });
-      }
+    function apply() {
+      raf = 0;
+      const rect = root.getBoundingClientRect();
 
-      heroPhoto.addEventListener("mousemove", onMove);
-      heroPhoto.addEventListener("mouseleave", () => {
-        bg.style.transform = "scale(1.06) translate(0px, 0px)";
-      });
+      const x = (lastX - rect.left) / rect.width;  // 0..1
+      const y = (lastY - rect.top) / rect.height;  // 0..1
+
+      const tx = (x - 0.5) * strength;
+      const ty = (y - 0.5) * strength;
+
+      target.style.transform = `scale(${scale}) translate(${tx}px, ${ty}px)`;
+    }
+
+    function onMove(e) {
+      lastX = e.clientX;
+      lastY = e.clientY;
+      if (raf) return;
+      raf = requestAnimationFrame(apply);
+    }
+
+    function reset() {
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+      target.style.transform = `scale(${scale}) translate(0px, 0px)`;
+    }
+
+    if (window.matchMedia && window.matchMedia("(min-width: 980px)").matches) {
+      root.addEventListener("mousemove", onMove);
+      root.addEventListener("mouseleave", reset);
     }
   }
 
+  // Hero: movemos el fondo blur suavemente
+  createMicroParallax({
+    rootSel: ".heroPhoto--full",
+    targetSel: ".heroPhoto__bg",
+    scale: 1.06,
+    strength: 10
+  });
+
+  // Countdown: micro (muy sutil) en el chip completo
+  createMicroParallax({
+    rootSel: "#faltan",
+    targetSel: "#countdown .cdChip",
+    scale: 1.00,
+    strength: 6
+  });
+
   // ===============================
-  // Add to Calendar (.ics)
+  // Add to Calendar (.ics) — compatible
   // ===============================
   const addToCal = $("#addToCalendarLink");
 
   const eventTitle = "Boda de Gema & Alberto";
-  const eventLocation = "Castillo de Fuensaldaña (Ceremonia) / El Hueco Bodas y Banquetes (Celebración)";
+  const eventLocation = "El Hueco Bodas y Banquetes · Valladolid";
   const eventDescription =
-    "Boda de Gema y Alberto.\n\nCeremonia: 19:00 — Castillo de Fuensaldaña.\nCelebración: 20:00 — El Hueco Bodas y Banquetes.\n\n¡Nos vemos allí!";
+    "Boda de Gema y Alberto.\n\nCeremonia: 19:00 — El Hueco.\nCelebración: 20:00 — El Hueco.\n\n¡Nos vemos allí!";
 
   function toICSDateUTC(date) {
     const y = date.getUTCFullYear();
@@ -289,16 +431,18 @@
   }
 
   function downloadICS() {
-    // Evento: 19:00–19:45 (ajústalo si quieres)
-    const start = new Date(2026, 5, 26, 19, 0, 0);
-    const end = new Date(2026, 5, 26, 19, 45, 0);
+    // Evento: 19:00–23:30 Madrid (más realista y útil)
+    const startUtcMs = tzDateToUtcMs({ ...EVENT, minute: 0, second: 0 });
+    const endUtcMs = tzDateToUtcMs({ ...EVENT, hour: 23, minute: 30, second: 0 });
 
-    // Convertimos a “UTC”
+    const startUtc = new Date(startUtcMs);
+    const endUtc = new Date(endUtcMs);
+
     const dtStamp = toICSDateUTC(new Date());
-    const dtStart = toICSDateUTC(new Date(start.getTime() - start.getTimezoneOffset() * 60000));
-    const dtEnd = toICSDateUTC(new Date(end.getTime() - end.getTimezoneOffset() * 60000));
+    const dtStart = toICSDateUTC(startUtc);
+    const dtEnd = toICSDateUTC(endUtc);
 
-    const uid = `gaweb-${Date.now()}@ga-web`;
+    const uid = `gaweb-${EVENT.year}${pad2(EVENT.month)}${pad2(EVENT.day)}-${Date.now()}@ga-web`;
 
     const ics = [
       "BEGIN:VCALENDAR",
@@ -306,6 +450,8 @@
       "PRODID:-//GA WEB//ES",
       "CALSCALE:GREGORIAN",
       "METHOD:PUBLISH",
+      `X-WR-CALNAME:${escapeICS("Boda Gema & Alberto")}`,
+      `X-WR-TIMEZONE:${EVENT.timeZone}`,
       "BEGIN:VEVENT",
       `UID:${uid}`,
       `DTSTAMP:${dtStamp}`,
@@ -339,7 +485,7 @@
   }
 
   // ===============================
-  // Modales (Dress/Bus/Tips + Guardar web)
+  // Modal (Dress/Bus/Tips/Save + Galería)
   // ===============================
   const modal = $("#modal");
   const modalContent = $("#modalContent");
@@ -366,6 +512,7 @@
       <p>Así la tendrás como si fuera una app:</p>
       <p><strong>iPhone (Safari):</strong> Compartir → “Añadir a pantalla de inicio”.</p>
       <p><strong>Android (Chrome):</strong> Menú (⋮) → “Añadir a pantalla de inicio”.</p>
+      <p><strong>PC:</strong> añade a marcadores (⭐) para tenerla a mano.</p>
     `
   };
 
@@ -379,17 +526,21 @@
     });
   }
 
-  function openModal(key, openerEl = null) {
+  function openModalHTML(html, openerEl = null) {
     if (!modal || !modalContent) return;
 
     lastFocusedEl = openerEl || document.activeElement;
 
-    modalContent.innerHTML = modalTemplates[key] || "<p>Contenido no disponible.</p>";
+    modalContent.innerHTML = html;
     modal.classList.add("is-open");
     modal.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
 
     if (closeBtn) window.setTimeout(() => closeBtn.focus(), 0);
+  }
+
+  function openModal(key, openerEl = null) {
+    openModalHTML(modalTemplates[key] || "<p>Contenido no disponible.</p>", openerEl);
   }
 
   function closeModal() {
@@ -403,8 +554,11 @@
       window.setTimeout(() => lastFocusedEl.focus(), 0);
     }
     lastFocusedEl = null;
+
+    if (modalContent) modalContent.innerHTML = "";
   }
 
+  // Botones de cards (dress/bus/tips)
   $$("[data-modal]").forEach((btn) => {
     btn.addEventListener("click", () => openModal(btn.dataset.modal, btn));
   });
@@ -418,13 +572,38 @@
     });
   }
 
+  // Galería: click -> modal con imagen grande (usa data-full si existe)
+  const galleryImages = $$(".galleryItem img");
+  if (galleryImages.length) {
+    galleryImages.forEach((img) => {
+      img.addEventListener("click", () => {
+        const full = (img.getAttribute("data-full") || "").trim();
+        const src = full || img.getAttribute("src");
+        const alt = img.getAttribute("alt") || "Imagen";
+        const html = `
+          <h2>Galería</h2>
+          <p style="margin-top:6px; color: rgba(22,22,22,.62);">${alt}</p>
+          <img class="modalImage" src="${src}" alt="${alt}">
+        `;
+        openModalHTML(html, img);
+      });
+    });
+  }
+
+  // Click fuera / cerrar
   if (modal) {
     modal.addEventListener("click", (e) => {
-      if (e.target && e.target.hasAttribute("data-close")) closeModal();
+      // Cierra si clic en backdrop o en elementos con data-close
+      const t = e.target;
+      if (!t) return;
+      if (t.hasAttribute("data-close") || t.classList.contains("modal__backdrop")) {
+        closeModal();
+      }
     });
   }
   if (closeBtn) closeBtn.addEventListener("click", closeModal);
 
+  // Trap focus + ESC
   document.addEventListener("keydown", (e) => {
     if (!modal || !modal.classList.contains("is-open")) return;
 

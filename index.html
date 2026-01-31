@@ -21,11 +21,29 @@
     <button id="openEnvelope" class="envelopeBtn" type="button" aria-label="Abrir invitación">
       <div class="envelopeCard">
         <img class="envelopeImg" src="assets/img/envelope.png" alt="" aria-hidden="true" />
+
+        <!-- Overlay PRO (posiciones pensadas para PC y móvil) -->
         <div class="envelopeOverlay">
-          <div class="envelopeTextTop">Esta invitación es exclusiva para ti</div>
-          <div class="envelopeNames">Gema &amp; Alberto</div>
+          <!-- Arriba: nombres -->
+          <div class="envelopeTop">
+            <div class="envelopeNamesTop">Gema &amp; Alberto</div>
+          </div>
+
+          <!-- Centro: lacre (ahora sí existe) -->
+          <div class="envelopeSeal" aria-hidden="true">
+            <img class="envelopeSeal__logo" src="assets/img/lacre.png" alt="" />
+            <!-- NOTA: Más adelante pondremos encima el logo diamante como overlay (SVG/PNG),
+                 pero primero dejamos el lacre perfecto y visible. -->
+          </div>
+
+          <!-- Abajo: mensaje + hint -->
+          <div class="envelopeBottom">
+            <div class="envelopeTextBottom">Esta invitación es exclusiva para ti</div>
+            <div class="envelopeHint">Pulsa para abrir</div>
+          </div>
+
+          <!-- Fecha -->
           <div class="envelopeDate">26.06.2026</div>
-          <div class="envelopeHint">Pulsa para abrir</div>
         </div>
       </div>
     </button>
@@ -36,8 +54,9 @@
     ♪
   </button>
   <audio id="bgMusic" preload="none" loop>
-    <!-- Pon aquí tu canción: -->
-    <!-- <source src="assets/audio/cancion.mp3" type="audio/mpeg"> -->
+    <!-- Pon aquí tu canción (cuando la tengas en assets/audio/):
+    <source src="assets/audio/cancion.mp3" type="audio/mpeg">
+    -->
   </audio>
 
   <!-- Corazoncitos (decoración ligera) -->
@@ -52,9 +71,16 @@
     <!-- HERO (Portada: 1 pantalla completa, SIN recortar nunca) -->
     <section class="section hero" id="inicio">
       <div class="heroStage">
-        <!-- FOTO -->
-        <div class="heroPhoto heroPhoto--full" style="--hero-image:url('../assets/img/hero.jpg');">
+
+        <!-- FOTO
+          - PC: contain + blur behind (lo ajustamos en CSS)
+          - Móvil: contain + blur behind (CSS)
+        -->
+        <div class="heroPhoto heroPhoto--full" data-parallax="hero" style="--hero-image:url('assets/img/hero.jpg');">
+          <!-- Fondo blur (sirve para móvil y PC cuando activemos contain) -->
           <div class="heroPhoto__bg" aria-hidden="true"></div>
+
+          <!-- Imagen principal -->
           <img class="heroPhoto__img" src="assets/img/hero.jpg" alt="Gema y Alberto">
         </div>
 
@@ -80,11 +106,21 @@
           <div class="hr-gold" aria-hidden="true"></div>
           <div class="heroBand heroBand--bottom" aria-hidden="true"></div>
         </div>
+
       </div>
 
       <!-- Fade de papel (bridge suave al siguiente bloque) -->
       <div class="heroFade" aria-hidden="true"></div>
     </section>
+
+    <!-- SEPARADOR PRO (paper wash + línea dorada + ola elegante) -->
+    <div class="sectionSep sectionSep--strong" aria-hidden="true">
+      <div class="sectionSep__wash"></div>
+      <div class="sectionSep__line"></div>
+      <svg class="sectionSep__wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
+        <path d="M0,88 C170,120 330,60 520,88 C710,116 880,64 1040,84 C1200,104 1320,96 1440,76 L1440,140 L0,140 Z"></path>
+      </svg>
+    </div>
 
     <!-- FALTAN... -->
     <section class="section" id="faltan">
@@ -93,30 +129,48 @@
         <h2 class="h2">Faltan…</h2>
         <p class="p">Y cada día estamos un poquito más cerca.</p>
 
-        <!-- Countdown (octógonos minimal, SIEMPRE en una línea) -->
-        <div class="countdownWrap" id="countdown" aria-label="Cuenta atrás">
-          <div class="cdUnit">
-            <div class="cdNum" data-cd="days">000</div>
-            <div class="cdLab">Días</div>
-          </div>
+        <!-- Countdown PRO: 1 SOLO chip en una línea SIEMPRE -->
+        <div class="countdownWrap" id="countdown" aria-label="Cuenta atrás" data-parallax="countdown">
+          <div class="cdChip" role="group" aria-label="Cuenta atrás hasta el 26.06.2026 a las 19:00">
+            <div class="cdUnit">
+              <div class="cdNum" data-cd="days">000</div>
+              <div class="cdLab">Días</div>
+            </div>
 
-          <div class="cdUnit">
-            <div class="cdNum" data-cd="hours">00</div>
-            <div class="cdLab">Horas</div>
-          </div>
+            <div class="cdDivider" aria-hidden="true"></div>
 
-          <div class="cdUnit">
-            <div class="cdNum" data-cd="mins">00</div>
-            <div class="cdLab">Min</div>
-          </div>
+            <div class="cdUnit">
+              <div class="cdNum" data-cd="hours">00</div>
+              <div class="cdLab">Horas</div>
+            </div>
 
-          <div class="cdUnit">
-            <div class="cdNum" data-cd="secs">00</div>
-            <div class="cdLab">Seg</div>
+            <div class="cdDivider" aria-hidden="true"></div>
+
+            <div class="cdUnit">
+              <div class="cdNum" data-cd="mins">00</div>
+              <div class="cdLab">Min</div>
+            </div>
+
+            <div class="cdDivider" aria-hidden="true"></div>
+
+            <div class="cdUnit">
+              <div class="cdNum" data-cd="secs">00</div>
+              <div class="cdLab">Seg</div>
+            </div>
           </div>
         </div>
+
       </div>
     </section>
+
+    <!-- SEPARADOR PRO -->
+    <div class="sectionSep" aria-hidden="true">
+      <div class="sectionSep__wash"></div>
+      <div class="sectionSep__line"></div>
+      <svg class="sectionSep__wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
+        <path d="M0,72 C210,34 390,120 610,84 C830,48 1000,24 1200,56 C1325,76 1405,88 1440,84 L1440,140 L0,140 Z"></path>
+      </svg>
+    </div>
 
     <!-- UBICACIÓN -->
     <section class="section" id="ubicacion">
@@ -125,6 +179,7 @@
         <h2 class="h2">Dónde será</h2>
         <p class="p">Todo lo importante, a un clic. Guarda la ubicación y llega con margen.</p>
 
+        <!-- UNA SOLA TARJETA (Ceremonia + celebración en el mismo sitio) -->
         <div class="placeGrid">
           <div class="placeCard placeCard--tint">
             <div class="placeHead">
@@ -133,29 +188,7 @@
                 <span class="pinPulse"></span>
               </div>
               <div class="placeHead__text">
-                <div class="placeTag">Ceremonia</div>
-                <h3 class="placeTitle">Castillo de Fuensaldaña</h3>
-                <p class="placeMeta">
-                  C. del Castillo, s/n · 47194 Fuensaldaña (Valladolid)<br>
-                  Recomendamos llegar con antelación para aparcar con calma.
-                </p>
-              </div>
-            </div>
-            <div class="placeBtns">
-              <a class="btn" href="https://maps.google.com/?q=Castillo+de+Fuensalda%C3%B1a" target="_blank" rel="noreferrer">
-                Cómo llegar → Google Maps
-              </a>
-            </div>
-          </div>
-
-          <div class="placeCard placeCard--tint">
-            <div class="placeHead">
-              <div class="placePin" aria-hidden="true">
-                <span class="pinDot"></span>
-                <span class="pinPulse"></span>
-              </div>
-              <div class="placeHead__text">
-                <div class="placeTag">Celebración</div>
+                <div class="placeTag">Ceremonia y celebración</div>
                 <h3 class="placeTitle">El Hueco Bodas y Banquetes</h3>
                 <p class="placeMeta">
                   Plaza Ópera, s/n · 47009 Valladolid<br>
@@ -170,8 +203,18 @@
             </div>
           </div>
         </div>
+
       </div>
     </section>
+
+    <!-- SEPARADOR PRO -->
+    <div class="sectionSep sectionSep--strong" aria-hidden="true">
+      <div class="sectionSep__wash"></div>
+      <div class="sectionSep__line"></div>
+      <svg class="sectionSep__wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
+        <path d="M0,86 C160,124 340,58 520,88 C700,118 880,62 1040,84 C1200,106 1320,98 1440,76 L1440,140 L0,140 Z"></path>
+      </svg>
+    </div>
 
     <!-- MOMENTOS CLAVE -->
     <section class="section" id="momentos">
@@ -181,12 +224,14 @@
         <p class="p">Horario orientativo. Si hay algún ajuste, lo actualizaremos aquí.</p>
 
         <div class="timelineWrap">
-          <div class="timeline" id="timeline">
-            <!-- Línea animada -->
+          <div class="timeline timeline--pro" id="timeline">
+
+            <!-- Línea PRO (stroke-dash preparada) -->
             <svg class="timelineLine" viewBox="0 0 10 1000" preserveAspectRatio="none" aria-hidden="true">
               <path class="timelineLine__path" d="M5 0 L5 1000"></path>
             </svg>
 
+            <!-- ITEM -->
             <div class="tItem">
               <div class="tSide tSide--left">
                 <div class="tCard tCard--tint">
@@ -195,7 +240,7 @@
                 </div>
               </div>
               <div class="tDot" aria-hidden="true">
-                <span class="tIcon">🚌</span>
+                <span class="tIcon" data-icon="bus">🚌</span>
                 <span class="tPulse"></span>
               </div>
               <div class="tSide tSide--right" aria-hidden="true"></div>
@@ -204,13 +249,13 @@
             <div class="tItem">
               <div class="tSide tSide--left" aria-hidden="true"></div>
               <div class="tDot" aria-hidden="true">
-                <span class="tIcon">💍</span>
+                <span class="tIcon" data-icon="rings">💍</span>
                 <span class="tPulse"></span>
               </div>
               <div class="tSide tSide--right">
                 <div class="tCard tCard--tint">
                   <div class="tTime">19:00h</div>
-                  <div class="tLabel">Ceremonia civil (Castillo de Fuensaldaña)</div>
+                  <div class="tLabel">Ceremonia civil (El Hueco)</div>
                 </div>
               </div>
             </div>
@@ -223,7 +268,7 @@
                 </div>
               </div>
               <div class="tDot" aria-hidden="true">
-                <span class="tIcon">🚗</span>
+                <span class="tIcon" data-icon="car">🚗</span>
                 <span class="tPulse"></span>
               </div>
               <div class="tSide tSide--right" aria-hidden="true"></div>
@@ -232,7 +277,7 @@
             <div class="tItem">
               <div class="tSide tSide--left" aria-hidden="true"></div>
               <div class="tDot" aria-hidden="true">
-                <span class="tIcon">🍸</span>
+                <span class="tIcon" data-icon="drink">🍸</span>
                 <span class="tPulse"></span>
               </div>
               <div class="tSide tSide--right">
@@ -251,11 +296,12 @@
                 </div>
               </div>
               <div class="tDot" aria-hidden="true">
-                <span class="tIcon">🎧</span>
+                <span class="tIcon" data-icon="dj">🎧</span>
                 <span class="tPulse"></span>
               </div>
               <div class="tSide tSide--right" aria-hidden="true"></div>
             </div>
+
           </div>
         </div>
 
@@ -332,6 +378,15 @@
       </div>
     </section>
 
+    <!-- SEPARADOR PRO -->
+    <div class="sectionSep" aria-hidden="true">
+      <div class="sectionSep__wash"></div>
+      <div class="sectionSep__line"></div>
+      <svg class="sectionSep__wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
+        <path d="M0,78 C240,40 410,120 640,84 C870,48 1030,26 1220,56 C1350,78 1410,90 1440,86 L1440,140 L0,140 Z"></path>
+      </svg>
+    </div>
+
     <!-- ASISTENCIA -->
     <section class="section" id="asistencia">
       <div class="frame section__inner">
@@ -364,6 +419,15 @@
       </div>
     </section>
 
+    <!-- SEPARADOR PRO -->
+    <div class="sectionSep sectionSep--strong" aria-hidden="true">
+      <div class="sectionSep__wash"></div>
+      <div class="sectionSep__line"></div>
+      <svg class="sectionSep__wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
+        <path d="M0,86 C160,124 340,58 520,88 C700,118 880,62 1040,84 C1200,106 1320,98 1440,76 L1440,140 L0,140 Z"></path>
+      </svg>
+    </div>
+
     <!-- GALERÍA -->
     <section class="section" id="galeria">
       <div class="frame section__inner">
@@ -372,17 +436,35 @@
         <p class="p">Un pequeño adelanto de lo que hemos vivido… y lo que viene.</p>
 
         <div class="gallery gallery--scroll" aria-label="Galería">
-          <div class="galleryTrack">
-            <figure class="galleryItem">
-              <img src="assets/img/ga.jpg" alt="Logo G&A">
+          <div class="galleryTrack" role="list">
+            <figure class="galleryItem" role="listitem">
+              <img
+                src="assets/img/ga.jpg"
+                alt="Logo G&A"
+                class="galleryImg"
+                data-gallery="true"
+                data-full="assets/img/ga.jpg"
+              >
             </figure>
 
-            <figure class="galleryItem">
-              <img src="assets/img/hero.jpg" alt="Gema y Alberto">
+            <figure class="galleryItem" role="listitem">
+              <img
+                src="assets/img/hero.jpg"
+                alt="Gema y Alberto"
+                class="galleryImg"
+                data-gallery="true"
+                data-full="assets/img/hero.jpg"
+              >
             </figure>
 
-            <figure class="galleryItem">
-              <img src="assets/img/ga.jpg" alt="Logo G&A">
+            <figure class="galleryItem" role="listitem">
+              <img
+                src="assets/img/ga.jpg"
+                alt="Logo G&A"
+                class="galleryImg"
+                data-gallery="true"
+                data-full="assets/img/ga.jpg"
+              >
             </figure>
           </div>
 
@@ -390,6 +472,15 @@
         </div>
       </div>
     </section>
+
+    <!-- SEPARADOR PRO -->
+    <div class="sectionSep" aria-hidden="true">
+      <div class="sectionSep__wash"></div>
+      <div class="sectionSep__line"></div>
+      <svg class="sectionSep__wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
+        <path d="M0,78 C240,40 410,120 640,84 C870,48 1030,26 1220,56 C1350,78 1410,90 1440,86 L1440,140 L0,140 Z"></path>
+      </svg>
+    </div>
 
     <!-- FOOTER FINAL -->
     <footer class="footer" id="final">
@@ -415,7 +506,7 @@
 
   </main>
 
-  <!-- MODAL -->
+  <!-- MODAL (reutilizable: Dress/Bus/Tips + Galería en grande) -->
   <div class="modal" id="modal" aria-hidden="true">
     <div class="modal__backdrop" data-close></div>
     <div class="modal__panel" role="dialog" aria-modal="true" aria-label="Información">
