@@ -7,6 +7,7 @@
    - Timeline móvil: rediseño PRO (apilado + conector fino)
    - Modal galería: imagen en contain sin cortar pies (cuando JS la inserte)
    - Sobre: lacre.jpeg visible (sin blend raro)
+   - HERO desktop: 50/50 real + foto pegada al borde izquierdo (sin banda)
    ========================= */
 
 /* =========================
@@ -54,10 +55,15 @@
    BASE
    ========================= */
 *{ box-sizing: border-box; }
-html, body { height: 100%; }
+
+html, body{
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
 
 body{
-  margin: 0;
   font-family: var(--font);
   color: var(--ink);
   background:
@@ -65,6 +71,7 @@ body{
     radial-gradient(980px 600px at 82% 6%, rgba(22,22,22,.06), rgba(22,22,22,0) 62%),
     linear-gradient(180deg, #f4efe3 0%, #e5d7bf 100%);
   background-attachment: fixed;
+  overflow-x: hidden; /* evita bandas por cálculos raros */
 }
 
 ::selection{ background: rgba(200,162,74,.22); }
@@ -235,7 +242,7 @@ a{ color: inherit; text-decoration: none; }
   pointer-events:none;
 }
 
-/* OJO: aquí ya NO es "logo" con blend. Es el lacre como imagen principal */
+/* Lacre principal */
 .envelopeSeal__logo{
   width: 100%;
   height: 100%;
@@ -364,24 +371,30 @@ a{ color: inherit; text-decoration: none; }
 
 /* =========================
    HERO (PRO: contain + blur behind en PC y móvil)
+   Desktop: 50/50 real + foto pegada al borde izquierdo
    ========================= */
-.hero{ padding: 0 !important; }
+.hero{
+  padding: 0 !important;
+  margin: 0 !important;
+}
 
 .heroStage{
-  width: 100vw;
+  width: 100%;
   min-height: 100svh;
   min-height: 100dvh;
   min-height: 100vh;
-  margin-left: calc(50% - 50vw);
+  margin: 0;
+  padding: 0;
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr; /* móvil */
   align-items: stretch;
   overflow: hidden;
 }
 
+/* Desktop: MITAD / MITAD exacto */
 @media (min-width: 980px){
   .heroStage{
-    grid-template-columns: 1.07fr .93fr;
+    grid-template-columns: 50% 50%;
     height: 100svh;
     height: 100dvh;
     height: 100vh;
@@ -392,26 +405,11 @@ a{ color: inherit; text-decoration: none; }
 .heroPhoto--full{
   position: relative;
   overflow: hidden;
-  background: var(--ivory); /* fuera negro */
-}
-
-/* Difuminado lateral para integrar con el panel derecho (solo PC) */
-@media (min-width: 980px){
-  .heroPhoto--full::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-    /* derecha: funde con el fondo ivory del texto */
-    background:
-      linear-gradient(90deg,
-        rgba(245,241,231,0) 0%,
-        rgba(245,241,231,0) 62%,
-        rgba(245,241,231,.65) 82%,
-        rgba(245,241,231,.96) 100%
-      );
-    z-index: 2;
-  }
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--ivory);
 }
 
 /* Fondo blur */
@@ -440,13 +438,47 @@ a{ color: inherit; text-decoration: none; }
   z-index: 1;
   width: 100%;
   height: 100%;
+  display: block;
   object-fit: contain;
   object-position: center bottom;
-  display: block;
 }
 
-/* En PC el blur se baja para que no "ensucie" */
+/* Degradado inferior en móvil para integrar foto → panel */
+@media (max-width: 979px){
+  .heroPhoto--full::after{
+    content:"";
+    position:absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 140px;
+    pointer-events:none;
+    z-index: 2;
+    background: linear-gradient(
+      180deg,
+      rgba(245,241,231,0) 0%,
+      rgba(245,241,231,.55) 55%,
+      rgba(245,241,231,.92) 100%
+    );
+  }
+}
+
+/* Difuminado lateral para integrar con el panel derecho (solo PC) */
 @media (min-width: 980px){
+  .heroPhoto--full::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index: 2;
+    background:
+      linear-gradient(90deg,
+        rgba(245,241,231,0) 0%,
+        rgba(245,241,231,0) 62%,
+        rgba(245,241,231,.65) 82%,
+        rgba(245,241,231,.96) 100%
+      );
+  }
+
+  /* En PC bajamos blur para que no “ensucie” */
   .heroPhoto--full .heroPhoto__bg{
     filter: blur(12px) saturate(1.03) brightness(.88);
     opacity: .62;
@@ -454,7 +486,7 @@ a{ color: inherit; text-decoration: none; }
   }
 }
 
-/* Texto hero (IMPORTANTÍSIMO: sin opacity/filter/backdrop en padres del texto) */
+/* Texto hero (sin opacity/filter/backdrop en padres del texto) */
 .heroText{
   display:flex;
   flex-direction: column;
@@ -871,7 +903,6 @@ a{ color: inherit; text-decoration: none; }
     padding-left: 0;
   }
 
-  /* Línea centrada */
   .timelineLine{
     left: 50%;
     transform: translateX(-50%);
@@ -882,7 +913,6 @@ a{ color: inherit; text-decoration: none; }
     stroke-width: 2.0;
   }
 
-  /* Mantener 3 columnas incluso en móvil */
   .tItem{
     grid-template-columns: 1fr 60px 1fr;
     align-items: center;
@@ -899,7 +929,6 @@ a{ color: inherit; text-decoration: none; }
   }
   .tIcon{ font-size: 16px; }
 
-  /* Cards más compactas y sin max-width que provoque cortes raros */
   .tCard{
     width: 100%;
     max-width: none;
@@ -907,16 +936,13 @@ a{ color: inherit; text-decoration: none; }
     border-radius: 22px;
   }
 
-  /* Las columnas vacías deben ocupar espacio (NO display:none) para que alterne */
   .tSide[aria-hidden="true"]{
-    visibility: hidden; /* ocupa sitio pero no se ve */
+    visibility: hidden;
   }
 
-  /* Ajuste fino de texto en móvil */
   .tTime{ font-size: 12px; }
   .tLabel{ font-size: 14px; }
 
-  /* Márgenes para que no pegue contra bordes */
   .tSide--left{ padding-right: 8px; }
   .tSide--right{ padding-left: 8px; }
 }
