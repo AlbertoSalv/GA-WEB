@@ -392,7 +392,26 @@ a{ color: inherit; text-decoration: none; }
 .heroPhoto--full{
   position: relative;
   overflow: hidden;
-  background: #000;
+  background: var(--ivory); /* fuera negro */
+}
+
+/* Difuminado lateral para integrar con el panel derecho (solo PC) */
+@media (min-width: 980px){
+  .heroPhoto--full::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    /* derecha: funde con el fondo ivory del texto */
+    background:
+      linear-gradient(90deg,
+        rgba(245,241,231,0) 0%,
+        rgba(245,241,231,0) 62%,
+        rgba(245,241,231,.65) 82%,
+        rgba(245,241,231,.96) 100%
+      );
+    z-index: 2;
+  }
 }
 
 /* Fondo blur */
@@ -846,16 +865,16 @@ a{ color: inherit; text-decoration: none; }
   line-height: 1.35;
 }
 
-/* ✅ MÓVIL PRO (rediseño real): apilado + conector fino + dots menos dominantes */
+/* MÓVIL PRO: línea centrada + alterna izquierda/derecha */
 @media (max-width: 859px){
   .timeline{
     padding-left: 0;
   }
 
-  /* Línea a la izquierda, fina y elegante */
+  /* Línea centrada */
   .timelineLine{
-    left: 26px;
-    transform: none;
+    left: 50%;
+    transform: translateX(-50%);
     width: 10px;
   }
   .timelineLine__path{
@@ -863,39 +882,43 @@ a{ color: inherit; text-decoration: none; }
     stroke-width: 2.0;
   }
 
+  /* Mantener 3 columnas incluso en móvil */
   .tItem{
-    grid-template-columns: 56px 1fr;
-    gap: 12px;
-    align-items: flex-start;
+    grid-template-columns: 1fr 60px 1fr;
+    align-items: center;
+    gap: 10px;
     padding: 14px 0;
   }
 
-  /* Dot más pequeño y menos dominante */
   .tDot{
     width: 44px;
     height: 44px;
-    margin: 0;
-    justify-self: start;
+    margin: 0 auto;
     background: rgba(255,255,255,.44);
     border-color: rgba(200,162,74,.28);
   }
   .tIcon{ font-size: 16px; }
 
-  /* Card full-width */
-  .tSide{
-    width: 100%;
-  }
+  /* Cards más compactas y sin max-width que provoque cortes raros */
   .tCard{
     width: 100%;
-    max-width: 680px;
-    text-align: left;
-    margin: 0;
-    padding: 14px 14px;
+    max-width: none;
+    padding: 12px 12px;
+    border-radius: 22px;
   }
 
-  /* todo a la derecha */
-  .tSide--left[aria-hidden="true"]{ display:none; }
-  .tSide--right[aria-hidden="true"]{ display:none; }
+  /* Las columnas vacías deben ocupar espacio (NO display:none) para que alterne */
+  .tSide[aria-hidden="true"]{
+    visibility: hidden; /* ocupa sitio pero no se ve */
+  }
+
+  /* Ajuste fino de texto en móvil */
+  .tTime{ font-size: 12px; }
+  .tLabel{ font-size: 14px; }
+
+  /* Márgenes para que no pegue contra bordes */
+  .tSide--left{ padding-right: 8px; }
+  .tSide--right{ padding-left: 8px; }
 }
 
 /* =========================
