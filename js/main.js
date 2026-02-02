@@ -27,11 +27,37 @@
   const pad2 = (n) => String(n).padStart(2, "0");
   const pad3 = (n) => String(n).padStart(3, "0");
 
+  // =========================================================
+  // Scroll lock robusto (evita “saltos”)
+  // =========================================================
+  let scrollLockCount = 0;
+  let savedScrollY = 0;
+
   function lockScroll() {
-    document.documentElement.style.overflow = "hidden";
+    scrollLockCount += 1;
+    if (scrollLockCount > 1) return;
+
+    savedScrollY = window.scrollY || window.pageYOffset || 0;
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${savedScrollY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
+    document.body.style.width = "100%";
   }
+
   function unlockScroll() {
-    document.documentElement.style.overflow = "";
+    scrollLockCount = Math.max(0, scrollLockCount - 1);
+    if (scrollLockCount !== 0) return;
+
+    const top = document.body.style.top;
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.left = "";
+    document.body.style.right = "";
+    document.body.style.width = "";
+
+    const y = top ? Math.abs(parseInt(top, 10)) : savedScrollY;
+    window.scrollTo(0, y || 0);
   }
 
   // =========================================================
@@ -45,23 +71,28 @@
 
   if (intro) lockScroll();
 
+  function hasAnimateCSS() {
+    // animate.css añade clases animate__animated; no hay API oficial, así que hacemos “best effort”
+    // Si no está cargado, no pasa nada.
+    return true;
+  }
+
   function applyFadeInToHero() {
-    // Usamos animate.css si está cargado.
-    // (si no lo está, no rompe nada)
+    if (prefersReducedMotion) return;
+
     const heroText = $(".heroText");
     const heroPhoto = $(".heroPhoto--full");
 
     const apply = (el) => {
       if (!el) return;
-      el.classList.remove("animate__animated", "animate__fadeIn");
+      el.classList.remove("animate__animated", "animate__fadeIn", "animate__faster");
       // reflow para reiniciar animación
       // eslint-disable-next-line no-unused-expressions
       el.offsetHeight;
-      el.classList.add("animate__animated", "animate__fadeIn");
-      el.classList.add("animate__faster");
+      el.classList.add("animate__animated", "animate__fadeIn", "animate__faster");
     };
 
-    if (!prefersReducedMotion) {
+    if (hasAnimateCSS()) {
       apply(heroPhoto);
       apply(heroText);
     }
@@ -111,12 +142,7 @@
 
   /**
    * Convierte "fecha/hora local en timeZone" a UTC ms de forma robusta.
-   * Método:
-   * 1) Partimos de un guess UTC con esos componentes.
-   * 2) Vemos qué hora sería ese guess en timeZone.
-   * 3) Ajustamos por la diferencia.
-   *
-   * Evita el bug típico del +1h en cambios DST.
+   * Evita el bug típico del +1h con DST.
    */
   function tzDateToUtcMs({ year, month, day, hour, minute, second, timeZone }) {
     const guess = Date.UTC(year, month - 1, day, hour, minute, second);
@@ -143,7 +169,6 @@
     let mi = Number(map.minute);
     let s = Number(map.second);
 
-    // Normaliza "24:xx" si ocurriera
     if (h === 24) {
       h = 0;
       const tmp = new Date(Date.UTC(y, mo - 1, d, 0, mi, s));
@@ -153,13 +178,8 @@
       d = tmp.getUTCDate();
     }
 
-    // "guess" visto en TZ convertido a UTC ms
     const asTZ = Date.UTC(y, mo - 1, d, h, mi, s);
-
-    // Diferencia entre lo que queríamos (componentes) y lo que resulta en TZ
     const diff = asTZ - guess;
-
-    // Ajuste final: restar diff
     return guess - diff;
   }
 
@@ -217,7 +237,8 @@
   // =========================================================
   // 4) RSVP desplegable + estado recibido
   // =========================================================
-  const rsvpToggle = $("#rsvpToggle");
+  const rsvpToggle = $("#rsvpToggle");          // botón clásico (si existe)
+  const rsvpHoverCard = $("#rsvpHoverCard");    // hover card tipo Universe (si existe)
   const rsvpPanel = $("#rsvpPanel");
   const rsvpForm = $("#rsvpForm");
   const rsvpCloseBtn = $("#rsvpCloseBtn");
@@ -229,6 +250,7 @@
     rsvpPanel.classList.add("is-open");
     rsvpPanel.setAttribute("aria-hidden", "false");
     if (rsvpToggle) rsvpToggle.setAttribute("aria-expanded", "true");
+    if (rsvpHoverCard) rsvpHoverCard.setAttribute("aria-expanded", "true");
 
     if (scrollIntoView) {
       const top = rsvpPanel.getBoundingClientRect().top + window.pageYOffset - 12;
@@ -241,25 +263,31 @@
 
   function closeRSVP() {
     if (!rsvpPanel) return;
+
     rsvpPanel.classList.remove("is-open");
     rsvpPanel.setAttribute("aria-hidden", "true");
     if (rsvpToggle) rsvpToggle.setAttribute("aria-expanded", "false");
+    if (rsvpHoverCard) rsvpHoverCard.setAttribute("aria-expanded", "false");
   }
 
+  function toggleRSVP({ scrollIntoView = false } = {}) {
+    if (!rsvpPanel) return;
+    const isOpen = rsvpPanel.classList.contains("is-open");
+    if (isOpen) closeRSVP();
+    else openRSVP({ scrollIntoView });
+  }
+
+  // Click en botón clásico
   if (rsvpToggle && rsvpPanel) {
-    rsvpToggle.addEventListener("click", () => {
-      const isOpen = rsvpPanel.classList.contains("is-open");
-      if (isOpen) closeRSVP();
-      else openRSVP();
-    });
+    rsvpToggle.addEventListener("click", () => toggleRSVP());
   }
-  if (rsvpCloseBtn) rsvpCloseBtn.addEventListener("click", closeRSVP);
 
-  document.addEventListener("keydown", (e) => {
-    if (e.key !== "Escape") return;
-    // si modal abierto, lo gestiona el handler del modal
-    if (rsvpPanel && rsvpPanel.classList.contains("is-open")) closeRSVP();
-  });
+  // Click en hover card
+  if (rsvpHoverCard && rsvpPanel) {
+    rsvpHoverCard.addEventListener("click", () => toggleRSVP({ scrollIntoView: true }));
+  }
+
+  if (rsvpCloseBtn) rsvpCloseBtn.addEventListener("click", closeRSVP);
 
   function setRSVPStatus(msg) {
     if (!rsvpStatus) return;
@@ -321,8 +349,6 @@
   }
 
   if (musicBtn && bgMusic) {
-    // Estado inicial: no reproducimos nunca.
-    // UI inicial: OFF siempre (evita ON falso). Cuando hagan click, ya se pone bien.
     setMusicUI(false);
 
     musicBtn.addEventListener("click", async () => {
@@ -350,12 +376,9 @@
       }
     });
 
-    // Si el audio cambia de estado por el navegador, reflejamos UI
     bgMusic.addEventListener("pause", () => setMusicUI(false));
     bgMusic.addEventListener("play", () => setMusicUI(true));
 
-    // Si en algún momento quieres “recordar” preferencia:
-    // Solo intentamos reanudar cuando el usuario haga su primer click en la página.
     const wantsOn = loadMusicPref();
     if (wantsOn && hasAudioSource(bgMusic)) {
       const once = async () => {
@@ -458,7 +481,6 @@
   }
 
   function downloadICS() {
-    // 19:00–23:30 Madrid
     const startUtcMs = tzDateToUtcMs({ ...EVENT, hour: 19, minute: 0, second: 0 });
     const endUtcMs = tzDateToUtcMs({ ...EVENT, hour: 23, minute: 30, second: 0 });
 
@@ -594,7 +616,7 @@
     });
   }
 
-  // Galería: click -> modal con imagen grande (usa data-full si existe)
+  // Galería: click -> modal con imagen grande
   const galleryImages = $$(".galleryItem img");
   if (galleryImages.length) {
     galleryImages.forEach((img) => {
@@ -623,36 +645,46 @@
   }
   if (closeBtn) closeBtn.addEventListener("click", closeModal);
 
-  // Trap focus + ESC
+  // =========================================================
+  // ESC global y trap focus modal
+  // - ✅ Si modal está abierto, ESC SOLO cierra modal
+  // - ✅ Si modal NO está abierto, ESC puede cerrar RSVP
+  // =========================================================
   document.addEventListener("keydown", (e) => {
-    if (!modal || !modal.classList.contains("is-open")) return;
+    // 1) Modal abierto
+    if (modal && modal.classList.contains("is-open")) {
+      if (e.key === "Escape") {
+        closeModal();
+        return;
+      }
+      if (e.key === "Tab") {
+        const panel = $(".modal__panel", modal);
+        if (!panel) return;
 
-    if (e.key === "Escape") {
-      closeModal();
+        const focusables = getFocusable(panel);
+        if (!focusables.length) return;
+
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
       return;
     }
 
-    if (e.key === "Tab") {
-      const panel = $(".modal__panel", modal);
-      if (!panel) return;
-
-      const focusables = getFocusable(panel);
-      if (!focusables.length) return;
-
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-
-      if (e.shiftKey) {
-        if (document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        }
-      } else {
-        if (document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
+    // 2) Modal NO abierto: ESC puede cerrar RSVP
+    if (e.key === "Escape") {
+      if (rsvpPanel && rsvpPanel.classList.contains("is-open")) closeRSVP();
     }
   });
 
