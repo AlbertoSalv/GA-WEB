@@ -1,6 +1,6 @@
 /* =========================================================
    GA WEB — main.js (PRO)
-   - Intro sobre
+   - Intro sobre + fadeIn (animate.css)
    - Countdown exacta: 26/06/2026 19:00 Europe/Madrid (aunque el invitado esté fuera)
    - RSVP: abre/cierra + estado “recibido” (modo demo)
    - Timeline: línea se dibuja al entrar en pantalla (stroke-dash)
@@ -24,19 +24,48 @@
     window.matchMedia("(pointer: coarse)").matches;
 
   // Helpers
-  function pad2(n) { return String(n).padStart(2, "0"); }
-  function pad3(n) { return String(n).padStart(3, "0"); }
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const pad3 = (n) => String(n).padStart(3, "0");
 
-  // ===============================
-  // Intro (Sobre) -> mostrar sitio
-  // ===============================
+  function lockScroll() {
+    document.documentElement.style.overflow = "hidden";
+  }
+  function unlockScroll() {
+    document.documentElement.style.overflow = "";
+  }
+
+  // =========================================================
+  // 1) INTRO (SOBRE) -> mostrar sitio + fadeIn animate.css
+  // =========================================================
   const intro = $("#intro");
   const openBtn = $("#openEnvelope");
   const site = $("#site");
 
   let isOpening = false;
 
-  if (intro) document.documentElement.style.overflow = "hidden";
+  if (intro) lockScroll();
+
+  function applyFadeInToHero() {
+    // Usamos animate.css si está cargado.
+    // (si no lo está, no rompe nada)
+    const heroText = $(".heroText");
+    const heroPhoto = $(".heroPhoto--full");
+
+    const apply = (el) => {
+      if (!el) return;
+      el.classList.remove("animate__animated", "animate__fadeIn");
+      // reflow para reiniciar animación
+      // eslint-disable-next-line no-unused-expressions
+      el.offsetHeight;
+      el.classList.add("animate__animated", "animate__fadeIn");
+      el.classList.add("animate__faster");
+    };
+
+    if (!prefersReducedMotion) {
+      apply(heroPhoto);
+      apply(heroText);
+    }
+  }
 
   if (openBtn && intro && site) {
     openBtn.addEventListener("click", () => {
@@ -52,10 +81,11 @@
 
         window.setTimeout(() => {
           intro.style.display = "none";
-          document.documentElement.style.overflow = "";
+          unlockScroll();
 
           requestAnimationFrame(() => {
             site.style.opacity = "1";
+            applyFadeInToHero();
           });
 
           window.scrollTo(0, 0);
@@ -64,12 +94,11 @@
     });
   }
 
-  // ===============================
-  // Countdown exacta Europe/Madrid
-  // ===============================
+  // =========================================================
+  // 2) COUNTDOWN exacta Europe/Madrid (fix 1h robusto)
+  // =========================================================
   const countdownWrap = $("#countdown");
 
-  // Evento fijo en Madrid:
   const EVENT = {
     year: 2026,
     month: 6,   // 1..12
@@ -80,9 +109,18 @@
     timeZone: "Europe/Madrid"
   };
 
-  // Devuelve partes de una fecha interpretada en timeZone (sin literales).
-  function formatPartsInTZ(date, timeZone) {
-    // en-GB tiende a ser más estable con 24h
+  /**
+   * Convierte "fecha/hora local en timeZone" a UTC ms de forma robusta.
+   * Método:
+   * 1) Partimos de un guess UTC con esos componentes.
+   * 2) Vemos qué hora sería ese guess en timeZone.
+   * 3) Ajustamos por la diferencia.
+   *
+   * Evita el bug típico del +1h en cambios DST.
+   */
+  function tzDateToUtcMs({ year, month, day, hour, minute, second, timeZone }) {
+    const guess = Date.UTC(year, month - 1, day, hour, minute, second);
+
     const dtf = new Intl.DateTimeFormat("en-GB", {
       timeZone,
       hour12: false,
@@ -94,29 +132,20 @@
       second: "2-digit"
     });
 
-    const parts = dtf.formatToParts(date);
+    const parts = dtf.formatToParts(new Date(guess));
     const map = {};
-    for (const p of parts) {
-      if (p.type !== "literal") map[p.type] = p.value;
-    }
-    return map;
-  }
+    for (const p of parts) if (p.type !== "literal") map[p.type] = p.value;
 
-  // Offset (ms) de timeZone respecto a UTC para un instante (date)
-  function getTimeZoneOffsetMs(date, timeZone) {
-    const parts = formatPartsInTZ(date, timeZone);
+    let y = Number(map.year);
+    let mo = Number(map.month);
+    let d = Number(map.day);
+    let h = Number(map.hour);
+    let mi = Number(map.minute);
+    let s = Number(map.second);
 
-    // Algunos motores pueden devolver hour="24" en casos límite: normalizamos.
-    let y = Number(parts.year);
-    let mo = Number(parts.month);
-    let d = Number(parts.day);
-    let h = Number(parts.hour);
-    let mi = Number(parts.minute);
-    let s = Number(parts.second);
-
+    // Normaliza "24:xx" si ocurriera
     if (h === 24) {
       h = 0;
-      // sumar 1 día en UTC (lo más simple: crear un Date UTC y añadir un día)
       const tmp = new Date(Date.UTC(y, mo - 1, d, 0, mi, s));
       tmp.setUTCDate(tmp.getUTCDate() + 1);
       y = tmp.getUTCFullYear();
@@ -124,24 +153,14 @@
       d = tmp.getUTCDate();
     }
 
-    // "Como se vería date en Madrid" convertido a UTC
+    // "guess" visto en TZ convertido a UTC ms
     const asTZ = Date.UTC(y, mo - 1, d, h, mi, s);
-    const utc = date.getTime();
 
-    // offset = (hora en TZ) - (hora en UTC)
-    return asTZ - utc;
-  }
+    // Diferencia entre lo que queríamos (componentes) y lo que resulta en TZ
+    const diff = asTZ - guess;
 
-  // Convierte una fecha/hora en Europe/Madrid a timestamp UTC (ms)
-  function tzDateToUtcMs({ year, month, day, hour, minute, second, timeZone }) {
-    // 1) creamos un "guess" en UTC con esos componentes
-    const utcGuess = Date.UTC(year, month - 1, day, hour, minute, second);
-
-    // 2) calculamos offset real del TZ en ese instante guess
-    const offsetMs = getTimeZoneOffsetMs(new Date(utcGuess), timeZone);
-
-    // 3) para que "Madrid 19:00" sea correcto: restamos offset
-    return utcGuess - offsetMs;
+    // Ajuste final: restar diff
+    return guess - diff;
   }
 
   const targetUtcMs = tzDateToUtcMs(EVENT);
@@ -153,7 +172,6 @@
     const hEl = $('[data-cd="hours"]', countdownWrap);
     const mEl = $('[data-cd="mins"]', countdownWrap);
     const sEl = $('[data-cd="secs"]', countdownWrap);
-
     if (!dEl || !hEl || !mEl || !sEl) return;
 
     const nowMs = Date.now();
@@ -179,9 +197,9 @@
     window.setInterval(tickCountdown, 1000);
   }, startDelay);
 
-  // ===============================
-  // Timeline line draw (stroke-dash)
-  // ===============================
+  // =========================================================
+  // 3) Timeline line draw (stroke-dash)
+  // =========================================================
   const timeline = $("#timeline");
   if (timeline && "IntersectionObserver" in window && !prefersReducedMotion) {
     const io = new IntersectionObserver((entries) => {
@@ -196,9 +214,9 @@
     timeline.classList.add("is-drawn");
   }
 
-  // ===============================
-  // RSVP desplegable + estado recibido
-  // ===============================
+  // =========================================================
+  // 4) RSVP desplegable + estado recibido
+  // =========================================================
   const rsvpToggle = $("#rsvpToggle");
   const rsvpPanel = $("#rsvpPanel");
   const rsvpForm = $("#rsvpForm");
@@ -239,6 +257,7 @@
 
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
+    // si modal abierto, lo gestiona el handler del modal
     if (rsvpPanel && rsvpPanel.classList.contains("is-open")) closeRSVP();
   });
 
@@ -257,7 +276,6 @@
         e.preventDefault();
         setRSVPStatus("✅ ¡Recibido! Gracias por confirmarlo. (Modo demo: después lo conectamos para que llegue de verdad)");
         closeRSVP();
-
         try { rsvpForm.reset(); } catch {}
       }
     });
@@ -272,9 +290,9 @@
     });
   }
 
-  // ===============================
-  // Música (toggle) — solo suena con click, UI real
-  // ===============================
+  // =========================================================
+  // 5) Música (toggle) — UI REAL, sin “ON falso”
+  // =========================================================
   const musicBtn = $("#musicToggle");
   const bgMusic = $("#bgMusic");
   const MUSIC_KEY = "gaweb_music_on";
@@ -303,17 +321,14 @@
   }
 
   if (musicBtn && bgMusic) {
-    // Estado inicial: nunca reproducimos, solo UI si hay source y pref guardada
-    const canPlay = hasAudioSource(bgMusic);
-    const wantsOn = loadMusicPref();
-
-    setMusicUI(!!(canPlay && wantsOn && !bgMusic.paused));
+    // Estado inicial: no reproducimos nunca.
+    // UI inicial: OFF siempre (evita ON falso). Cuando hagan click, ya se pone bien.
+    setMusicUI(false);
 
     musicBtn.addEventListener("click", async () => {
       const canPlayNow = hasAudioSource(bgMusic);
 
       if (!canPlayNow) {
-        // No hay canción cargada todavía
         setMusicUI(false);
         saveMusicPref(false);
         return;
@@ -330,19 +345,36 @@
           saveMusicPref(false);
         }
       } catch {
-        // Bloqueo del navegador o error
         setMusicUI(false);
         saveMusicPref(false);
       }
     });
 
+    // Si el audio cambia de estado por el navegador, reflejamos UI
     bgMusic.addEventListener("pause", () => setMusicUI(false));
     bgMusic.addEventListener("play", () => setMusicUI(true));
+
+    // Si en algún momento quieres “recordar” preferencia:
+    // Solo intentamos reanudar cuando el usuario haga su primer click en la página.
+    const wantsOn = loadMusicPref();
+    if (wantsOn && hasAudioSource(bgMusic)) {
+      const once = async () => {
+        document.removeEventListener("pointerdown", once);
+        try {
+          await bgMusic.play();
+          setMusicUI(true);
+        } catch {
+          setMusicUI(false);
+          saveMusicPref(false);
+        }
+      };
+      document.addEventListener("pointerdown", once, { once: true });
+    }
   }
 
-  // ===============================
-  // Microparallax (hero + countdown, desktop, suave)
-  // ===============================
+  // =========================================================
+  // 6) Microparallax (hero + countdown, desktop, suave)
+  // =========================================================
   function createMicroParallax({ rootSel, targetSel, scale = 1.06, strength = 10 }) {
     const root = $(rootSel);
     if (!root || prefersReducedMotion || isCoarsePointer) return;
@@ -357,13 +389,10 @@
     function apply() {
       raf = 0;
       const rect = root.getBoundingClientRect();
-
-      const x = (lastX - rect.left) / rect.width;  // 0..1
-      const y = (lastY - rect.top) / rect.height;  // 0..1
-
+      const x = (lastX - rect.left) / rect.width;
+      const y = (lastY - rect.top) / rect.height;
       const tx = (x - 0.5) * strength;
       const ty = (y - 0.5) * strength;
-
       target.style.transform = `scale(${scale}) translate(${tx}px, ${ty}px)`;
     }
 
@@ -386,7 +415,6 @@
     }
   }
 
-  // Hero: movemos el fondo blur suavemente
   createMicroParallax({
     rootSel: ".heroPhoto--full",
     targetSel: ".heroPhoto__bg",
@@ -394,7 +422,6 @@
     strength: 10
   });
 
-  // Countdown: micro (muy sutil) en el chip completo
   createMicroParallax({
     rootSel: "#faltan",
     targetSel: "#countdown .cdChip",
@@ -402,9 +429,9 @@
     strength: 6
   });
 
-  // ===============================
-  // Add to Calendar (.ics) — compatible
-  // ===============================
+  // =========================================================
+  // 7) Add to Calendar (.ics) — compatible
+  // =========================================================
   const addToCal = $("#addToCalendarLink");
 
   const eventTitle = "Boda de Gema & Alberto";
@@ -431,16 +458,13 @@
   }
 
   function downloadICS() {
-    // Evento: 19:00–23:30 Madrid (más realista y útil)
-    const startUtcMs = tzDateToUtcMs({ ...EVENT, minute: 0, second: 0 });
+    // 19:00–23:30 Madrid
+    const startUtcMs = tzDateToUtcMs({ ...EVENT, hour: 19, minute: 0, second: 0 });
     const endUtcMs = tzDateToUtcMs({ ...EVENT, hour: 23, minute: 30, second: 0 });
 
-    const startUtc = new Date(startUtcMs);
-    const endUtc = new Date(endUtcMs);
-
     const dtStamp = toICSDateUTC(new Date());
-    const dtStart = toICSDateUTC(startUtc);
-    const dtEnd = toICSDateUTC(endUtc);
+    const dtStart = toICSDateUTC(new Date(startUtcMs));
+    const dtEnd = toICSDateUTC(new Date(endUtcMs));
 
     const uid = `gaweb-${EVENT.year}${pad2(EVENT.month)}${pad2(EVENT.day)}-${Date.now()}@ga-web`;
 
@@ -484,9 +508,9 @@
     });
   }
 
-  // ===============================
-  // Modal (Dress/Bus/Tips/Save + Galería)
-  // ===============================
+  // =========================================================
+  // 8) Modal (Dress/Bus/Tips/Save + Galería)
+  // =========================================================
   const modal = $("#modal");
   const modalContent = $("#modalContent");
   const closeBtn = modal ? $(".modal__close", modal) : null;
@@ -534,8 +558,8 @@
     modalContent.innerHTML = html;
     modal.classList.add("is-open");
     modal.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
 
+    lockScroll();
     if (closeBtn) window.setTimeout(() => closeBtn.focus(), 0);
   }
 
@@ -548,7 +572,7 @@
 
     modal.classList.remove("is-open");
     modal.setAttribute("aria-hidden", "true");
-    document.body.style.overflow = "";
+    unlockScroll();
 
     if (lastFocusedEl && typeof lastFocusedEl.focus === "function") {
       window.setTimeout(() => lastFocusedEl.focus(), 0);
@@ -558,12 +582,10 @@
     if (modalContent) modalContent.innerHTML = "";
   }
 
-  // Botones de cards (dress/bus/tips)
   $$("[data-modal]").forEach((btn) => {
     btn.addEventListener("click", () => openModal(btn.dataset.modal, btn));
   });
 
-  // Guardar web (footer)
   const saveToHomeLink = $("#saveToHomeLink");
   if (saveToHomeLink) {
     saveToHomeLink.addEventListener("click", (e) => {
@@ -590,10 +612,8 @@
     });
   }
 
-  // Click fuera / cerrar
   if (modal) {
     modal.addEventListener("click", (e) => {
-      // Cierra si clic en backdrop o en elementos con data-close
       const t = e.target;
       if (!t) return;
       if (t.hasAttribute("data-close") || t.classList.contains("modal__backdrop")) {

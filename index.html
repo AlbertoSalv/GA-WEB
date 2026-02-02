@@ -9,7 +9,12 @@
   <!-- Fuentes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+
+  <!-- ✅ Añadimos Libre Baskerville (título 1) + Allura (texto 3) -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;600;800;900&family=Libre+Baskerville:wght@400;700&family=Allura&display=swap" rel="stylesheet">
+
+  <!-- Animate.css (fade-in PRO al abrir el sobre; lo activamos desde JS) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
   <link rel="stylesheet" href="css/styles.css" />
 </head>
@@ -22,27 +27,21 @@
       <div class="envelopeCard">
         <img class="envelopeImg" src="assets/img/envelope.png" alt="" aria-hidden="true" />
 
-        <!-- Overlay PRO (posiciones pensadas para PC y móvil) -->
         <div class="envelopeOverlay">
-          <!-- Arriba: nombres -->
           <div class="envelopeTop">
             <div class="envelopeNamesTop">Gema &amp; Alberto</div>
           </div>
 
-          <!-- Centro: lacre (ahora sí existe) -->
+          <!-- Centro: lacre -->
           <div class="envelopeSeal" aria-hidden="true">
             <img class="envelopeSeal__logo" src="assets/img/lacre.png" alt="" />
-            <!-- NOTA: Más adelante pondremos encima el logo diamante como overlay (SVG/PNG),
-                 pero primero dejamos el lacre perfecto y visible. -->
           </div>
 
-          <!-- Abajo: mensaje + hint -->
           <div class="envelopeBottom">
             <div class="envelopeTextBottom">Esta invitación es exclusiva para ti</div>
             <div class="envelopeHint">Pulsa para abrir</div>
           </div>
 
-          <!-- Fecha -->
           <div class="envelopeDate">26.06.2026</div>
         </div>
       </div>
@@ -50,41 +49,32 @@
   </div>
 
   <!-- Música (no autoplay) -->
-  <button class="musicBtn" id="musicToggle" type="button" aria-pressed="false" aria-label="Activar música">
-    ♪
-  </button>
+  <button class="musicBtn" id="musicToggle" type="button" aria-pressed="false" aria-label="Activar música">♪</button>
   <audio id="bgMusic" preload="none" loop>
-    <!-- Pon aquí tu canción (cuando la tengas en assets/audio/):
-    <source src="assets/audio/cancion.mp3" type="audio/mpeg">
-    -->
+    <!-- <source src="assets/audio/cancion.mp3" type="audio/mpeg"> -->
   </audio>
 
-  <!-- Corazoncitos (decoración ligera) -->
+  <!-- ✅ Corazoncitos (ahora 6) -->
   <div class="floatHearts" aria-hidden="true">
     <span class="fh fh1">♥</span>
     <span class="fh fh2">♥</span>
     <span class="fh fh3">♥</span>
+    <span class="fh fh4">♥</span>
+    <span class="fh fh5">♥</span>
+    <span class="fh fh6">♥</span>
   </div>
 
   <main id="site" class="site site--hidden">
 
-    <!-- HERO (Portada: 1 pantalla completa, SIN recortar nunca) -->
-    <section class="section hero" id="inicio">
+    <!-- HERO -->
+    <section class="section hero js-hero-anim" id="inicio">
       <div class="heroStage">
 
-        <!-- FOTO
-          - PC: contain + blur behind (lo ajustamos en CSS)
-          - Móvil: contain + blur behind (CSS)
-        -->
         <div class="heroPhoto heroPhoto--full" data-parallax="hero" style="--hero-image:url('assets/img/hero.jpg');">
-          <!-- Fondo blur (sirve para móvil y PC cuando activemos contain) -->
           <div class="heroPhoto__bg" aria-hidden="true"></div>
-
-          <!-- Imagen principal -->
           <img class="heroPhoto__img" src="assets/img/hero.jpg" alt="Gema y Alberto">
         </div>
 
-        <!-- TEXTO -->
         <div class="heroText">
           <div class="heroBand heroBand--top" aria-hidden="true"></div>
 
@@ -109,27 +99,24 @@
 
       </div>
 
-      <!-- Fade de papel (bridge suave al siguiente bloque) -->
       <div class="heroFade" aria-hidden="true"></div>
     </section>
 
-    <!-- SEPARADOR PRO (paper wash + línea dorada + ola elegante) -->
-    <div class="sectionSep sectionSep--strong" aria-hidden="true">
-      <div class="sectionSep__wash"></div>
-      <div class="sectionSep__line"></div>
-      <svg class="sectionSep__wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
-        <path d="M0,88 C170,120 330,60 520,88 C710,116 880,64 1040,84 C1200,104 1320,96 1440,76 L1440,140 L0,140 Z"></path>
-      </svg>
+    <!-- ✅ SEPARADOR IMAGEN (banda1.png) -->
+    <div class="sepImage" aria-hidden="true">
+      <img src="assets/img/banda1.png" alt="" aria-hidden="true">
     </div>
 
-    <!-- FALTAN... -->
+    <!-- ✅ CUENTA ATRÁS: SOLO 1 TÍTULO (grande) en la posición del "1" -->
     <section class="section" id="faltan">
       <div class="frame section__inner">
-        <div class="kicker">Cuenta atrás</div>
-        <h2 class="h2">Faltan…</h2>
-        <p class="p">Y cada día estamos un poquito más cerca.</p>
 
-        <!-- Countdown PRO: 1 SOLO chip en una línea SIEMPRE -->
+        <!-- TÍTULO ÚNICO (se estiliza en CSS como Libre Baskerville + granate) -->
+        <h2 class="sectionTitle sectionTitle--baskerville">Faltan…</h2>
+
+        <!-- Subtexto (se estiliza en CSS como Allura) -->
+        <p class="sectionSub sectionSub--allura">Y cada día estamos un poquito más cerca.</p>
+
         <div class="countdownWrap" id="countdown" aria-label="Cuenta atrás" data-parallax="countdown">
           <div class="cdChip" role="group" aria-label="Cuenta atrás hasta el 26.06.2026 a las 19:00">
             <div class="cdUnit">
@@ -172,16 +159,14 @@
       </svg>
     </div>
 
-    <!-- UBICACIÓN -->
+    <!-- UBICACIÓN (aquí quito kicker para evitar “doble título”) -->
     <section class="section" id="ubicacion">
       <div class="frame section__inner">
-        <div class="kicker">Ubicación</div>
         <h2 class="h2">Dónde será</h2>
         <p class="p">Todo lo importante, a un clic. Guarda la ubicación y llega con margen.</p>
 
-        <!-- UNA SOLA TARJETA (Ceremonia + celebración en el mismo sitio) -->
         <div class="placeGrid">
-          <div class="placeCard placeCard--tint">
+          <div class="placeCard">
             <div class="placeHead">
               <div class="placePin" aria-hidden="true">
                 <span class="pinDot"></span>
@@ -216,7 +201,7 @@
       </svg>
     </div>
 
-    <!-- MOMENTOS CLAVE -->
+    <!-- MOMENTOS CLAVE (lo dejamos como te gusta) -->
     <section class="section" id="momentos">
       <div class="frame section__inner">
         <div class="kicker">Momentos clave</div>
@@ -226,15 +211,13 @@
         <div class="timelineWrap">
           <div class="timeline timeline--pro" id="timeline">
 
-            <!-- Línea PRO (stroke-dash preparada) -->
             <svg class="timelineLine" viewBox="0 0 10 1000" preserveAspectRatio="none" aria-hidden="true">
               <path class="timelineLine__path" d="M5 0 L5 1000"></path>
             </svg>
 
-            <!-- ITEM -->
             <div class="tItem">
               <div class="tSide tSide--left">
-                <div class="tCard tCard--tint">
+                <div class="tCard">
                   <div class="tTime">18:30h</div>
                   <div class="tLabel">Autobús de ida</div>
                 </div>
@@ -253,7 +236,7 @@
                 <span class="tPulse"></span>
               </div>
               <div class="tSide tSide--right">
-                <div class="tCard tCard--tint">
+                <div class="tCard">
                   <div class="tTime">19:00h</div>
                   <div class="tLabel">Ceremonia civil (El Hueco)</div>
                 </div>
@@ -262,7 +245,7 @@
 
             <div class="tItem">
               <div class="tSide tSide--left">
-                <div class="tCard tCard--tint">
+                <div class="tCard">
                   <div class="tTime">20:00h</div>
                   <div class="tLabel">Celebración (El Hueco)</div>
                 </div>
@@ -281,7 +264,7 @@
                 <span class="tPulse"></span>
               </div>
               <div class="tSide tSide--right">
-                <div class="tCard tCard--tint">
+                <div class="tCard">
                   <div class="tTime">20:15h</div>
                   <div class="tLabel">Cóctel</div>
                 </div>
@@ -290,7 +273,7 @@
 
             <div class="tItem">
               <div class="tSide tSide--left">
-                <div class="tCard tCard--tint">
+                <div class="tCard">
                   <div class="tTime">22:15h</div>
                   <div class="tLabel">DJ y barra libre</div>
                 </div>
@@ -305,22 +288,32 @@
           </div>
         </div>
 
-        <!-- Bloque IMPORTANTE + botón -->
+        <!-- ✅ RSVP CALLOUT (aquí prepararemos el efecto “Hover Me” con CSS) -->
         <div class="rsvpCallout" aria-label="Información importante">
           <div class="rsvpCallout__kicker">IMPORTANTE</div>
           <p class="rsvpCallout__text">
             Nos haría muchísima ilusión contar contigo este día. Por favor, confirma tu asistencia para poder organizarlo todo con cariño.
           </p>
 
-          <button class="btn btn--primary rsvpToggle" id="rsvpToggle"
-                  type="button" aria-expanded="false" aria-controls="rsvpPanel">
-            Confirmar asistencia
+          <!-- Botón con estructura para hover 3D -->
+          <button class="hoverCardBtn" id="rsvpToggle" type="button" aria-expanded="false" aria-controls="rsvpPanel">
+            <span class="hoverCardInner" aria-hidden="true">
+              <span class="hoverCardFace hoverCardFront">
+                <span class="hoverCardIcon">✉️</span>
+                <span class="hoverCardTitle">Confirmar asistencia</span>
+                <span class="hoverCardHint">Pasa el ratón</span>
+              </span>
+              <span class="hoverCardFace hoverCardBack">
+                <span class="hoverCardTitle">¡Vamos allá!</span>
+                <span class="hoverCardHint">Haz clic para abrir el formulario</span>
+              </span>
+            </span>
+            <span class="srOnly">Confirmar asistencia</span>
           </button>
 
           <div class="rsvpStatus" id="rsvpStatus" aria-live="polite"></div>
         </div>
 
-        <!-- RSVP panel -->
         <div class="rsvpPanel" id="rsvpPanel" aria-hidden="true">
           <div class="rsvpHead">
             <div class="kicker">Confirmación</div>
@@ -378,7 +371,6 @@
       </div>
     </section>
 
-    <!-- SEPARADOR PRO -->
     <div class="sectionSep" aria-hidden="true">
       <div class="sectionSep__wash"></div>
       <div class="sectionSep__line"></div>
@@ -387,7 +379,7 @@
       </svg>
     </div>
 
-    <!-- ASISTENCIA -->
+    <!-- ASISTENCIA (lo dejamos como te gusta) -->
     <section class="section" id="asistencia">
       <div class="frame section__inner">
         <div class="kicker">Asistencia</div>
@@ -395,21 +387,21 @@
         <p class="p">Dress code, autobús y notas útiles.</p>
 
         <div class="actionGrid">
-          <button class="actionCard actionCard--tint" data-modal="dress" type="button">
+          <button class="actionCard" data-modal="dress" type="button">
             <div class="actionIcon" aria-hidden="true">👗</div>
             <div class="actionTitle">Dress code</div>
             <div class="actionSub">Una orientación para tu vestuario</div>
             <div class="actionBtn">Ver más</div>
           </button>
 
-          <button class="actionCard actionCard--tint" data-modal="bus" type="button">
+          <button class="actionCard" data-modal="bus" type="button">
             <div class="actionIcon" aria-hidden="true">🚌</div>
             <div class="actionTitle">Autobús</div>
             <div class="actionSub">Horarios y paradas</div>
             <div class="actionBtn">Ver más</div>
           </button>
 
-          <button class="actionCard actionCard--tint" data-modal="tips" type="button">
+          <button class="actionCard" data-modal="tips" type="button">
             <div class="actionIcon" aria-hidden="true">✨</div>
             <div class="actionTitle">Tips</div>
             <div class="actionSub">Información adicional</div>
@@ -419,7 +411,6 @@
       </div>
     </section>
 
-    <!-- SEPARADOR PRO -->
     <div class="sectionSep sectionSep--strong" aria-hidden="true">
       <div class="sectionSep__wash"></div>
       <div class="sectionSep__line"></div>
@@ -428,7 +419,7 @@
       </svg>
     </div>
 
-    <!-- GALERÍA -->
+    <!-- GALERÍA (lo dejamos como te gusta) -->
     <section class="section" id="galeria">
       <div class="frame section__inner">
         <div class="kicker">Galería</div>
@@ -438,33 +429,15 @@
         <div class="gallery gallery--scroll" aria-label="Galería">
           <div class="galleryTrack" role="list">
             <figure class="galleryItem" role="listitem">
-              <img
-                src="assets/img/ga.jpg"
-                alt="Logo G&A"
-                class="galleryImg"
-                data-gallery="true"
-                data-full="assets/img/ga.jpg"
-              >
+              <img src="assets/img/ga.jpg" alt="Logo G&A" class="galleryImg" data-gallery="true" data-full="assets/img/ga.jpg">
             </figure>
 
             <figure class="galleryItem" role="listitem">
-              <img
-                src="assets/img/hero.jpg"
-                alt="Gema y Alberto"
-                class="galleryImg"
-                data-gallery="true"
-                data-full="assets/img/hero.jpg"
-              >
+              <img src="assets/img/hero.jpg" alt="Gema y Alberto" class="galleryImg" data-gallery="true" data-full="assets/img/hero.jpg">
             </figure>
 
             <figure class="galleryItem" role="listitem">
-              <img
-                src="assets/img/ga.jpg"
-                alt="Logo G&A"
-                class="galleryImg"
-                data-gallery="true"
-                data-full="assets/img/ga.jpg"
-              >
+              <img src="assets/img/ga.jpg" alt="Logo G&A" class="galleryImg" data-gallery="true" data-full="assets/img/ga.jpg">
             </figure>
           </div>
 
@@ -473,7 +446,6 @@
       </div>
     </section>
 
-    <!-- SEPARADOR PRO -->
     <div class="sectionSep" aria-hidden="true">
       <div class="sectionSep__wash"></div>
       <div class="sectionSep__line"></div>
@@ -482,7 +454,7 @@
       </svg>
     </div>
 
-    <!-- FOOTER FINAL -->
+    <!-- FOOTER -->
     <footer class="footer" id="final">
       <div class="frame footer__inner">
         <div class="footerTop">
@@ -506,7 +478,7 @@
 
   </main>
 
-  <!-- MODAL (reutilizable: Dress/Bus/Tips + Galería en grande) -->
+  <!-- MODAL -->
   <div class="modal" id="modal" aria-hidden="true">
     <div class="modal__backdrop" data-close></div>
     <div class="modal__panel" role="dialog" aria-modal="true" aria-label="Información">
