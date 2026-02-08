@@ -9,6 +9,7 @@
    - Modales accesibles + Galería click-to-open (imagen contain, no recorta)
    - Add to Calendar (.ics) compatible
    - Guardar web
+   - NUEVO: Ring 3D (Opción A) sin librerías: drag mouse/touch + inercia
    ========================================================= */
 
 (() => {
@@ -17,15 +18,13 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  const prefersReducedMotion = window.matchMedia &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  const isCoarsePointer = window.matchMedia &&
-    window.matchMedia("(pointer: coarse)").matches;
+  const prefersReducedMotion = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const isCoarsePointer = !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
 
   // Helpers
   const pad2 = (n) => String(n).padStart(2, "0");
   const pad3 = (n) => String(n).padStart(3, "0");
+  const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 
   // =========================================================
   // Scroll lock robusto (evita “saltos”)
@@ -71,15 +70,8 @@
 
   if (intro) lockScroll();
 
-  function hasAnimateCSS() {
-    // animate.css añade clases animate__animated; no hay API oficial, así que hacemos “best effort”
-    // Si no está cargado, no pasa nada.
-    return true;
-  }
-
   function applyFadeInToHero() {
     if (prefersReducedMotion) return;
-
     const heroText = $(".heroText");
     const heroPhoto = $(".heroPhoto--full");
 
@@ -92,10 +84,8 @@
       el.classList.add("animate__animated", "animate__fadeIn", "animate__faster");
     };
 
-    if (hasAnimateCSS()) {
-      apply(heroPhoto);
-      apply(heroText);
-    }
+    apply(heroPhoto);
+    apply(heroText);
   }
 
   if (openBtn && intro && site) {
@@ -140,10 +130,6 @@
     timeZone: "Europe/Madrid"
   };
 
-  /**
-   * Convierte "fecha/hora local en timeZone" a UTC ms de forma robusta.
-   * Evita el bug típico del +1h con DST.
-   */
   function tzDateToUtcMs({ year, month, day, hour, minute, second, timeZone }) {
     const guess = Date.UTC(year, month - 1, day, hour, minute, second);
 
@@ -169,6 +155,7 @@
     let mi = Number(map.minute);
     let s = Number(map.second);
 
+    // Edge case: 24:00
     if (h === 24) {
       h = 0;
       const tmp = new Date(Date.UTC(y, mo - 1, d, 0, mi, s));
@@ -223,11 +210,12 @@
   const timeline = $("#timeline");
   if (timeline && "IntersectionObserver" in window && !prefersReducedMotion) {
     const io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
         timeline.classList.add("is-drawn");
         io.disconnect();
-      });
+        break;
+      }
     }, { threshold: 0.25 });
     io.observe(timeline);
   } else if (timeline) {
@@ -237,8 +225,10 @@
   // =========================================================
   // 4) RSVP desplegable + estado recibido
   // =========================================================
-  const rsvpToggle = $("#rsvpToggle");          // botón clásico (si existe)
-  const rsvpHoverCard = $("#rsvpHoverCard");    // hover card tipo Universe (si existe)
+  // En tu HTML actual el botón hover-card tiene id="rsvpToggle"
+  // y NO existe #rsvpHoverCard. Aun así lo soportamos si lo añades luego.
+  const rsvpToggle = $("#rsvpToggle");
+  const rsvpHoverCard = $("#rsvpHoverCard");
   const rsvpPanel = $("#rsvpPanel");
   const rsvpForm = $("#rsvpForm");
   const rsvpCloseBtn = $("#rsvpCloseBtn");
@@ -277,16 +267,12 @@
     else openRSVP({ scrollIntoView });
   }
 
-  // Click en botón clásico
   if (rsvpToggle && rsvpPanel) {
-    rsvpToggle.addEventListener("click", () => toggleRSVP());
+    rsvpToggle.addEventListener("click", () => toggleRSVP({ scrollIntoView: true }));
   }
-
-  // Click en hover card
   if (rsvpHoverCard && rsvpPanel) {
     rsvpHoverCard.addEventListener("click", () => toggleRSVP({ scrollIntoView: true }));
   }
-
   if (rsvpCloseBtn) rsvpCloseBtn.addEventListener("click", closeRSVP);
 
   function setRSVPStatus(msg) {
@@ -299,17 +285,15 @@
     rsvpForm.addEventListener("submit", (e) => {
       const action = (rsvpForm.getAttribute("action") || "").trim();
       const isPlaceholder = action === "" || action === "#";
+      if (!isPlaceholder) return;
 
-      if (isPlaceholder) {
-        e.preventDefault();
-        setRSVPStatus("✅ ¡Recibido! Gracias por confirmarlo. (Modo demo: después lo conectamos para que llegue de verdad)");
-        closeRSVP();
-        try { rsvpForm.reset(); } catch {}
-      }
+      e.preventDefault();
+      setRSVPStatus("✅ ¡Recibido! Gracias por confirmarlo. (Modo demo: después lo conectamos para que llegue de verdad)");
+      closeRSVP();
+      try { rsvpForm.reset(); } catch {}
     });
   }
 
-  // Footer link abre RSVP
   const footerRSVPLink = $("#footerRSVPLink");
   if (footerRSVPLink) {
     footerRSVPLink.addEventListener("click", (e) => {
@@ -353,7 +337,6 @@
 
     musicBtn.addEventListener("click", async () => {
       const canPlayNow = hasAudioSource(bgMusic);
-
       if (!canPlayNow) {
         setMusicUI(false);
         saveMusicPref(false);
@@ -382,7 +365,6 @@
     const wantsOn = loadMusicPref();
     if (wantsOn && hasAudioSource(bgMusic)) {
       const once = async () => {
-        document.removeEventListener("pointerdown", once);
         try {
           await bgMusic.play();
           setMusicUI(true);
@@ -405,37 +387,38 @@
     const target = targetSel ? $(targetSel, root) : root;
     if (!target) return;
 
+    if (!(window.matchMedia && window.matchMedia("(min-width: 980px)").matches)) return;
+
     let raf = 0;
     let lastX = 0;
     let lastY = 0;
 
-    function apply() {
+    const apply = () => {
       raf = 0;
       const rect = root.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
       const x = (lastX - rect.left) / rect.width;
       const y = (lastY - rect.top) / rect.height;
       const tx = (x - 0.5) * strength;
       const ty = (y - 0.5) * strength;
       target.style.transform = `scale(${scale}) translate(${tx}px, ${ty}px)`;
-    }
+    };
 
-    function onMove(e) {
+    const onMove = (e) => {
       lastX = e.clientX;
       lastY = e.clientY;
       if (raf) return;
       raf = requestAnimationFrame(apply);
-    }
+    };
 
-    function reset() {
+    const reset = () => {
       if (raf) cancelAnimationFrame(raf);
       raf = 0;
       target.style.transform = `scale(${scale}) translate(0px, 0px)`;
-    }
+    };
 
-    if (window.matchMedia && window.matchMedia("(min-width: 980px)").matches) {
-      root.addEventListener("mousemove", onMove);
-      root.addEventListener("mouseleave", reset);
-    }
+    root.addEventListener("mousemove", onMove);
+    root.addEventListener("mouseleave", reset);
   }
 
   createMicroParallax({
@@ -531,7 +514,7 @@
   }
 
   // =========================================================
-  // 8) Modal (Dress/Bus/Tips/Save + Galería)
+  // 8) Modal (Dress/Bus/Tips/Save + Galería + Ring)
   // =========================================================
   const modal = $("#modal");
   const modalContent = $("#modalContent");
@@ -616,8 +599,8 @@
     });
   }
 
-  // Galería: click -> modal con imagen grande
-  const galleryImages = $$(".galleryItem img");
+  // Galería fallback: click -> modal con imagen grande
+  const galleryImages = $$(".galleryItem img, .galleryImg");
   if (galleryImages.length) {
     galleryImages.forEach((img) => {
       img.addEventListener("click", () => {
@@ -646,9 +629,161 @@
   if (closeBtn) closeBtn.addEventListener("click", closeModal);
 
   // =========================================================
+  // 9) Ring 3D (Opción A) — sin librerías
+  // - Coloca paneles equidistantes alrededor de un círculo
+  // - Drag mouse/touch + inercia
+  // - Click abre modal (usa data-full si existe)
+  // =========================================================
+  function initRing3D() {
+    // Solo desktop y si no hay reduce motion
+    if (prefersReducedMotion) return;
+    if (!(window.matchMedia && window.matchMedia("(min-width: 980px)").matches)) return;
+
+    const scene = $(".ring3dScene");
+    const ring = $(".ring3d", scene || document);
+    if (!scene || !ring) return;
+
+    const panels = $$(".ring3dPanel", ring);
+    if (!panels.length) return;
+
+    // Ajusta transforms iniciales: equidistantes
+    const n = panels.length;
+    const step = 360 / n;
+
+    // Radio calculado por ancho del panel (evita que se solapen)
+    const firstRect = panels[0].getBoundingClientRect();
+    const panelW = firstRect.width || 260;
+    const radius = Math.round((panelW / 2) / Math.tan(Math.PI / n) + 40); // +40 “aire”
+
+    panels.forEach((p, i) => {
+      const angle = i * step;
+      p.style.transform = `translate(-50%, -50%) rotateY(${angle}deg) translateZ(${radius}px)`;
+    });
+
+    // Drag + inercia
+    let isDown = false;
+    let startX = 0;
+    let lastX = 0;
+    let vel = 0;
+    let rotY = 0;
+    let raf = 0;
+
+    // Sensibilidad: px -> grados (ajustable)
+    const pxToDeg = 0.22;
+
+    // Evita que el drag seleccione cosas
+    scene.style.touchAction = "pan-y";
+
+    const getClientX = (e) => {
+      if (e.touches && e.touches[0]) return e.touches[0].clientX;
+      return e.clientX;
+    };
+
+    const setRotation = (deg) => {
+      rotY = deg;
+      ring.style.transform = `rotateY(${rotY}deg)`;
+    };
+
+    const stopRaf = () => {
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+    };
+
+    const inertia = () => {
+      raf = 0;
+      // fricción
+      vel *= 0.94;
+      // corte mínimo
+      if (Math.abs(vel) < 0.02) {
+        vel = 0;
+        return;
+      }
+      setRotation(rotY + vel);
+      raf = requestAnimationFrame(inertia);
+    };
+
+    const onDown = (e) => {
+      // si click en imagen, dejamos que el click funcione (pero no iniciamos drag si es click corto)
+      isDown = true;
+      startX = getClientX(e);
+      lastX = startX;
+      vel = 0;
+      stopRaf();
+      scene.classList.add("is-dragging");
+    };
+
+    const onMove = (e) => {
+      if (!isDown) return;
+      const x = getClientX(e);
+      const dx = x - lastX;
+      lastX = x;
+
+      const deltaDeg = dx * pxToDeg;
+      setRotation(rotY + deltaDeg);
+      vel = deltaDeg; // velocidad instantánea
+    };
+
+    const onUp = () => {
+      if (!isDown) return;
+      isDown = false;
+      scene.classList.remove("is-dragging");
+      // inercia
+      if (Math.abs(vel) > 0.05) {
+        raf = requestAnimationFrame(inertia);
+      }
+    };
+
+    // mouse
+    scene.addEventListener("mousedown", onDown);
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+
+    // touch
+    scene.addEventListener("touchstart", onDown, { passive: true });
+    scene.addEventListener("touchmove", onMove, { passive: true });
+    scene.addEventListener("touchend", onUp);
+
+    // Click en panel -> modal
+    panels.forEach((p) => {
+      const img = $("img", p);
+      if (!img) return;
+
+      img.addEventListener("click", () => {
+        const full = (img.getAttribute("data-full") || "").trim();
+        const src = full || img.getAttribute("src");
+        const alt = img.getAttribute("alt") || "Imagen";
+        const html = `
+          <h2>Galería</h2>
+          <p style="margin-top:6px; color: rgba(22,22,22,.62);">${alt}</p>
+          <img class="modalImage" src="${src}" alt="${alt}">
+        `;
+        openModalHTML(html, img);
+      });
+    });
+
+    // Recalcular si cambia tamaño (por ejemplo zoom)
+    let resizeT = 0;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeT);
+      resizeT = window.setTimeout(() => {
+        // recalcula radius con nuevo ancho
+        const rect = panels[0].getBoundingClientRect();
+        const w = rect.width || panelW;
+        const newRadius = Math.round((w / 2) / Math.tan(Math.PI / n) + 40);
+        panels.forEach((p, i) => {
+          const angle = i * step;
+          p.style.transform = `translate(-50%, -50%) rotateY(${angle}deg) translateZ(${newRadius}px)`;
+        });
+      }, 120);
+    }, { passive: true });
+  }
+
+  initRing3D();
+
+  // =========================================================
   // ESC global y trap focus modal
-  // - ✅ Si modal está abierto, ESC SOLO cierra modal
-  // - ✅ Si modal NO está abierto, ESC puede cerrar RSVP
+  // - Si modal está abierto, ESC SOLO cierra modal
+  // - Si modal NO está abierto, ESC puede cerrar RSVP
   // =========================================================
   document.addEventListener("keydown", (e) => {
     // 1) Modal abierto

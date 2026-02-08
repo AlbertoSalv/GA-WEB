@@ -10,10 +10,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <!-- ✅ Añadimos Libre Baskerville (título 1) + Allura (texto 3) -->
+  <!-- Libre Baskerville (títulos) + Allura (descripciones) -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;600;800;900&family=Libre+Baskerville:wght@400;700&family=Allura&display=swap" rel="stylesheet">
 
-  <!-- Animate.css (fade-in PRO al abrir el sobre; lo activamos desde JS) -->
+  <!-- Animate.css -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
   <link rel="stylesheet" href="css/styles.css" />
@@ -29,7 +29,7 @@
 
         <div class="envelopeOverlay">
           <div class="envelopeTop">
-            <div class="envelopeNamesTop">Gema &amp; Alberto</div>
+            <div class="envelopeNamesTop envelopeNamesTop--baskerville">Gema &amp; Alberto</div>
           </div>
 
           <!-- Centro: lacre -->
@@ -38,8 +38,10 @@
           </div>
 
           <div class="envelopeBottom">
-            <div class="envelopeTextBottom">Esta invitación es exclusiva para ti</div>
-            <div class="envelopeHint">Pulsa para abrir</div>
+            <div class="envelopeTextBottom envelopeTextBottom--allura">
+              Esta invitación es exclusiva para ti
+            </div>
+            <div class="envelopeHint envelopeHint--allura">Pulsa para abrir</div>
           </div>
 
           <div class="envelopeDate">26.06.2026</div>
@@ -54,7 +56,7 @@
     <!-- <source src="assets/audio/cancion.mp3" type="audio/mpeg"> -->
   </audio>
 
-  <!-- ✅ Corazoncitos (ahora 6) -->
+  <!-- Corazoncitos -->
   <div class="floatHearts" aria-hidden="true">
     <span class="fh fh1">♥</span>
     <span class="fh fh2">♥</span>
@@ -80,7 +82,7 @@
 
           <div class="heroNames">Gema y Alberto</div>
 
-          <p class="heroLead">
+          <p class="heroLead heroLead--allura">
             Un día especial merece ser compartido con personas especiales.<br>
             Y nosotros no podemos imaginar nuestro día sin ti.
           </p>
@@ -102,20 +104,19 @@
       <div class="heroFade" aria-hidden="true"></div>
     </section>
 
-    <!-- ✅ SEPARADOR IMAGEN (banda1.png) -->
-    <div class="sepImage" aria-hidden="true">
-      <img src="assets/img/banda1.png" alt="" aria-hidden="true">
-    </div>
+    <!-- ✅ SEPARADOR PREMIUM: banda como BACKGROUND (no img gigante) -->
+    <div class="sepImage sepImage--bg" aria-hidden="true"></div>
 
-    <!-- ✅ CUENTA ATRÁS: SOLO 1 TÍTULO (grande) en la posición del "1" -->
+    <!-- CUENTA ATRÁS -->
     <section class="section" id="faltan">
       <div class="frame section__inner">
 
-        <!-- TÍTULO ÚNICO (se estiliza en CSS como Libre Baskerville + granate) -->
-        <h2 class="sectionTitle sectionTitle--baskerville">Faltan…</h2>
+        <div class="sectionHead">
+          <span class="sectionHead__line" aria-hidden="true"></span>
+          <h2 class="sectionHead__title">Faltan…</h2>
+        </div>
 
-        <!-- Subtexto (se estiliza en CSS como Allura) -->
-        <p class="sectionSub sectionSub--allura">Y cada día estamos un poquito más cerca.</p>
+        <p class="sectionHead__sub">Y cada día estamos un poquito más cerca.</p>
 
         <div class="countdownWrap" id="countdown" aria-label="Cuenta atrás" data-parallax="countdown">
           <div class="cdChip" role="group" aria-label="Cuenta atrás hasta el 26.06.2026 a las 19:00">
@@ -159,19 +160,27 @@
       </svg>
     </div>
 
-    <!-- UBICACIÓN (aquí quito kicker para evitar “doble título”) -->
+    <!-- UBICACIÓN -->
     <section class="section" id="ubicacion">
       <div class="frame section__inner">
-        <h2 class="h2">Dónde será</h2>
-        <p class="p">Todo lo importante, a un clic. Guarda la ubicación y llega con margen.</p>
+
+        <div class="sectionHead">
+          <span class="sectionHead__line" aria-hidden="true"></span>
+          <h2 class="sectionHead__title">Dónde será</h2>
+        </div>
+        <p class="sectionHead__sub">Todo lo importante, a un clic. Guarda la ubicación y llega con margen.</p>
 
         <div class="placeGrid">
           <div class="placeCard">
             <div class="placeHead">
-              <div class="placePin" aria-hidden="true">
-                <span class="pinDot"></span>
-                <span class="pinPulse"></span>
+
+              <div class="placePin placePin--icon" aria-hidden="true">
+                <svg class="pinIcon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 22s7-5.2 7-12A7 7 0 0 0 5 10c0 6.8 7 12 7 12z"></path>
+                  <circle cx="12" cy="10" r="2.6"></circle>
+                </svg>
               </div>
+
               <div class="placeHead__text">
                 <div class="placeTag">Ceremonia y celebración</div>
                 <h3 class="placeTitle">El Hueco Bodas y Banquetes</h3>
@@ -201,12 +210,15 @@
       </svg>
     </div>
 
-    <!-- MOMENTOS CLAVE (lo dejamos como te gusta) -->
+    <!-- MOMENTOS CLAVE -->
     <section class="section" id="momentos">
       <div class="frame section__inner">
-        <div class="kicker">Momentos clave</div>
-        <h2 class="h2">La línea del día</h2>
-        <p class="p">Horario orientativo. Si hay algún ajuste, lo actualizaremos aquí.</p>
+
+        <div class="sectionHead">
+          <span class="sectionHead__line" aria-hidden="true"></span>
+          <h2 class="sectionHead__title">Momentos clave</h2>
+        </div>
+        <p class="sectionHead__sub">Horario orientativo. Si hay algún ajuste, lo actualizaremos aquí.</p>
 
         <div class="timelineWrap">
           <div class="timeline timeline--pro" id="timeline">
@@ -288,14 +300,13 @@
           </div>
         </div>
 
-        <!-- ✅ RSVP CALLOUT (aquí prepararemos el efecto “Hover Me” con CSS) -->
+        <!-- RSVP CALLOUT -->
         <div class="rsvpCallout" aria-label="Información importante">
           <div class="rsvpCallout__kicker">IMPORTANTE</div>
           <p class="rsvpCallout__text">
             Nos haría muchísima ilusión contar contigo este día. Por favor, confirma tu asistencia para poder organizarlo todo con cariño.
           </p>
 
-          <!-- Botón con estructura para hover 3D -->
           <button class="hoverCardBtn" id="rsvpToggle" type="button" aria-expanded="false" aria-controls="rsvpPanel">
             <span class="hoverCardInner" aria-hidden="true">
               <span class="hoverCardFace hoverCardFront">
@@ -379,14 +390,17 @@
       </svg>
     </div>
 
-    <!-- ASISTENCIA (lo dejamos como te gusta) -->
+    <!-- ASISTENCIA -->
     <section class="section" id="asistencia">
       <div class="frame section__inner">
-        <div class="kicker">Asistencia</div>
-        <h2 class="h2">Todo lo que necesitas</h2>
-        <p class="p">Dress code, autobús y notas útiles.</p>
 
-        <div class="actionGrid">
+        <div class="sectionHead">
+          <span class="sectionHead__line" aria-hidden="true"></span>
+          <h2 class="sectionHead__title">Todo lo que necesitas</h2>
+        </div>
+        <p class="sectionHead__sub">Dress code, autobús y notas útiles.</p>
+
+        <div class="actionGrid actionGrid--centerMobile">
           <button class="actionCard" data-modal="dress" type="button">
             <div class="actionIcon" aria-hidden="true">👗</div>
             <div class="actionTitle">Dress code</div>
@@ -419,30 +433,65 @@
       </svg>
     </div>
 
-    <!-- GALERÍA (lo dejamos como te gusta) -->
+    <!-- GALERÍA -->
     <section class="section" id="galeria">
       <div class="frame section__inner">
-        <div class="kicker">Galería</div>
-        <h2 class="h2">Nuestros momentos</h2>
-        <p class="p">Un pequeño adelanto de lo que hemos vivido… y lo que viene.</p>
 
-        <div class="gallery gallery--scroll" aria-label="Galería">
+        <div class="sectionHead">
+          <span class="sectionHead__line" aria-hidden="true"></span>
+          <h2 class="sectionHead__title">Nuestros momentos</h2>
+        </div>
+        <p class="sectionHead__sub">Un pequeño adelanto de lo que hemos vivido… y lo que viene.</p>
+
+        <!-- ✅ Opción A (Ring 3D propio)
+             - Se activará por CSS/JS en desktop
+             - En móvil se ocultará y se verá el carrusel de abajo -->
+        <div class="ring3dWrap" aria-label="Galería 3D" data-ring3d>
+          <div class="ring3dScene" aria-hidden="false">
+            <div class="ring3d" data-ring3d-ring>
+              <!-- Paneles del ring: usa las mismas fotos (añade/quita) -->
+              <figure class="ring3dPanel">
+                <img src="assets/img/ga.jpg" alt="Logo G&A" data-gallery="true" data-full="assets/img/ga.jpg">
+              </figure>
+              <figure class="ring3dPanel">
+                <img src="assets/img/hero.jpg" alt="Gema y Alberto" data-gallery="true" data-full="assets/img/hero.jpg">
+              </figure>
+              <figure class="ring3dPanel">
+                <img src="assets/img/ga.jpg" alt="Logo G&A" data-gallery="true" data-full="assets/img/ga.jpg">
+              </figure>
+            </div>
+          </div>
+          <div class="ring3dHint" aria-hidden="true">Arrastra →</div>
+        </div>
+
+        <!-- ✅ Fallback móvil / sencillo (drag-to-scroll)
+             - Se mostrará en móvil (y si preferís, también en desktop como alternativa) -->
+        <div class="gallery gallery--scroll gallery--polaroid" aria-label="Galería (desliza)">
           <div class="galleryTrack" role="list">
-            <figure class="galleryItem" role="listitem">
-              <img src="assets/img/ga.jpg" alt="Logo G&A" class="galleryImg" data-gallery="true" data-full="assets/img/ga.jpg">
+
+            <figure class="galleryItem galleryItem--polaroid" role="listitem">
+              <div class="galleryFrame">
+                <img src="assets/img/ga.jpg" alt="Logo G&A" class="galleryImg" data-gallery="true" data-full="assets/img/ga.jpg">
+              </div>
             </figure>
 
-            <figure class="galleryItem" role="listitem">
-              <img src="assets/img/hero.jpg" alt="Gema y Alberto" class="galleryImg" data-gallery="true" data-full="assets/img/hero.jpg">
+            <figure class="galleryItem galleryItem--polaroid" role="listitem">
+              <div class="galleryFrame">
+                <img src="assets/img/hero.jpg" alt="Gema y Alberto" class="galleryImg" data-gallery="true" data-full="assets/img/hero.jpg">
+              </div>
             </figure>
 
-            <figure class="galleryItem" role="listitem">
-              <img src="assets/img/ga.jpg" alt="Logo G&A" class="galleryImg" data-gallery="true" data-full="assets/img/ga.jpg">
+            <figure class="galleryItem galleryItem--polaroid" role="listitem">
+              <div class="galleryFrame">
+                <img src="assets/img/ga.jpg" alt="Logo G&A" class="galleryImg" data-gallery="true" data-full="assets/img/ga.jpg">
+              </div>
             </figure>
+
           </div>
 
           <div class="galleryHint" aria-hidden="true">Desliza →</div>
         </div>
+
       </div>
     </section>
 
