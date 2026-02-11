@@ -1,15 +1,14 @@
 /* =========================================================
    GA WEB — main.js (PRO)
    - Intro sobre + fadeIn (animate.css)
-   - Countdown exacta: 26/06/2026 19:00 Europe/Madrid (aunque el invitado esté fuera)
+   - Countdown exacta: 26/06/2026 19:00 Europe/Madrid
    - RSVP: abre/cierra + estado “recibido” (modo demo)
-   - Timeline: línea se dibuja al entrar en pantalla (stroke-dash)
-   - Música: toggle sin autoplay + estado real (sin “ON falso”)
+   - Timeline: línea se dibuja al entrar en pantalla
+   - Música: toggle sin autoplay + estado real
    - Microparallax suave (hero + countdown, solo desktop)
-   - Modales accesibles + Galería click-to-open (imagen contain, no recorta)
-   - Add to Calendar (.ics) compatible
-   - Guardar web
-   - NUEVO: Ring 3D (Opción A) sin librerías: drag mouse/touch + inercia
+   - Modales accesibles + Galería click-to-open
+   - Galería: drag-to-scroll pro (mouse + touch)
+   - Add to Calendar (.ics)
    ========================================================= */
 
 (() => {
@@ -18,16 +17,17 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  const prefersReducedMotion = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  const isCoarsePointer = !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
+  const prefersReducedMotion = window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // Helpers
+  const isCoarsePointer = window.matchMedia &&
+    window.matchMedia("(pointer: coarse)").matches;
+
   const pad2 = (n) => String(n).padStart(2, "0");
   const pad3 = (n) => String(n).padStart(3, "0");
-  const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 
   // =========================================================
-  // Scroll lock robusto (evita “saltos”)
+  // Scroll lock robusto
   // =========================================================
   let scrollLockCount = 0;
   let savedScrollY = 0;
@@ -60,7 +60,7 @@
   }
 
   // =========================================================
-  // 1) INTRO (SOBRE) -> mostrar sitio + fadeIn animate.css
+  // 1) INTRO (SOBRE)
   // =========================================================
   const intro = $("#intro");
   const openBtn = $("#openEnvelope");
@@ -70,8 +70,14 @@
 
   if (intro) lockScroll();
 
+  function hasAnimateCSS() {
+    // Best-effort: si animate.css no está, no rompe nada
+    return true;
+  }
+
   function applyFadeInToHero() {
     if (prefersReducedMotion) return;
+
     const heroText = $(".heroText");
     const heroPhoto = $(".heroPhoto--full");
 
@@ -84,8 +90,10 @@
       el.classList.add("animate__animated", "animate__fadeIn", "animate__faster");
     };
 
-    apply(heroPhoto);
-    apply(heroText);
+    if (hasAnimateCSS()) {
+      apply(heroPhoto);
+      apply(heroText);
+    }
   }
 
   if (openBtn && intro && site) {
@@ -116,13 +124,13 @@
   }
 
   // =========================================================
-  // 2) COUNTDOWN exacta Europe/Madrid (fix 1h robusto)
+  // 2) COUNTDOWN Europe/Madrid (robusto DST)
   // =========================================================
   const countdownWrap = $("#countdown");
 
   const EVENT = {
     year: 2026,
-    month: 6,   // 1..12
+    month: 6,
     day: 26,
     hour: 19,
     minute: 0,
@@ -152,10 +160,9 @@
     let mo = Number(map.month);
     let d = Number(map.day);
     let h = Number(map.hour);
-    let mi = Number(map.minute);
-    let s = Number(map.second);
+    const mi = Number(map.minute);
+    const s = Number(map.second);
 
-    // Edge case: 24:00
     if (h === 24) {
       h = 0;
       const tmp = new Date(Date.UTC(y, mo - 1, d, 0, mi, s));
@@ -205,17 +212,16 @@
   }, startDelay);
 
   // =========================================================
-  // 3) Timeline line draw (stroke-dash)
+  // 3) Timeline draw
   // =========================================================
   const timeline = $("#timeline");
   if (timeline && "IntersectionObserver" in window && !prefersReducedMotion) {
     const io = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting) continue;
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
         timeline.classList.add("is-drawn");
         io.disconnect();
-        break;
-      }
+      });
     }, { threshold: 0.25 });
     io.observe(timeline);
   } else if (timeline) {
@@ -223,12 +229,9 @@
   }
 
   // =========================================================
-  // 4) RSVP desplegable + estado recibido
+  // 4) RSVP
   // =========================================================
-  // En tu HTML actual el botón hover-card tiene id="rsvpToggle"
-  // y NO existe #rsvpHoverCard. Aun así lo soportamos si lo añades luego.
   const rsvpToggle = $("#rsvpToggle");
-  const rsvpHoverCard = $("#rsvpHoverCard");
   const rsvpPanel = $("#rsvpPanel");
   const rsvpForm = $("#rsvpForm");
   const rsvpCloseBtn = $("#rsvpCloseBtn");
@@ -240,7 +243,6 @@
     rsvpPanel.classList.add("is-open");
     rsvpPanel.setAttribute("aria-hidden", "false");
     if (rsvpToggle) rsvpToggle.setAttribute("aria-expanded", "true");
-    if (rsvpHoverCard) rsvpHoverCard.setAttribute("aria-expanded", "true");
 
     if (scrollIntoView) {
       const top = rsvpPanel.getBoundingClientRect().top + window.pageYOffset - 12;
@@ -257,7 +259,6 @@
     rsvpPanel.classList.remove("is-open");
     rsvpPanel.setAttribute("aria-hidden", "true");
     if (rsvpToggle) rsvpToggle.setAttribute("aria-expanded", "false");
-    if (rsvpHoverCard) rsvpHoverCard.setAttribute("aria-expanded", "false");
   }
 
   function toggleRSVP({ scrollIntoView = false } = {}) {
@@ -269,9 +270,6 @@
 
   if (rsvpToggle && rsvpPanel) {
     rsvpToggle.addEventListener("click", () => toggleRSVP({ scrollIntoView: true }));
-  }
-  if (rsvpHoverCard && rsvpPanel) {
-    rsvpHoverCard.addEventListener("click", () => toggleRSVP({ scrollIntoView: true }));
   }
   if (rsvpCloseBtn) rsvpCloseBtn.addEventListener("click", closeRSVP);
 
@@ -285,12 +283,13 @@
     rsvpForm.addEventListener("submit", (e) => {
       const action = (rsvpForm.getAttribute("action") || "").trim();
       const isPlaceholder = action === "" || action === "#";
-      if (!isPlaceholder) return;
 
-      e.preventDefault();
-      setRSVPStatus("✅ ¡Recibido! Gracias por confirmarlo. (Modo demo: después lo conectamos para que llegue de verdad)");
-      closeRSVP();
-      try { rsvpForm.reset(); } catch {}
+      if (isPlaceholder) {
+        e.preventDefault();
+        setRSVPStatus("✅ ¡Recibido! Gracias por confirmarlo. (Modo demo: después lo conectamos para que llegue de verdad)");
+        closeRSVP();
+        try { rsvpForm.reset(); } catch {}
+      }
     });
   }
 
@@ -303,7 +302,7 @@
   }
 
   // =========================================================
-  // 5) Música (toggle) — UI REAL, sin “ON falso”
+  // 5) Música (toggle)
   // =========================================================
   const musicBtn = $("#musicToggle");
   const bgMusic = $("#bgMusic");
@@ -337,6 +336,7 @@
 
     musicBtn.addEventListener("click", async () => {
       const canPlayNow = hasAudioSource(bgMusic);
+
       if (!canPlayNow) {
         setMusicUI(false);
         saveMusicPref(false);
@@ -365,6 +365,7 @@
     const wantsOn = loadMusicPref();
     if (wantsOn && hasAudioSource(bgMusic)) {
       const once = async () => {
+        document.removeEventListener("pointerdown", once);
         try {
           await bgMusic.play();
           setMusicUI(true);
@@ -378,7 +379,7 @@
   }
 
   // =========================================================
-  // 6) Microparallax (hero + countdown, desktop, suave)
+  // 6) Microparallax (desktop, suave)
   // =========================================================
   function createMicroParallax({ rootSel, targetSel, scale = 1.06, strength = 10 }) {
     const root = $(rootSel);
@@ -387,38 +388,37 @@
     const target = targetSel ? $(targetSel, root) : root;
     if (!target) return;
 
-    if (!(window.matchMedia && window.matchMedia("(min-width: 980px)").matches)) return;
-
     let raf = 0;
     let lastX = 0;
     let lastY = 0;
 
-    const apply = () => {
+    function apply() {
       raf = 0;
       const rect = root.getBoundingClientRect();
-      if (!rect.width || !rect.height) return;
       const x = (lastX - rect.left) / rect.width;
       const y = (lastY - rect.top) / rect.height;
       const tx = (x - 0.5) * strength;
       const ty = (y - 0.5) * strength;
       target.style.transform = `scale(${scale}) translate(${tx}px, ${ty}px)`;
-    };
+    }
 
-    const onMove = (e) => {
+    function onMove(e) {
       lastX = e.clientX;
       lastY = e.clientY;
       if (raf) return;
       raf = requestAnimationFrame(apply);
-    };
+    }
 
-    const reset = () => {
+    function reset() {
       if (raf) cancelAnimationFrame(raf);
       raf = 0;
       target.style.transform = `scale(${scale}) translate(0px, 0px)`;
-    };
+    }
 
-    root.addEventListener("mousemove", onMove);
-    root.addEventListener("mouseleave", reset);
+    if (window.matchMedia && window.matchMedia("(min-width: 980px)").matches) {
+      root.addEventListener("mousemove", onMove);
+      root.addEventListener("mouseleave", reset);
+    }
   }
 
   createMicroParallax({
@@ -436,7 +436,7 @@
   });
 
   // =========================================================
-  // 7) Add to Calendar (.ics) — compatible
+  // 7) Add to Calendar (.ics)
   // =========================================================
   const addToCal = $("#addToCalendarLink");
 
@@ -514,7 +514,7 @@
   }
 
   // =========================================================
-  // 8) Modal (Dress/Bus/Tips/Save + Galería + Ring)
+  // 8) Modal + Galería click-to-open
   // =========================================================
   const modal = $("#modal");
   const modalContent = $("#modalContent");
@@ -599,10 +599,10 @@
     });
   }
 
-  // Galería fallback: click -> modal con imagen grande
-  const galleryImages = $$(".galleryItem img, .galleryImg");
-  if (galleryImages.length) {
-    galleryImages.forEach((img) => {
+  // ✅ Galería: click -> modal (usa data-gallery)
+  const galleryClickable = $$('[data-gallery="true"]');
+  if (galleryClickable.length) {
+    galleryClickable.forEach((img) => {
       img.addEventListener("click", () => {
         const full = (img.getAttribute("data-full") || "").trim();
         const src = full || img.getAttribute("src");
@@ -629,161 +629,54 @@
   if (closeBtn) closeBtn.addEventListener("click", closeModal);
 
   // =========================================================
-  // 9) Ring 3D (Opción A) — sin librerías
-  // - Coloca paneles equidistantes alrededor de un círculo
-  // - Drag mouse/touch + inercia
-  // - Click abre modal (usa data-full si existe)
+  // 9) Galería: drag-to-scroll PRO
   // =========================================================
-  function initRing3D() {
-    // Solo desktop y si no hay reduce motion
-    if (prefersReducedMotion) return;
-    if (!(window.matchMedia && window.matchMedia("(min-width: 980px)").matches)) return;
+  function enableDragScroll(track) {
+    if (!track) return;
 
-    const scene = $(".ring3dScene");
-    const ring = $(".ring3d", scene || document);
-    if (!scene || !ring) return;
-
-    const panels = $$(".ring3dPanel", ring);
-    if (!panels.length) return;
-
-    // Ajusta transforms iniciales: equidistantes
-    const n = panels.length;
-    const step = 360 / n;
-
-    // Radio calculado por ancho del panel (evita que se solapen)
-    const firstRect = panels[0].getBoundingClientRect();
-    const panelW = firstRect.width || 260;
-    const radius = Math.round((panelW / 2) / Math.tan(Math.PI / n) + 40); // +40 “aire”
-
-    panels.forEach((p, i) => {
-      const angle = i * step;
-      p.style.transform = `translate(-50%, -50%) rotateY(${angle}deg) translateZ(${radius}px)`;
-    });
-
-    // Drag + inercia
     let isDown = false;
     let startX = 0;
-    let lastX = 0;
-    let vel = 0;
-    let rotY = 0;
-    let raf = 0;
-
-    // Sensibilidad: px -> grados (ajustable)
-    const pxToDeg = 0.22;
-
-    // Evita que el drag seleccione cosas
-    scene.style.touchAction = "pan-y";
-
-    const getClientX = (e) => {
-      if (e.touches && e.touches[0]) return e.touches[0].clientX;
-      return e.clientX;
-    };
-
-    const setRotation = (deg) => {
-      rotY = deg;
-      ring.style.transform = `rotateY(${rotY}deg)`;
-    };
-
-    const stopRaf = () => {
-      if (raf) cancelAnimationFrame(raf);
-      raf = 0;
-    };
-
-    const inertia = () => {
-      raf = 0;
-      // fricción
-      vel *= 0.94;
-      // corte mínimo
-      if (Math.abs(vel) < 0.02) {
-        vel = 0;
-        return;
-      }
-      setRotation(rotY + vel);
-      raf = requestAnimationFrame(inertia);
-    };
+    let startScrollLeft = 0;
+    let pointerId = null;
 
     const onDown = (e) => {
-      // si click en imagen, dejamos que el click funcione (pero no iniciamos drag si es click corto)
+      // solo botón principal
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+
       isDown = true;
-      startX = getClientX(e);
-      lastX = startX;
-      vel = 0;
-      stopRaf();
-      scene.classList.add("is-dragging");
+      pointerId = e.pointerId;
+      track.setPointerCapture(pointerId);
+
+      startX = e.clientX;
+      startScrollLeft = track.scrollLeft;
+
+      track.classList.add("is-dragging");
     };
 
     const onMove = (e) => {
       if (!isDown) return;
-      const x = getClientX(e);
-      const dx = x - lastX;
-      lastX = x;
-
-      const deltaDeg = dx * pxToDeg;
-      setRotation(rotY + deltaDeg);
-      vel = deltaDeg; // velocidad instantánea
+      const dx = e.clientX - startX;
+      track.scrollLeft = startScrollLeft - dx;
     };
 
     const onUp = () => {
       if (!isDown) return;
       isDown = false;
-      scene.classList.remove("is-dragging");
-      // inercia
-      if (Math.abs(vel) > 0.05) {
-        raf = requestAnimationFrame(inertia);
-      }
+      pointerId = null;
+      track.classList.remove("is-dragging");
     };
 
-    // mouse
-    scene.addEventListener("mousedown", onDown);
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
-
-    // touch
-    scene.addEventListener("touchstart", onDown, { passive: true });
-    scene.addEventListener("touchmove", onMove, { passive: true });
-    scene.addEventListener("touchend", onUp);
-
-    // Click en panel -> modal
-    panels.forEach((p) => {
-      const img = $("img", p);
-      if (!img) return;
-
-      img.addEventListener("click", () => {
-        const full = (img.getAttribute("data-full") || "").trim();
-        const src = full || img.getAttribute("src");
-        const alt = img.getAttribute("alt") || "Imagen";
-        const html = `
-          <h2>Galería</h2>
-          <p style="margin-top:6px; color: rgba(22,22,22,.62);">${alt}</p>
-          <img class="modalImage" src="${src}" alt="${alt}">
-        `;
-        openModalHTML(html, img);
-      });
-    });
-
-    // Recalcular si cambia tamaño (por ejemplo zoom)
-    let resizeT = 0;
-    window.addEventListener("resize", () => {
-      clearTimeout(resizeT);
-      resizeT = window.setTimeout(() => {
-        // recalcula radius con nuevo ancho
-        const rect = panels[0].getBoundingClientRect();
-        const w = rect.width || panelW;
-        const newRadius = Math.round((w / 2) / Math.tan(Math.PI / n) + 40);
-        panels.forEach((p, i) => {
-          const angle = i * step;
-          p.style.transform = `translate(-50%, -50%) rotateY(${angle}deg) translateZ(${newRadius}px)`;
-        });
-      }, 120);
-    }, { passive: true });
+    track.addEventListener("pointerdown", onDown);
+    track.addEventListener("pointermove", onMove);
+    track.addEventListener("pointerup", onUp);
+    track.addEventListener("pointercancel", onUp);
+    track.addEventListener("mouseleave", onUp);
   }
 
-  initRing3D();
+  $$(".galleryTrack").forEach(enableDragScroll);
 
   // =========================================================
-  // ESC global y trap focus modal
-  // - Si modal está abierto, ESC SOLO cierra modal
-  // - Si modal NO está abierto, ESC puede cerrar RSVP
+  // ESC global + trap focus modal
   // =========================================================
   document.addEventListener("keydown", (e) => {
     // 1) Modal abierto

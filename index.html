@@ -104,7 +104,7 @@
       <div class="heroFade" aria-hidden="true"></div>
     </section>
 
-    <!-- ✅ SEPARADOR PREMIUM: banda como BACKGROUND (no img gigante) -->
+    <!-- ✅ SEPARADOR PREMIUM: banda como BACKGROUND -->
     <div class="sepImage sepImage--bg" aria-hidden="true"></div>
 
     <!-- CUENTA ATRÁS -->
@@ -443,13 +443,10 @@
         </div>
         <p class="sectionHead__sub">Un pequeño adelanto de lo que hemos vivido… y lo que viene.</p>
 
-        <!-- ✅ Opción A (Ring 3D propio)
-             - Se activará por CSS/JS en desktop
-             - En móvil se ocultará y se verá el carrusel de abajo -->
+        <!-- (Lo dejamos en HTML por si lo retomamos, pero el CSS lo oculta para no estropear el look) -->
         <div class="ring3dWrap" aria-label="Galería 3D" data-ring3d>
           <div class="ring3dScene" aria-hidden="false">
             <div class="ring3d" data-ring3d-ring>
-              <!-- Paneles del ring: usa las mismas fotos (añade/quita) -->
               <figure class="ring3dPanel">
                 <img src="assets/img/ga.jpg" alt="Logo G&A" data-gallery="true" data-full="assets/img/ga.jpg">
               </figure>
@@ -464,8 +461,7 @@
           <div class="ring3dHint" aria-hidden="true">Arrastra →</div>
         </div>
 
-        <!-- ✅ Fallback móvil / sencillo (drag-to-scroll)
-             - Se mostrará en móvil (y si preferís, también en desktop como alternativa) -->
+        <!-- ✅ Carrusel PRO (drag real + polaroid perfecto) -->
         <div class="gallery gallery--scroll gallery--polaroid" aria-label="Galería (desliza)">
           <div class="galleryTrack" role="list">
 
