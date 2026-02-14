@@ -1,13 +1,17 @@
 /* =========================================================
-   GA WEB — main.js (PRO)
+   GA WEB — main.js (PRO) — FIX + OPTIMIZADO (2026)
    - Intro sobre + fadeIn (animate.css)
    - Countdown exacta: 26/06/2026 19:00 Europe/Madrid
    - RSVP: abre/cierra + estado “recibido” (modo demo)
-   - Timeline: línea se dibuja al entrar en pantalla
+   - Timeline:
+       • línea se dibuja al entrar en pantalla
+       • items reveal on-viewport (premium)
+       • iconos Lottie: load ligero + play once al entrar (fallback emoji)
    - Música: toggle sin autoplay + estado real
    - Microparallax suave (hero + countdown, solo desktop)
-   - Modales accesibles + Galería click-to-open
-   - Galería: drag-to-scroll pro (mouse + touch)
+   - Modales accesibles + click-to-open (galería + cubo)
+   - Galería: drag-to-scroll pro (mouse + touch) + evita “click” tras arrastrar
+   - Cubo: drag rotate (mouse + touch) + inercia + auto-rotate + click en caras abre modal
    - Add to Calendar (.ics)
    ========================================================= */
 
@@ -17,17 +21,17 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  const prefersReducedMotion = window.matchMedia &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const prefersReducedMotion =
+    !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
-  const isCoarsePointer = window.matchMedia &&
-    window.matchMedia("(pointer: coarse)").matches;
+  const isCoarsePointer =
+    !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
 
   const pad2 = (n) => String(n).padStart(2, "0");
   const pad3 = (n) => String(n).padStart(3, "0");
 
   // =========================================================
-  // Scroll lock robusto
+  // Scroll lock robusto (para modal/intro)
   // =========================================================
   let scrollLockCount = 0;
   let savedScrollY = 0;
@@ -70,11 +74,6 @@
 
   if (intro) lockScroll();
 
-  function hasAnimateCSS() {
-    // Best-effort: si animate.css no está, no rompe nada
-    return true;
-  }
-
   function applyFadeInToHero() {
     if (prefersReducedMotion) return;
 
@@ -90,10 +89,8 @@
       el.classList.add("animate__animated", "animate__fadeIn", "animate__faster");
     };
 
-    if (hasAnimateCSS()) {
-      apply(heroPhoto);
-      apply(heroText);
-    }
+    apply(heroPhoto);
+    apply(heroText);
   }
 
   if (openBtn && intro && site) {
@@ -163,6 +160,7 @@
     const mi = Number(map.minute);
     const s = Number(map.second);
 
+    // Corrección 24:xx
     if (h === 24) {
       h = 0;
       const tmp = new Date(Date.UTC(y, mo - 1, d, 0, mi, s));
@@ -212,21 +210,118 @@
   }, startDelay);
 
   // =========================================================
-  // 3) Timeline draw
+  // 3) Timeline (line draw + item reveal + Lottie icons)
   // =========================================================
   const timeline = $("#timeline");
+
+  // 3.1) Línea se dibuja al entrar
   if (timeline && "IntersectionObserver" in window && !prefersReducedMotion) {
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        timeline.classList.add("is-drawn");
-        io.disconnect();
-      });
-    }, { threshold: 0.25 });
-    io.observe(timeline);
+    const ioLine = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          timeline.classList.add("is-drawn");
+          ioLine.disconnect();
+          break;
+        }
+      },
+      { threshold: 0.25 }
+    );
+    ioLine.observe(timeline);
   } else if (timeline) {
     timeline.classList.add("is-drawn");
   }
+
+  // 3.2) Items: reveal premium + play once Lottie al entrar
+  function initTimelineLottieAndReveal() {
+    if (!timeline) return;
+
+    const items = $$("[data-tl-item]", timeline);
+    const lottieHolders = $$("[data-lottie]", timeline);
+
+    // Si no hay items, no hacemos nada
+    if (!items.length) return;
+
+    // Si reduce motion, no animamos: dejamos contenido visible y emojis.
+    if (prefersReducedMotion || !("IntersectionObserver" in window)) {
+      // Asegura que no quede en estado "is-ready" oculto
+      timeline.classList.remove("is-ready");
+      items.forEach((it) => it.classList.add("is-in"));
+      return;
+    }
+
+    // Activamos estado inicial (CSS hará los items invisibles hasta entrar)
+    timeline.classList.add("is-ready");
+
+    // Carga de Lottie (si existe librería). Si no existe, solo reveal.
+    const hasLottieLib = typeof window.lottie !== "undefined" && window.lottie && typeof window.lottie.loadAnimation === "function";
+    const instances = new Map();
+
+    if (hasLottieLib && lottieHolders.length) {
+      lottieHolders.forEach((holder) => {
+        const path = (holder.getAttribute("data-lottie") || "").trim();
+        if (!path) return;
+
+        const loop = holder.getAttribute("data-loop") === "true";
+        const autoplay = holder.getAttribute("data-autoplay") === "true";
+
+        try {
+          const anim = window.lottie.loadAnimation({
+            container: holder,
+            renderer: "svg",
+            loop,
+            autoplay,
+            path,
+            rendererSettings: {
+              progressiveLoad: true,
+              preserveAspectRatio: "xMidYMid meet"
+            }
+          });
+
+          // Estado inicial: frame 0, y ocultamos emoji fallback cuando haya lottie
+          anim.goToAndStop(0, true);
+          instances.set(holder, anim);
+
+          const dot = holder.closest(".tDot");
+          if (dot) dot.classList.add("has-lottie");
+        } catch {
+          // Si falla una animación, simplemente dejamos el emoji
+        }
+      });
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const item = entry.target;
+
+          // Reveal item
+          item.classList.add("is-in");
+
+          // Play Lottie once (si existe y no se ha reproducido)
+          const holder = $("[data-lottie]", item);
+          const anim = holder ? instances.get(holder) : null;
+
+          if (anim && !item.dataset.played) {
+            item.dataset.played = "1";
+            anim.stop();
+            anim.play();
+          }
+
+          io.unobserve(item);
+        });
+      },
+      {
+        threshold: 0.45,
+        rootMargin: "0px 0px -10% 0px"
+      }
+    );
+
+    items.forEach((it) => io.observe(it));
+  }
+
+  initTimelineLottieAndReveal();
 
   // =========================================================
   // 4) RSVP
@@ -336,7 +431,6 @@
 
     musicBtn.addEventListener("click", async () => {
       const canPlayNow = hasAudioSource(bgMusic);
-
       if (!canPlayNow) {
         setMusicUI(false);
         saveMusicPref(false);
@@ -431,7 +525,7 @@
   createMicroParallax({
     rootSel: "#faltan",
     targetSel: "#countdown .cdChip",
-    scale: 1.00,
+    scale: 1.0,
     strength: 6
   });
 
@@ -464,8 +558,13 @@
   }
 
   function downloadICS() {
+    // Evento empieza 26/06/2026 19:00 (Madrid)
     const startUtcMs = tzDateToUtcMs({ ...EVENT, hour: 19, minute: 0, second: 0 });
-    const endUtcMs = tzDateToUtcMs({ ...EVENT, hour: 23, minute: 30, second: 0 });
+
+    // Termina 27/06/2026 02:00 (Madrid)
+    const endUtcMs = tzDateToUtcMs({
+      year: 2026, month: 6, day: 27, hour: 2, minute: 0, second: 0, timeZone: EVENT.timeZone
+    });
 
     const dtStamp = toICSDateUTC(new Date());
     const dtStart = toICSDateUTC(new Date(startUtcMs));
@@ -514,12 +613,11 @@
   }
 
   // =========================================================
-  // 8) Modal + Galería click-to-open
+  // 8) MODAL + click-to-open (galería + cubo)
   // =========================================================
   const modal = $("#modal");
   const modalContent = $("#modalContent");
   const closeBtn = modal ? $(".modal__close", modal) : null;
-
   let lastFocusedEl = null;
 
   const modalTemplates = {
@@ -599,23 +697,32 @@
     });
   }
 
-  // ✅ Galería: click -> modal (usa data-gallery)
-  const galleryClickable = $$('[data-gallery="true"]');
-  if (galleryClickable.length) {
-    galleryClickable.forEach((img) => {
-      img.addEventListener("click", () => {
-        const full = (img.getAttribute("data-full") || "").trim();
-        const src = full || img.getAttribute("src");
-        const alt = img.getAttribute("alt") || "Imagen";
+  // ✅ Click-to-open universal: data-gallery="true" + (data-full opcional)
+  function bindGalleryClickables(root = document) {
+    const clickables = $$('[data-gallery="true"]', root);
+    if (!clickables.length) return;
+
+    clickables.forEach((el) => {
+      if (el.__gaBound) return;
+      el.__gaBound = true;
+
+      el.addEventListener("click", () => {
+        const full = (el.getAttribute("data-full") || "").trim();
+        const src = full || el.getAttribute("src") || el.getAttribute("data-src");
+        const alt = el.getAttribute("alt") || el.getAttribute("aria-label") || "Imagen";
+        if (!src) return;
+
         const html = `
           <h2>Galería</h2>
           <p style="margin-top:6px; color: rgba(22,22,22,.62);">${alt}</p>
           <img class="modalImage" src="${src}" alt="${alt}">
         `;
-        openModalHTML(html, img);
+        openModalHTML(html, el);
       });
     });
   }
+
+  bindGalleryClickables();
 
   if (modal) {
     modal.addEventListener("click", (e) => {
@@ -629,23 +736,25 @@
   if (closeBtn) closeBtn.addEventListener("click", closeModal);
 
   // =========================================================
-  // 9) Galería: drag-to-scroll PRO
+  // 9) Galería: drag-to-scroll PRO (y evita click tras drag)
   // =========================================================
-  function enableDragScroll(track) {
+  function enableDragScroll(track, { dragThresholdPx = 6 } = {}) {
     if (!track) return;
 
     let isDown = false;
     let startX = 0;
     let startScrollLeft = 0;
     let pointerId = null;
+    let moved = false;
 
     const onDown = (e) => {
-      // solo botón principal
       if (e.pointerType === "mouse" && e.button !== 0) return;
 
       isDown = true;
+      moved = false;
       pointerId = e.pointerId;
-      track.setPointerCapture(pointerId);
+
+      try { track.setPointerCapture(pointerId); } catch {}
 
       startX = e.clientX;
       startScrollLeft = track.scrollLeft;
@@ -656,6 +765,7 @@
     const onMove = (e) => {
       if (!isDown) return;
       const dx = e.clientX - startX;
+      if (Math.abs(dx) > dragThresholdPx) moved = true;
       track.scrollLeft = startScrollLeft - dx;
     };
 
@@ -664,6 +774,17 @@
       isDown = false;
       pointerId = null;
       track.classList.remove("is-dragging");
+
+      // Si arrastró, bloquea click fantasma
+      if (moved) {
+        const killClick = (ev) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          track.removeEventListener("click", killClick, true);
+        };
+        track.addEventListener("click", killClick, true);
+        window.setTimeout(() => track.removeEventListener("click", killClick, true), 180);
+      }
     };
 
     track.addEventListener("pointerdown", onDown);
@@ -673,7 +794,177 @@
     track.addEventListener("mouseleave", onUp);
   }
 
-  $$(".galleryTrack").forEach(enableDragScroll);
+  $$(".galleryTrack").forEach((t) => enableDragScroll(t));
+
+  // =========================================================
+  // 10) CUBO: drag rotate + inercia + auto-rotate + click-to-open
+  // =========================================================
+  function enableCube(cubeEl, { threshold = 10 } = {}) {
+    if (!cubeEl) return;
+
+    // Marca para CSS (cursor/touch-action)
+    cubeEl.setAttribute("data-cube", "true");
+
+    let isDown = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    let rotX = -14;
+    let rotY = 28;
+
+    let movedPx = 0;
+    let vx = 0;
+    let vy = 0;
+    let lastTs = 0;
+
+    let inertiaRaf = 0;
+    let autoRaf = 0;
+    let auto = true;
+
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+    function apply() {
+      cubeEl.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+    }
+
+    function stopAuto() {
+      auto = false;
+      cancelAnimationFrame(autoRaf);
+      autoRaf = 0;
+    }
+
+    function startAuto() {
+      if (prefersReducedMotion) return;
+      stopAuto();
+      auto = true;
+
+      const loop = () => {
+        if (!auto || isDown) return;
+        rotY += 0.12;
+        rotX = clamp(rotX, -70, 70);
+        apply();
+        autoRaf = requestAnimationFrame(loop);
+      };
+      autoRaf = requestAnimationFrame(loop);
+    }
+
+    function stopInertia() {
+      cancelAnimationFrame(inertiaRaf);
+      inertiaRaf = 0;
+    }
+
+    function startInertia() {
+      stopInertia();
+      if (prefersReducedMotion) return;
+
+      const friction = 0.92;
+
+      const step = () => {
+        vx *= friction;
+        vy *= friction;
+
+        if (Math.abs(vx) < 0.01 && Math.abs(vy) < 0.01) {
+          stopInertia();
+          cubeEl.style.animation = "";
+          startAuto();
+          return;
+        }
+
+        rotY += vx;
+        rotX -= vy;
+        rotX = clamp(rotX, -70, 70);
+        apply();
+
+        inertiaRaf = requestAnimationFrame(step);
+      };
+
+      inertiaRaf = requestAnimationFrame(step);
+    }
+
+    function onDown(e) {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+
+      isDown = true;
+      movedPx = 0;
+      vx = 0;
+      vy = 0;
+
+      lastX = e.clientX;
+      lastY = e.clientY;
+      lastTs = performance.now();
+
+      stopAuto();
+      stopInertia();
+
+      cubeEl.classList.add("is-dragging");
+      try { cubeEl.setPointerCapture(e.pointerId); } catch {}
+
+      // Pausa animación CSS mientras arrastras (si estuviera)
+      cubeEl.style.animation = "none";
+    }
+
+    function onMove(e) {
+      if (!isDown) return;
+
+      const x = e.clientX;
+      const y = e.clientY;
+
+      const dx = x - lastX;
+      const dy = y - lastY;
+
+      movedPx += Math.abs(dx) + Math.abs(dy);
+
+      const sens = 0.18;
+      rotY += dx * sens;
+      rotX -= dy * sens;
+      rotX = clamp(rotX, -70, 70);
+
+      // Velocidad para inercia
+      const now = performance.now();
+      const dt = Math.max(16, now - lastTs);
+      vx = (dx * sens) / (dt / 16);
+      vy = (dy * sens) / (dt / 16);
+      lastTs = now;
+
+      apply();
+
+      lastX = x;
+      lastY = y;
+    }
+
+    function onUp() {
+      if (!isDown) return;
+      isDown = false;
+      cubeEl.classList.remove("is-dragging");
+
+      if (movedPx >= threshold) {
+        const killClick = (ev) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          cubeEl.removeEventListener("click", killClick, true);
+        };
+        cubeEl.addEventListener("click", killClick, true);
+        window.setTimeout(() => cubeEl.removeEventListener("click", killClick, true), 220);
+
+        startInertia();
+      } else {
+        cubeEl.style.animation = "";
+        startAuto();
+      }
+    }
+
+    cubeEl.addEventListener("pointerdown", onDown);
+    cubeEl.addEventListener("pointermove", onMove);
+    cubeEl.addEventListener("pointerup", onUp);
+    cubeEl.addEventListener("pointercancel", onUp);
+    cubeEl.addEventListener("mouseleave", onUp);
+
+    apply();
+    startAuto();
+  }
+
+  const cubeEl = $('[data-cube], #kidsCube');
+  if (cubeEl) enableCube(cubeEl);
 
   // =========================================================
   // ESC global + trap focus modal

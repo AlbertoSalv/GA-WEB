@@ -1,11 +1,17 @@
 /* =========================
-   GA WEB — styles.css (PRO)
+   GA WEB — styles.css (PRO) — 2026 (FIXED + OPTIMIZADO)
+   + Timeline Lottie (elegante, creativo, rendimiento PRO)
    Fixes aplicados:
    - Fondo unificado (mismo look “portada” en toda la web)
-   - Banda1 como background: desktop finita (se ve TODO), móvil como ahora
+   - Banda1: ancho completo SIN distorsión (repeat-x), desktop finita, móvil como ahora
+   - Ubicación: botón “Cómo llegar” centrado en móvil; desktop opcional centrado con .placeCard--centerDesktop
+   - Subtítulos Allura: +1 punto aprox y consistentes en toda la web
    - Galería polaroid: cuadrado perfecto, todas iguales, sin overflow en móvil/web
    - Track horizontal PRO: sin barras + drag feel
    - Action cards centradas (Dress/Bus/Tips) en móvil y web
+   - Sección “Otros puntos de vista”: layout (dibujo + cubo) + estilos cubo 3D + fix fondo blanco
+   - Cubo: preparado para drag (touch/mouse) + mantiene clicks en caras (modal)
+   - ✅ Timeline: soporte para Lottie (contenedor .tLottie) + fallback emoji + animación on-viewport (clase .is-in)
    ========================= */
 
 /* =========================
@@ -23,7 +29,11 @@
   --gold-2:#b8923f;
 
   --font: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+
+  /* ✅ coherente con el stack: Libre Baskerville (títulos), Allura (subtítulos), Inter (texto)
+     Dejo --font-display porque lo usas en varios sitios (hero, h3, footer, etc.)
+     Si queréis 100% purista: cambiadlo a var(--font-title) y listo. */
+  --font-display: "Libre Baskerville", Georgia, "Times New Roman", serif;
 
   --font-title: "Libre Baskerville", Georgia, "Times New Roman", serif;
   --font-script: "Allura", cursive;
@@ -50,6 +60,12 @@
 
   --timeline-line: rgba(200,162,74,.28);
   --timeline-line-strong: rgba(200,162,74,.50);
+
+  /* ✅ Timeline motion tokens */
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+
+  /* Cubo */
+  --cube-z: 150px;
 }
 
 /* =========================
@@ -187,10 +203,12 @@ a{ color: inherit; text-decoration: none; }
   color: var(--garnet);
   text-shadow: 0 16px 34px rgba(0,0,0,.06);
 }
+
+/* ✅ Subtítulos: un pelín más grandes, consistentes en toda la web */
 .sectionHead__sub{
   margin: 6px 0 0;
   font-family: var(--font-script);
-  font-size: clamp(20px, 2.2vw, 32px);
+  font-size: clamp(21px, 2.25vw, 33px);
   color: rgba(22,22,22,.52);
   line-height: 1.25;
 }
@@ -647,9 +665,9 @@ a{ color: inherit; text-decoration: none; }
 }
 
 /* =========================
-   ✅ BANDA1 como BACKGROUND
-   - Desktop: finita y se ve TODO (contain)
-   - Móvil: más alta (como ahora)
+   ✅ BANDA1 como BACKGROUND (ancho completo sin distorsión)
+   - Mobile: alto como ahora
+   - Desktop: finita
    ========================= */
 .sepImage.sepImage--bg{
   width: 100%;
@@ -658,26 +676,20 @@ a{ color: inherit; text-decoration: none; }
   line-height: 0;
   overflow: hidden;
   background-image: url("../assets/img/banda1.png");
-  background-repeat: no-repeat;
+  background-repeat: repeat-x;
   background-position: center;
-  background-size: contain;     /* ✅ se ve TODO */
+  background-size: auto 100%;
   filter: drop-shadow(0 10px 18px rgba(0,0,0,.10));
 }
 
 /* Móvil (como ahora) */
 @media (max-width: 979px){
-  .sepImage.sepImage--bg{
-    height: 170px;
-    background-position: center;
-  }
+  .sepImage.sepImage--bg{ height: 170px; }
 }
 
 /* Desktop (finita) */
 @media (min-width: 980px){
-  .sepImage.sepImage--bg{
-    height: 120px;             /* ✅ bandita fina */
-    background-position: center;
-  }
+  .sepImage.sepImage--bg{ height: 70px; }
 }
 
 /* =========================
@@ -840,6 +852,9 @@ a{ color: inherit; text-decoration: none; }
   .cdDivider{ height: 38px; }
 }
 
+/* ✅ Faltan: subtítulo centrado sin romper el tamaño global */
+#faltan .sectionHead__sub{ text-align: center; }
+
 /* =========================
    CARDS — BLANCAS (global)
    ========================= */
@@ -868,8 +883,16 @@ a{ color: inherit; text-decoration: none; }
 
 .placeHead{ display:flex; gap: 14px; align-items: flex-start; position: relative; z-index: 1; }
 .placeHead__text{ flex: 1; min-width: 0; }
-.placeTag{ font-weight:900; letter-spacing:1.4px; text-transform:uppercase; font-size:11px; color: rgba(22,22,22,.75); margin-bottom:6px; display:inline-flex; gap:8px; align-items:center; }
-.placeTag::before{ content:""; width:10px; height:10px; border-radius:999px; background: rgba(200,162,74,.95); box-shadow: 0 10px 18px rgba(200,162,74,.18); }
+.placeTag{
+  font-weight:900; letter-spacing:1.4px; text-transform:uppercase;
+  font-size:11px; color: rgba(22,22,22,.75);
+  margin-bottom:6px; display:inline-flex; gap:8px; align-items:center;
+}
+.placeTag::before{
+  content:""; width:10px; height:10px; border-radius:999px;
+  background: rgba(200,162,74,.95);
+  box-shadow: 0 10px 18px rgba(200,162,74,.18);
+}
 .placeTitle{ font-family: var(--font-display); font-weight:700; font-size: clamp(22px, 1.6vw, 30px); margin:0; }
 .placeMeta{ margin-top:10px; color: var(--muted); line-height:1.65; font-size:14px; }
 .placeBtns{ margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; position: relative; z-index: 1; }
@@ -897,8 +920,31 @@ a{ color: inherit; text-decoration: none; }
   filter: drop-shadow(0 10px 16px rgba(0,0,0,.08));
 }
 
+/* ✅ móvil: centra el botón de maps */
+@media (max-width: 520px){
+  .placeBtns{ justify-content: center; }
+  .placeBtns .btn{
+    width: min(520px, 100%);
+    justify-content: center;
+  }
+}
+
+/* ✅ desktop: si usas .placeCard--centerDesktop, centra toda la tarjeta */
+@media (min-width: 980px){
+  .placeCard--centerDesktop .placeHead{
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .placeCard--centerDesktop .placeHead__text{ max-width: 72ch; }
+  .placeCard--centerDesktop .placeTag{ justify-content: center; }
+  .placeCard--centerDesktop .placeBtns{ justify-content: center; }
+}
+
 /* =========================
-   TIMELINE
+   TIMELINE (PRO + Lottie)
    ========================= */
 .timelineWrap{ margin-top: 24px; display:grid; place-items:center; }
 
@@ -923,8 +969,8 @@ a{ color: inherit; text-decoration: none; }
   stroke: var(--timeline-line);
   stroke-width: 2.2;
   stroke-linecap: round;
-  stroke-dasharray: 1200;
-  stroke-dashoffset: 1200;
+  stroke-dasharray: 1400;
+  stroke-dashoffset: 1400;
   filter: drop-shadow(0 10px 18px rgba(0,0,0,.06));
 }
 .timeline.is-drawn .timelineLine__path{
@@ -939,6 +985,10 @@ a{ color: inherit; text-decoration: none; }
   gap: 12px;
   padding: 18px 0;
   z-index: 1;
+
+  /* ✅ “premium reveal” controlado por JS (on viewport) */
+  opacity: 1;
+  transform: none;
 }
 @media (min-width: 860px){
   .tItem{ grid-template-columns: 1fr 72px 1fr; align-items:center; }
@@ -947,6 +997,18 @@ a{ color: inherit; text-decoration: none; }
   .tSide--right{ grid-column: 3; }
 }
 
+/* ✅ Estado inicial (si JS añade .is-ready al timeline) */
+.timeline.is-ready .tItem{
+  opacity: 0;
+  transform: translateY(12px);
+}
+.timeline.is-ready .tItem.is-in{
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 520ms var(--ease-out), transform 520ms var(--ease-out);
+}
+
+/* Dot */
 .tDot{
   width: 58px; height: 58px; border-radius: 999px; display:grid; place-items:center;
   background: rgba(255,255,255,.92);
@@ -955,6 +1017,44 @@ a{ color: inherit; text-decoration: none; }
   margin: 0 auto;
   position: relative;
 }
+
+/* ✅ Lottie container: ocupa el dot y centra SVG; fallback emoji por debajo */
+.tLottie{
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  overflow: hidden;
+
+  /* el icono no debe “mover” layout cuando cargue */
+  transform: translateZ(0);
+}
+
+/* El SVG de lottie lo inyecta lottie-web dentro; le damos tamaño */
+.tLottie > svg{
+  width: 72%;
+  height: 72%;
+  display: block;
+}
+
+/* fallback emoji (si no hay lottie / reduce motion) */
+.tIcon{
+  font-size: 18px;
+  line-height: 1;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  opacity: .95;
+}
+
+/* cuando lottie esté activo, el JS pondrá .has-lottie en .tDot */
+.tDot.has-lottie .tIcon{
+  opacity: 0;
+}
+
+/* Pulse */
 .tPulse{
   position:absolute; inset: -2px; border-radius: 999px;
   border: 1px solid rgba(22,22,22,.10);
@@ -966,19 +1066,25 @@ a{ color: inherit; text-decoration: none; }
   60%{ transform: scale(1.14); opacity:0; }
   100%{ transform: scale(1.14); opacity:0; }
 }
-.tIcon{ font-size: 18px; }
 
+/* Card */
 .tCard{
   border-radius: var(--radius-xl);
   padding: 14px 16px;
   box-shadow: 0 14px 38px rgba(0,0,0,.08);
   max-width: 460px;
   position: relative;
+
+  /* ✅ sutil “borde editorial” */
+  outline: 1px solid rgba(200,162,74,.12);
+  outline-offset: -1px;
 }
+
 @media (min-width: 860px){
   .tItem:nth-child(odd) .tCard{ margin-left: auto; text-align: right; }
   .tItem:nth-child(even) .tCard{ margin-right: auto; text-align: left; }
 }
+
 .tTime{
   font-weight: 900;
   letter-spacing: .8px;
@@ -1006,6 +1112,8 @@ a{ color: inherit; text-decoration: none; }
   }
   .tDot{ width: 44px; height: 44px; }
   .tIcon{ font-size: 16px; }
+  .tLottie > svg{ width: 74%; height: 74%; }
+
   .tCard{
     width: 100%;
     max-width: none;
@@ -1198,7 +1306,6 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   box-shadow: 0 16px 44px rgba(0,0,0,.10);
   transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
 
-  /* ✅ centrado */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1229,7 +1336,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   font-size: 14px;
   line-height: 1.35;
   max-width: 28ch;
-  flex: 1; /* empuja el botón hacia abajo: look “pro” */
+  flex: 1;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -1251,11 +1358,10 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
    ========================= */
 .gallery{ margin-top: 22px; }
 
-/* Track: tamaño fijo por tarjeta (evita “tamaños distintos”) */
 .galleryTrack{
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: clamp(240px, 72vw, 360px); /* ✅ todas iguales */
+  grid-auto-columns: clamp(240px, 72vw, 360px);
   gap: 14px;
   overflow-x: auto;
   overflow-y: hidden;
@@ -1269,7 +1375,6 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 
 .galleryItem{ margin: 0; scroll-snap-align: center; }
 
-/* Polaroid: sin “overflow raro” */
 .gallery--polaroid .galleryItem--polaroid{
   background: transparent;
   border: 0;
@@ -1277,7 +1382,6 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   overflow: visible;
 }
 
-/* La “tarjeta” cuadrada */
 .gallery--polaroid .galleryFrame{
   position: relative;
   width: 100%;
@@ -1287,16 +1391,12 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   border: 4px solid rgba(22,22,22,.88);
   box-shadow: 0 20px 60px rgba(0,0,0,.16);
   padding: 10px;
-
   cursor: pointer;
   transform: translateZ(0);
   transition: transform 180ms ease;
-
-  /* ✅ CLAVE: nada sobresale */
   overflow: hidden;
 }
 
-/* Stack detrás */
 .gallery--polaroid .galleryFrame::before,
 .gallery--polaroid .galleryFrame::after{
   content:"";
@@ -1316,7 +1416,6 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   opacity: .90;
 }
 
-/* Imagen dentro: SIEMPRE encajada */
 .gallery--polaroid .galleryImg{
   width: 100%;
   height: 100%;
@@ -1326,7 +1425,6 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   display:block;
 }
 
-/* Hover suave desktop */
 @media (hover:hover){
   .gallery--polaroid .galleryFrame:hover{ transform: translateY(-2px) rotate(0.6deg); }
 }
@@ -1340,18 +1438,162 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   font-weight: 900;
 }
 
-/* Drag feel: evita selección */
 .galleryTrack, .galleryImg{
   user-select: none;
   -webkit-user-drag: none;
 }
 
 /* =========================
-   Ring3D (por ahora oculto: no lo queréis así)
+   Ring3D (por ahora oculto)
    ========================= */
 .ring3dWrap{ display:none; }
 
 /* =========================
+   ✅ OTROS PUNTOS DE VISTA (dibujo + cubo)
+   ========================= */
+.kidsGrid{
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: center;
+}
+@media (min-width: 980px){
+  .kidsGrid{
+    grid-template-columns: 1.1fr .9fr;
+    gap: 20px;
+  }
+}
+
+.kidsFeatured{ margin: 0; }
+
+.kidsFeaturedFrame{
+  border-radius: 22px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
+.kidsFeaturedImg{
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 0;
+}
+
+.kidsCaption{
+  margin-top: 10px;
+  font-size: 12px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: rgba(22,22,22,.58);
+  font-weight: 900;
+}
+
+.kidsCubeWrap{
+  display: grid;
+  place-items: center;
+  gap: 10px;
+}
+.kidsCubeHint{
+  font-size: 12px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: rgba(22,22,22,.55);
+  font-weight: 900;
+}
+
+.cubeScene{
+  width: min(320px, 86vw);
+  aspect-ratio: 1 / 1;
+  perspective: 900px;
+  display: grid;
+  place-items: center;
+  overflow: visible;
+}
+
+@media (min-width: 980px){
+  :root{ --cube-z: 160px; }
+}
+
+.cube{
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(-16deg) rotateY(28deg);
+  transition: transform 220ms ease;
+  will-change: transform;
+}
+
+[data-cube]{
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+[data-cube].is-dragging{ cursor: grabbing; }
+
+.cubeFace{
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+
+  border-radius: 22px;
+  overflow: hidden;
+
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(22,22,22,.10);
+  box-shadow: 0 18px 52px rgba(0,0,0,.12);
+}
+
+.cubeFace img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: auto;
+  cursor: zoom-in;
+}
+
+.cubeFace--front{  transform: rotateY(0deg) translateZ(var(--cube-z)); }
+.cubeFace--back{   transform: rotateY(180deg) translateZ(var(--cube-z)); }
+.cubeFace--right{  transform: rotateY(90deg) translateZ(var(--cube-z)); }
+.cubeFace--left{   transform: rotateY(-90deg) translateZ(var(--cube-z)); }
+.cubeFace--top{    transform: rotateX(90deg) translateZ(var(--cube-z)); }
+.cubeFace--bottom{ transform: rotateX(-90deg) translateZ(var(--cube-z)); }
+
+@media (hover:hover) and (prefers-reduced-motion: no-preference){
+  .cube{ animation: cubeSpin 14s linear infinite; }
+  .cubeScene:hover .cube{ animation-play-state: paused; }
+}
+@keyframes cubeSpin{
+  0%{ transform: rotateX(-16deg) rotateY(0deg); }
+  100%{ transform: rotateX(-16deg) rotateY(360deg); }
+}
+
+/* =========================================
+   FIX DIBUJO IZQUIERDA (PNG sin fondo)
+   ========================================= */
+.opvChosenImg{
+  display:block;
+  width:100%;
+  height:auto;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  object-fit: contain;
+  cursor: zoom-in;
+}
+
+/* =========================================
    FOOTER
    ========================= */
 .footer{ padding: 42px 0 70px; }
@@ -1439,4 +1681,6 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   .heroNames, .heroDate--fancy .heroDate__text{ animation: none !important; }
   .fh{ animation: none !important; opacity: 0 !important; }
   .hoverCardInner{ transition: none !important; }
+  .cube{ animation: none !important; }
+  .tPulse{ animation: none !important; opacity: .15 !important; }
 }

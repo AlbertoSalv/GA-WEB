@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <!-- Libre Baskerville (títulos) + Allura (descripciones) -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;600;800;900&family=Libre+Baskerville:wght@400;700&family=Allura&display=swap" rel="stylesheet">
+  <!-- Libre Baskerville (títulos) + Allura (subtítulos) + Inter (texto) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Libre+Baskerville:wght@400;700&family=Allura&display=swap" rel="stylesheet">
 
   <!-- Animate.css -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
@@ -116,8 +116,6 @@
           <h2 class="sectionHead__title">Faltan…</h2>
         </div>
 
-        <p class="sectionHead__sub">Y cada día estamos un poquito más cerca.</p>
-
         <div class="countdownWrap" id="countdown" aria-label="Cuenta atrás" data-parallax="countdown">
           <div class="cdChip" role="group" aria-label="Cuenta atrás hasta el 26.06.2026 a las 19:00">
             <div class="cdUnit">
@@ -148,6 +146,8 @@
           </div>
         </div>
 
+        <p class="sectionHead__sub">Y cada día estamos un poquito más cerca.</p>
+
       </div>
     </section>
 
@@ -171,7 +171,7 @@
         <p class="sectionHead__sub">Todo lo importante, a un clic. Guarda la ubicación y llega con margen.</p>
 
         <div class="placeGrid">
-          <div class="placeCard">
+          <div class="placeCard placeCard--centerDesktop">
             <div class="placeHead">
 
               <div class="placePin placePin--icon" aria-hidden="true">
@@ -190,6 +190,7 @@
                 </p>
               </div>
             </div>
+
             <div class="placeBtns">
               <a class="btn" href="https://maps.google.com/?q=El+Hueco+Bodas+y+Banquetes" target="_blank" rel="noreferrer">
                 Cómo llegar → Google Maps
@@ -210,7 +211,7 @@
       </svg>
     </div>
 
-    <!-- MOMENTOS CLAVE -->
+    <!-- MOMENTOS CLAVE (actualizado para Lottie + accesible + escalable) -->
     <section class="section" id="momentos">
       <div class="frame section__inner">
 
@@ -221,32 +222,57 @@
         <p class="sectionHead__sub">Horario orientativo. Si hay algún ajuste, lo actualizaremos aquí.</p>
 
         <div class="timelineWrap">
-          <div class="timeline timeline--pro" id="timeline">
+          <!-- ✅ data-timeline: hook para JS -->
+          <div class="timeline timeline--pro" id="timeline" data-timeline>
 
-            <svg class="timelineLine" viewBox="0 0 10 1000" preserveAspectRatio="none" aria-hidden="true">
-              <path class="timelineLine__path" d="M5 0 L5 1000"></path>
+            <!-- ✅ Línea (se mantiene tu SVG para no romper tu animación actual) -->
+            <svg class="timelineLine" viewBox="0 0 10 1100" preserveAspectRatio="none" aria-hidden="true">
+              <path class="timelineLine__path" d="M5 0 L5 1100"></path>
             </svg>
 
-            <div class="tItem">
+            <!-- 1) Autobús ida -->
+            <div class="tItem" data-tl-item>
               <div class="tSide tSide--left">
                 <div class="tCard">
                   <div class="tTime">18:30h</div>
                   <div class="tLabel">Autobús de ida</div>
                 </div>
               </div>
+
+              <!-- ✅ Icono Lottie (fallback emoji dentro, por si reduce-motion o falla lottie) -->
               <div class="tDot" aria-hidden="true">
-                <span class="tIcon" data-icon="bus">🚌</span>
+                <span
+                  class="tLottie"
+                  data-lottie="assets/lottie/bus.json"
+                  data-loop="false"
+                  data-autoplay="false"
+                  aria-hidden="true"
+                >
+                  <span class="tIcon" aria-hidden="true">🚌</span>
+                </span>
                 <span class="tPulse"></span>
               </div>
+
               <div class="tSide tSide--right" aria-hidden="true"></div>
             </div>
 
-            <div class="tItem">
+            <!-- 2) Ceremonia -->
+            <div class="tItem" data-tl-item>
               <div class="tSide tSide--left" aria-hidden="true"></div>
+
               <div class="tDot" aria-hidden="true">
-                <span class="tIcon" data-icon="rings">💍</span>
+                <span
+                  class="tLottie"
+                  data-lottie="assets/lottie/rings.json"
+                  data-loop="false"
+                  data-autoplay="false"
+                  aria-hidden="true"
+                >
+                  <span class="tIcon" aria-hidden="true">💍</span>
+                </span>
                 <span class="tPulse"></span>
               </div>
+
               <div class="tSide tSide--right">
                 <div class="tCard">
                   <div class="tTime">19:00h</div>
@@ -255,45 +281,78 @@
               </div>
             </div>
 
-            <div class="tItem">
+            <!-- 3) Cena / Celebración -->
+            <div class="tItem" data-tl-item>
               <div class="tSide tSide--left">
                 <div class="tCard">
                   <div class="tTime">20:00h</div>
-                  <div class="tLabel">Celebración (El Hueco)</div>
+                  <div class="tLabel">Cena tipo cóctel (El Hueco)</div>
                 </div>
               </div>
+
               <div class="tDot" aria-hidden="true">
-                <span class="tIcon" data-icon="car">🚗</span>
+                <span
+                  class="tLottie"
+                  data-lottie="assets/lottie/dinner.json"
+                  data-loop="false"
+                  data-autoplay="false"
+                  aria-hidden="true"
+                >
+                  <span class="tIcon" aria-hidden="true">🍽️</span>
+                </span>
                 <span class="tPulse"></span>
               </div>
+
               <div class="tSide tSide--right" aria-hidden="true"></div>
             </div>
 
-            <div class="tItem">
+            <!-- 4) DJ y barra libre -->
+            <div class="tItem" data-tl-item>
               <div class="tSide tSide--left" aria-hidden="true"></div>
+
               <div class="tDot" aria-hidden="true">
-                <span class="tIcon" data-icon="drink">🍸</span>
+                <span
+                  class="tLottie"
+                  data-lottie="assets/lottie/dj.json"
+                  data-loop="false"
+                  data-autoplay="false"
+                  aria-hidden="true"
+                >
+                  <span class="tIcon" aria-hidden="true">🎧</span>
+                </span>
                 <span class="tPulse"></span>
               </div>
+
               <div class="tSide tSide--right">
                 <div class="tCard">
-                  <div class="tTime">20:15h</div>
-                  <div class="tLabel">Cóctel</div>
+                  <div class="tTime">23:00h</div>
+                  <div class="tLabel">DJ y barra libre</div>
                 </div>
               </div>
             </div>
 
-            <div class="tItem">
+            <!-- 5) Fin + Autobús vuelta -->
+            <div class="tItem" data-tl-item>
               <div class="tSide tSide--left">
                 <div class="tCard">
-                  <div class="tTime">22:15h</div>
-                  <div class="tLabel">DJ y barra libre</div>
+                  <div class="tTime">02:00h</div>
+                  <div class="tLabel">Fin de celebración + autobús de vuelta</div>
                 </div>
               </div>
+
               <div class="tDot" aria-hidden="true">
-                <span class="tIcon" data-icon="dj">🎧</span>
+                <span
+                  class="tLottie"
+                  data-lottie="assets/lottie/finish.json"
+                  data-loop="false"
+                  data-autoplay="false"
+                  aria-hidden="true"
+                >
+                  <span class="tIcon" aria-hidden="true">🏁</span>
+                </span>
                 <span class="tPulse"></span>
               </div>
+
               <div class="tSide tSide--right" aria-hidden="true"></div>
             </div>
 
@@ -443,49 +502,148 @@
         </div>
         <p class="sectionHead__sub">Un pequeño adelanto de lo que hemos vivido… y lo que viene.</p>
 
-        <!-- (Lo dejamos en HTML por si lo retomamos, pero el CSS lo oculta para no estropear el look) -->
-        <div class="ring3dWrap" aria-label="Galería 3D" data-ring3d>
-          <div class="ring3dScene" aria-hidden="false">
-            <div class="ring3d" data-ring3d-ring>
-              <figure class="ring3dPanel">
-                <img src="assets/img/ga.jpg" alt="Logo G&A" data-gallery="true" data-full="assets/img/ga.jpg">
-              </figure>
-              <figure class="ring3dPanel">
-                <img src="assets/img/hero.jpg" alt="Gema y Alberto" data-gallery="true" data-full="assets/img/hero.jpg">
-              </figure>
-              <figure class="ring3dPanel">
-                <img src="assets/img/ga.jpg" alt="Logo G&A" data-gallery="true" data-full="assets/img/ga.jpg">
-              </figure>
-            </div>
-          </div>
-          <div class="ring3dHint" aria-hidden="true">Arrastra →</div>
-        </div>
-
-        <!-- ✅ Carrusel PRO (drag real + polaroid perfecto) -->
         <div class="gallery gallery--scroll gallery--polaroid" aria-label="Galería (desliza)">
           <div class="galleryTrack" role="list">
 
             <figure class="galleryItem galleryItem--polaroid" role="listitem">
               <div class="galleryFrame">
-                <img src="assets/img/ga.jpg" alt="Logo G&A" class="galleryImg" data-gallery="true" data-full="assets/img/ga.jpg">
+                <img src="assets/img/ga.jpg" alt="Logo G&A" class="galleryImg" data-full="assets/img/ga.jpg">
               </div>
             </figure>
 
             <figure class="galleryItem galleryItem--polaroid" role="listitem">
               <div class="galleryFrame">
-                <img src="assets/img/hero.jpg" alt="Gema y Alberto" class="galleryImg" data-gallery="true" data-full="assets/img/hero.jpg">
+                <img src="assets/img/hero.jpg" alt="Gema y Alberto" class="galleryImg" data-full="assets/img/hero.jpg">
               </div>
             </figure>
 
             <figure class="galleryItem galleryItem--polaroid" role="listitem">
               <div class="galleryFrame">
-                <img src="assets/img/ga.jpg" alt="Logo G&A" class="galleryImg" data-gallery="true" data-full="assets/img/ga.jpg">
+                <img src="assets/img/ga.jpg" alt="Logo G&A" class="galleryImg" data-full="assets/img/ga.jpg">
               </div>
             </figure>
 
           </div>
 
           <div class="galleryHint" aria-hidden="true">Desliza →</div>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="sectionSep" aria-hidden="true">
+      <div class="sectionSep__wash"></div>
+      <div class="sectionSep__line"></div>
+      <svg class="sectionSep__wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
+        <path d="M0,78 C240,40 410,120 640,84 C870,48 1030,26 1220,56 C1350,78 1410,90 1440,86 L1440,140 L0,140 Z"></path>
+      </svg>
+    </div>
+
+    <!-- ✅ OTROS PUNTOS DE VISTA (dibujo + cubo) -->
+    <section class="section" id="puntos-de-vista">
+      <div class="frame section__inner">
+
+        <div class="sectionHead">
+          <span class="sectionHead__line" aria-hidden="true"></span>
+          <h2 class="sectionHead__title">Otros puntos de vista</h2>
+        </div>
+        <p class="sectionHead__sub">Los dibujos de los peques de Gema… y el retrato que irá en nuestra invitación.</p>
+
+        <div class="kidsGrid">
+
+          <!-- Izquierda: dibujo “principal” -->
+          <figure class="kidsFeatured">
+            <div class="kidsFeaturedFrame">
+              <img
+                class="opvChosenImg"
+                src="assets/img/dibujo-invitacion.png"
+                alt="Dibujo elegido para la invitación"
+                data-gallery="true"
+                data-full="assets/img/dibujo-invitacion.png"
+                loading="lazy"
+                decoding="async"
+              >
+            </div>
+            <figcaption class="kidsCaption">Dibujo elegido para la invitación</figcaption>
+          </figure>
+
+          <!-- Derecha: cubo -->
+          <div class="kidsCubeWrap" aria-label="Cubo de dibujos">
+            <div class="cubeScene" id="kidsCubeScene">
+              <div class="cube" id="kidsCube" data-cube aria-label="Cubo 3D de dibujos" role="group">
+
+                <button class="cubeFace cubeFace--front" type="button" aria-label="Ver dibujo 1">
+                  <img
+                    src="assets/img/dibujo-1.jpeg"
+                    alt="Dibujo 1"
+                    data-gallery="true"
+                    data-full="assets/img/ninos/dibujo-1.jpg"
+                    loading="lazy"
+                    decoding="async"
+                  >
+                </button>
+
+                <button class="cubeFace cubeFace--back" type="button" aria-label="Ver dibujo 2">
+                  <img
+                    src="assets/img/dibujo-2.jpeg"
+                    alt="Dibujo 2"
+                    data-gallery="true"
+                    data-full="assets/img/ninos/dibujo-2.jpg"
+                    loading="lazy"
+                    decoding="async"
+                  >
+                </button>
+
+                <button class="cubeFace cubeFace--right" type="button" aria-label="Ver dibujo 3">
+                  <img
+                    src="assets/img/dibujo-3.jpeg"
+                    alt="Dibujo 3"
+                    data-gallery="true"
+                    data-full="assets/img/ninos/dibujo-3.jpg"
+                    loading="lazy"
+                    decoding="async"
+                  >
+                </button>
+
+                <button class="cubeFace cubeFace--left" type="button" aria-label="Ver dibujo 4">
+                  <img
+                    src="assets/img/dibujo-4.jpeg"
+                    alt="Dibujo 4"
+                    data-gallery="true"
+                    data-full="assets/img/ninos/dibujo-4.jpg"
+                    loading="lazy"
+                    decoding="async"
+                  >
+                </button>
+
+                <button class="cubeFace cubeFace--top" type="button" aria-label="Ver dibujo 5">
+                  <img
+                    src="assets/img/dibujo-5.jpeg"
+                    alt="Dibujo 5"
+                    data-gallery="true"
+                    data-full="assets/img/ninos/dibujo-5.jpg"
+                    loading="lazy"
+                    decoding="async"
+                  >
+                </button>
+
+                <button class="cubeFace cubeFace--bottom" type="button" aria-label="Ver dibujo 6">
+                  <img
+                    src="assets/img/dibujo-6.jpeg"
+                    alt="Dibujo 6"
+                    data-gallery="true"
+                    data-full="assets/img/ninos/dibujo-6.jpg"
+                    loading="lazy"
+                    decoding="async"
+                  >
+                </button>
+
+              </div>
+            </div>
+
+            <div class="kidsCubeHint" aria-hidden="true">Arrastra para girar →</div>
+          </div>
+
         </div>
 
       </div>
@@ -532,6 +690,10 @@
     </div>
   </div>
 
-  <script src="js/main.js"></script>
+  <!-- ✅ Lottie (ligero) — necesario para iconos animados del timeline -->
+  <script defer src="https://unpkg.com/lottie-web/build/player/lottie_light.min.js"></script>
+
+  <!-- Tu JS -->
+  <script defer src="js/main.js"></script>
 </body>
 </html>
