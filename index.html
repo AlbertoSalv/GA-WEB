@@ -104,7 +104,7 @@
       <div class="heroFade" aria-hidden="true"></div>
     </section>
 
-    <!-- ✅ SEPARADOR PREMIUM: banda como BACKGROUND -->
+    <!-- ✅ SEPARADOR PREMIUM: pavo real (se queda) -->
     <div class="sepImage sepImage--bg" aria-hidden="true"></div>
 
     <!-- CUENTA ATRÁS -->
@@ -151,12 +151,15 @@
       </div>
     </section>
 
-    <!-- SEPARADOR PRO -->
-    <div class="sectionSep" aria-hidden="true">
-      <div class="sectionSep__wash"></div>
-      <div class="sectionSep__line"></div>
-      <svg class="sectionSep__wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
-        <path d="M0,72 C210,34 390,120 610,84 C830,48 1000,24 1200,56 C1325,76 1405,88 1440,84 L1440,140 L0,140 Z"></path>
+    <!-- ✅ NUEVO SEPARADOR (fino, minimalista, identidad) -->
+    <div class="sectionSepMinimal" aria-hidden="true">
+      <svg class="sectionSepMinimal__svg" viewBox="0 0 1440 28" preserveAspectRatio="none" focusable="false" aria-hidden="true">
+        <path class="sectionSepMinimal__path"
+          d="M0 14
+             C 220 10, 420 18, 640 14
+             S 1060 10, 1280 14
+             S 1440 16, 1440 14" />
+        <circle class="sectionSepMinimal__dot" cx="720" cy="14" r="2.2" />
       </svg>
     </div>
 
@@ -202,16 +205,19 @@
       </div>
     </section>
 
-    <!-- SEPARADOR PRO -->
-    <div class="sectionSep sectionSep--strong" aria-hidden="true">
-      <div class="sectionSep__wash"></div>
-      <div class="sectionSep__line"></div>
-      <svg class="sectionSep__wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
-        <path d="M0,86 C160,124 340,58 520,88 C700,118 880,62 1040,84 C1200,106 1320,98 1440,76 L1440,140 L0,140 Z"></path>
+    <!-- ✅ NUEVO SEPARADOR (variación un pelín más marcada) -->
+    <div class="sectionSepMinimal sectionSepMinimal--strong" aria-hidden="true">
+      <svg class="sectionSepMinimal__svg" viewBox="0 0 1440 28" preserveAspectRatio="none" focusable="false" aria-hidden="true">
+        <path class="sectionSepMinimal__path"
+          d="M0 14
+             C 200 20, 420 6, 640 14
+             S 1060 22, 1280 14
+             S 1440 10, 1440 14" />
+        <circle class="sectionSepMinimal__dot" cx="720" cy="14" r="2.2" />
       </svg>
     </div>
 
-    <!-- MOMENTOS CLAVE (actualizado para Lottie + accesible + escalable) -->
+    <!-- MOMENTOS CLAVE -->
     <section class="section" id="momentos">
       <div class="frame section__inner">
 
@@ -222,15 +228,12 @@
         <p class="sectionHead__sub">Horario orientativo. Si hay algún ajuste, lo actualizaremos aquí.</p>
 
         <div class="timelineWrap">
-          <!-- ✅ data-timeline: hook para JS -->
           <div class="timeline timeline--pro" id="timeline" data-timeline>
 
-            <!-- ✅ Línea (se mantiene tu SVG para no romper tu animación actual) -->
             <svg class="timelineLine" viewBox="0 0 10 1100" preserveAspectRatio="none" aria-hidden="true">
               <path class="timelineLine__path" d="M5 0 L5 1100"></path>
             </svg>
 
-            <!-- 1) Autobús ida -->
             <div class="tItem" data-tl-item>
               <div class="tSide tSide--left">
                 <div class="tCard">
@@ -239,15 +242,8 @@
                 </div>
               </div>
 
-              <!-- ✅ Icono Lottie (fallback emoji dentro, por si reduce-motion o falla lottie) -->
               <div class="tDot" aria-hidden="true">
-                <span
-                  class="tLottie"
-                  data-lottie="assets/lottie/bus.json"
-                  data-loop="false"
-                  data-autoplay="false"
-                  aria-hidden="true"
-                >
+                <span class="tLottie" data-lottie="assets/lottie/bus.json" data-loop="false" data-autoplay="false" aria-hidden="true">
                   <span class="tIcon" aria-hidden="true">🚌</span>
                 </span>
                 <span class="tPulse"></span>
@@ -256,18 +252,11 @@
               <div class="tSide tSide--right" aria-hidden="true"></div>
             </div>
 
-            <!-- 2) Ceremonia -->
             <div class="tItem" data-tl-item>
               <div class="tSide tSide--left" aria-hidden="true"></div>
 
               <div class="tDot" aria-hidden="true">
-                <span
-                  class="tLottie"
-                  data-lottie="assets/lottie/rings.json"
-                  data-loop="false"
-                  data-autoplay="false"
-                  aria-hidden="true"
-                >
+                <span class="tLottie" data-lottie="assets/lottie/rings.json" data-loop="false" data-autoplay="false" aria-hidden="true">
                   <span class="tIcon" aria-hidden="true">💍</span>
                 </span>
                 <span class="tPulse"></span>
@@ -281,7 +270,6 @@
               </div>
             </div>
 
-            <!-- 3) Cena / Celebración -->
             <div class="tItem" data-tl-item>
               <div class="tSide tSide--left">
                 <div class="tCard">
@@ -291,13 +279,7 @@
               </div>
 
               <div class="tDot" aria-hidden="true">
-                <span
-                  class="tLottie"
-                  data-lottie="assets/lottie/dinner.json"
-                  data-loop="false"
-                  data-autoplay="false"
-                  aria-hidden="true"
-                >
+                <span class="tLottie" data-lottie="assets/lottie/dinner.json" data-loop="false" data-autoplay="false" aria-hidden="true">
                   <span class="tIcon" aria-hidden="true">🍽️</span>
                 </span>
                 <span class="tPulse"></span>
@@ -306,18 +288,11 @@
               <div class="tSide tSide--right" aria-hidden="true"></div>
             </div>
 
-            <!-- 4) DJ y barra libre -->
             <div class="tItem" data-tl-item>
               <div class="tSide tSide--left" aria-hidden="true"></div>
 
               <div class="tDot" aria-hidden="true">
-                <span
-                  class="tLottie"
-                  data-lottie="assets/lottie/dj.json"
-                  data-loop="false"
-                  data-autoplay="false"
-                  aria-hidden="true"
-                >
+                <span class="tLottie" data-lottie="assets/lottie/dj.json" data-loop="false" data-autoplay="false" aria-hidden="true">
                   <span class="tIcon" aria-hidden="true">🎧</span>
                 </span>
                 <span class="tPulse"></span>
@@ -331,7 +306,6 @@
               </div>
             </div>
 
-            <!-- 5) Fin + Autobús vuelta -->
             <div class="tItem" data-tl-item>
               <div class="tSide tSide--left">
                 <div class="tCard">
@@ -341,13 +315,7 @@
               </div>
 
               <div class="tDot" aria-hidden="true">
-                <span
-                  class="tLottie"
-                  data-lottie="assets/lottie/finish.json"
-                  data-loop="false"
-                  data-autoplay="false"
-                  aria-hidden="true"
-                >
+                <span class="tLottie" data-lottie="assets/lottie/finish.json" data-loop="false" data-autoplay="false" aria-hidden="true">
                   <span class="tIcon" aria-hidden="true">🏁</span>
                 </span>
                 <span class="tPulse"></span>
@@ -441,11 +409,15 @@
       </div>
     </section>
 
-    <div class="sectionSep" aria-hidden="true">
-      <div class="sectionSep__wash"></div>
-      <div class="sectionSep__line"></div>
-      <svg class="sectionSep__wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
-        <path d="M0,78 C240,40 410,120 640,84 C870,48 1030,26 1220,56 C1350,78 1410,90 1440,86 L1440,140 L0,140 Z"></path>
+    <!-- ✅ NUEVO SEPARADOR -->
+    <div class="sectionSepMinimal" aria-hidden="true">
+      <svg class="sectionSepMinimal__svg" viewBox="0 0 1440 28" preserveAspectRatio="none" focusable="false" aria-hidden="true">
+        <path class="sectionSepMinimal__path"
+          d="M0 14
+             C 220 10, 420 18, 640 14
+             S 1060 10, 1280 14
+             S 1440 16, 1440 14" />
+        <circle class="sectionSepMinimal__dot" cx="720" cy="14" r="2.2" />
       </svg>
     </div>
 
@@ -484,11 +456,15 @@
       </div>
     </section>
 
-    <div class="sectionSep sectionSep--strong" aria-hidden="true">
-      <div class="sectionSep__wash"></div>
-      <div class="sectionSep__line"></div>
-      <svg class="sectionSep__wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
-        <path d="M0,86 C160,124 340,58 520,88 C700,118 880,62 1040,84 C1200,106 1320,98 1440,76 L1440,140 L0,140 Z"></path>
+    <!-- ✅ NUEVO SEPARADOR (strong) -->
+    <div class="sectionSepMinimal sectionSepMinimal--strong" aria-hidden="true">
+      <svg class="sectionSepMinimal__svg" viewBox="0 0 1440 28" preserveAspectRatio="none" focusable="false" aria-hidden="true">
+        <path class="sectionSepMinimal__path"
+          d="M0 14
+             C 200 20, 420 6, 640 14
+             S 1060 22, 1280 14
+             S 1440 10, 1440 14" />
+        <circle class="sectionSepMinimal__dot" cx="720" cy="14" r="2.2" />
       </svg>
     </div>
 
@@ -531,15 +507,19 @@
       </div>
     </section>
 
-    <div class="sectionSep" aria-hidden="true">
-      <div class="sectionSep__wash"></div>
-      <div class="sectionSep__line"></div>
-      <svg class="sectionSep__wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
-        <path d="M0,78 C240,40 410,120 640,84 C870,48 1030,26 1220,56 C1350,78 1410,90 1440,86 L1440,140 L0,140 Z"></path>
+    <!-- ✅ NUEVO SEPARADOR -->
+    <div class="sectionSepMinimal" aria-hidden="true">
+      <svg class="sectionSepMinimal__svg" viewBox="0 0 1440 28" preserveAspectRatio="none" focusable="false" aria-hidden="true">
+        <path class="sectionSepMinimal__path"
+          d="M0 14
+             C 220 10, 420 18, 640 14
+             S 1060 10, 1280 14
+             S 1440 16, 1440 14" />
+        <circle class="sectionSepMinimal__dot" cx="720" cy="14" r="2.2" />
       </svg>
     </div>
 
-    <!-- ✅ OTROS PUNTOS DE VISTA (dibujo + cubo) -->
+    <!-- ✅ OTROS PUNTOS DE VISTA -->
     <section class="section" id="puntos-de-vista">
       <div class="frame section__inner">
 
@@ -551,7 +531,6 @@
 
         <div class="kidsGrid">
 
-          <!-- Izquierda: dibujo “principal” -->
           <figure class="kidsFeatured">
             <div class="kidsFeaturedFrame">
               <img
@@ -567,7 +546,6 @@
             <figcaption class="kidsCaption">Dibujo elegido para la invitación</figcaption>
           </figure>
 
-          <!-- Derecha: cubo -->
           <div class="kidsCubeWrap" aria-label="Cubo de dibujos">
             <div class="cubeScene" id="kidsCubeScene">
               <div class="cube" id="kidsCube" data-cube aria-label="Cubo 3D de dibujos" role="group">
@@ -649,11 +627,15 @@
       </div>
     </section>
 
-    <div class="sectionSep" aria-hidden="true">
-      <div class="sectionSep__wash"></div>
-      <div class="sectionSep__line"></div>
-      <svg class="sectionSep__wave" viewBox="0 0 1440 140" preserveAspectRatio="none">
-        <path d="M0,78 C240,40 410,120 640,84 C870,48 1030,26 1220,56 C1350,78 1410,90 1440,86 L1440,140 L0,140 Z"></path>
+    <!-- ✅ NUEVO SEPARADOR -->
+    <div class="sectionSepMinimal" aria-hidden="true">
+      <svg class="sectionSepMinimal__svg" viewBox="0 0 1440 28" preserveAspectRatio="none" focusable="false" aria-hidden="true">
+        <path class="sectionSepMinimal__path"
+          d="M0 14
+             C 220 10, 420 18, 640 14
+             S 1060 10, 1280 14
+             S 1440 16, 1440 14" />
+        <circle class="sectionSepMinimal__dot" cx="720" cy="14" r="2.2" />
       </svg>
     </div>
 
@@ -690,7 +672,7 @@
     </div>
   </div>
 
-  <!-- ✅ Lottie (ligero) — necesario para iconos animados del timeline -->
+  <!-- ✅ Lottie (ligero) -->
   <script defer src="https://unpkg.com/lottie-web/build/player/lottie_light.min.js"></script>
 
   <!-- Tu JS -->
