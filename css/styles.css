@@ -214,11 +214,11 @@ a{ color: inherit; text-decoration: none; }
 }
 
 /* =========================
-   INTRO (SOBRE) — PRO (móvil fino + textos controlados + sin “pegote”)
-   NOTA IMPORTANTE:
-   - Si ya has fusionado el lacre dentro de assets/img/envelope.png,
-     NO uses .envelopeSeal en el HTML (elimínalo) y este bloque lo oculta por seguridad.
+   INTRO (SOBRE) — FINAL PRO (WEB OK + MÓVIL CLAVADO)
+   - lacre ya fusionado en assets/img/envelope.png (NO .envelopeSeal en HTML)
+   - en móvil: 3 textos totalmente independientes (como la fecha)
    ========================= */
+
 .intro{
   position: fixed;
   inset: 0;
@@ -239,15 +239,11 @@ a{ color: inherit; text-decoration: none; }
   padding: 0;
   cursor: pointer;
   width: min(780px, 92vw);
-}
-
-/* Mejora UX móvil: evita highlight raro */
-.envelopeBtn{
   -webkit-tap-highlight-color: transparent;
 }
 
 .envelopeCard{
-  position: relative;
+  position: relative; /* ✅ ancla los absolutos al sobre */
   width: 100%;
   border-radius: var(--card-radius);
   overflow: hidden;
@@ -255,6 +251,7 @@ a{ color: inherit; text-decoration: none; }
   transform: translateZ(0);
   transition: transform 900ms cubic-bezier(.2,.8,.2,1), filter 900ms cubic-bezier(.2,.8,.2,1);
 }
+
 .envelopeImg{
   display:block;
   width:100%;
@@ -278,6 +275,9 @@ a{ color: inherit; text-decoration: none; }
   padding: 18px;
   text-align: center;
   color: rgba(34,34,34,.84);
+
+  /* ✅ asegura que los absolutos (móvil) se referencian AQUÍ también */
+  pointer-events: none;
 }
 
 /* =========================
@@ -309,14 +309,15 @@ a{ color: inherit; text-decoration: none; }
 }
 
 /* =========================
-   SEAL: (solo si existe lacre en HTML)
-   ⚠️ Como tu lacre YA está dentro de envelope.png, lo ocultamos por defecto
+   SEAL: deshabilitado (lacre ya viene en envelope.png)
    ========================= */
-.envelopeSeal{ display:none !important; }
-.envelopeSeal__logo{ display:none !important; }
+.envelopeSeal,
+.envelopeSeal__logo{
+  display:none !important;
+}
 
 /* =========================
-   BOTTOM: textos (ancho controlado + negro con presencia)
+   DESKTOP/TABLET (flujo normal, se ve bien en web)
    ========================= */
 .envelopeBottom{
   position:absolute;
@@ -330,7 +331,6 @@ a{ color: inherit; text-decoration: none; }
   text-align: center;
 }
 
-/* “Esta invitación…” */
 .envelopeTextBottom{
   font-family: var(--font-script);
   font-size: clamp(16px, 2.2vw, 22px);
@@ -343,7 +343,6 @@ a{ color: inherit; text-decoration: none; }
   text-shadow: 0 1px 0 rgba(255,255,255,.35);
 }
 
-/* “Pulsa para abrir” */
 .envelopeHint{
   font-family: var(--font-script);
   font-size: 18px;
@@ -353,7 +352,7 @@ a{ color: inherit; text-decoration: none; }
   text-shadow: 0 1px 0 rgba(255,255,255,.30);
 }
 
-/* Fecha */
+/* Fecha (siempre independiente) */
 .envelopeDate{
   position:absolute;
   left: 0;
@@ -378,27 +377,86 @@ a{ color: inherit; text-decoration: none; }
 }
 
 /* =========================
-   MOBILE TUNING (clave para que no invada diagonales)
-   - Baja SOLO la primera línea (“Esta invitación…”) sin apelmazar
+   MOBILE (≤430px) — 3 TEXTOS INDEPENDIENTES Y CLAVADOS
+   ✅ “Esta invitación…” arriba
+   ✅ “Pulsa para abrir” en medio
+   ✅ Fecha abajo (como ya estaba)
    ========================= */
 @media (max-width: 430px){
+
+  /* ✅ el overlay es el “marco” para posicionar */
+  .envelopeOverlay{
+    position: absolute;
+    inset: 0;
+  }
+
+  /* ✅ apagamos el layout del contenedor para que NO arrastre nada */
   .envelopeBottom{
-    bottom: 6.6%;
-    width: min(360px, 70%);
-    gap: 6px;
+    position: static !important;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    width: auto;
+    display: contents; /* ✅ evita que el contenedor afecte */
   }
 
-  /* ✅ baja solo la primera línea para que no toque diagonales */
+  /* 1) “Esta invitación…” ARRIBA (ajusta solo este valor si quieres) */
   .envelopeTextBottom{
-    max-width: 22ch;
-    margin-top: 0px; /* si aún toca, sube a 12px */
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 17.0%;            /* 👈 ARRIBA: sube/baja SOLO este */
+    width: min(360px, 76%);
+    max-width: 24ch;
+    margin: 0;
+    text-align: center;
+    line-height: 1.10;
   }
 
+  /* 2) “Pulsa para abrir” EN MEDIO */
+  .envelopeHint{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 8%;             /* 👈 MEDIO: sube/baja SOLO este */
+    width: min(360px, 76%);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* 3) Fecha ABAJO (perfecta) */
   .envelopeDate{
-    bottom: 3.5%;
+    bottom: 3%;
     font-size: 11px;
   }
 }
+
+/* =========================
+   MUSIC BUTTON
+   ========================= */
+.musicBtn{
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 9000;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(22,22,22,.12);
+  background: rgba(245,241,231,.72);
+  box-shadow: 0 14px 34px rgba(0,0,0,.10);
+  cursor: pointer;
+  font-weight: 900;
+  color: rgba(22,22,22,.86);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.musicBtn.is-on{
+  border-color: rgba(200,162,74,.55);
+  background: rgba(255,255,255,.78);
+}
+
+
 
 /* =========================
    MUSIC BUTTON
@@ -1045,7 +1103,7 @@ a{ color: inherit; text-decoration: none; }
 
 /* Dot */
 .tDot{
-  width: 58px; height: 58px; border-radius: 999px; display:grid; place-items:center;
+  width: 85px; height: 85px; border-radius: 999px; display:grid; place-items:center;
   background: rgba(255,255,255,.92);
   border: 1px solid rgba(200,162,74,.26);
   box-shadow: 0 16px 36px rgba(0,0,0,.08);
