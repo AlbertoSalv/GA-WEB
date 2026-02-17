@@ -25,6 +25,7 @@
   <div id="intro" class="intro" role="dialog" aria-modal="true" aria-label="Invitación">
     <button id="openEnvelope" class="envelopeBtn" type="button" aria-label="Abrir invitación">
       <div class="envelopeCard">
+        <!-- ✅ envelope.png ya incluye el lacre+logo (fusionado en Canva) -->
         <img class="envelopeImg" src="assets/img/envelope.png" alt="" aria-hidden="true" />
 
         <div class="envelopeOverlay">
@@ -32,19 +33,16 @@
             <div class="envelopeNamesTop envelopeNamesTop--baskerville">Gema &amp; Alberto</div>
           </div>
 
-          <!-- Centro: lacre -->
-          <div class="envelopeSeal" aria-hidden="true">
-            <img class="envelopeSeal__logo" src="assets/img/lacre.png" alt="" />
-          </div>
+          <!-- ✅ Eliminado: .envelopeSeal (ya no existe lacre.png) -->
 
-          <div class="envelopeBottom">
+          <div class="envelopeBottom" aria-hidden="true">
             <div class="envelopeTextBottom envelopeTextBottom--allura">
               Esta invitación es exclusiva para ti
             </div>
             <div class="envelopeHint envelopeHint--allura">Pulsa para abrir</div>
           </div>
 
-          <div class="envelopeDate">26.06.2026</div>
+          <div class="envelopeDate" aria-hidden="true">26.06.2026</div>
         </div>
       </div>
     </button>
