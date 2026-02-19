@@ -9,18 +9,110 @@
   <!-- Fuentes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <!-- Libre Baskerville (títulos) + Allura (subtítulos) + Inter (texto) -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Libre+Baskerville:wght@400;700&family=Allura&display=swap" rel="stylesheet">
 
   <!-- Animate.css -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
   <link rel="stylesheet" href="css/styles.css" />
+
+  <!-- ✅ OVERRIDES (sin tocar tu styles.css): fondos alternos + corte “quebrado” + iconos más grandes en móvil + flechas bonitas -->
+  <style>
+    :root{
+      /* Ajusta si quieres: estos dos colores son los “apartados alternos” */
+      --bgA: var(--ga-bg-a, #f6f1ea);
+      --bgB: var(--ga-bg-b, #efe5d9);
+      --break-h: 44px;
+      --break-h-mobile: 34px;
+    }
+
+    /* ✅ Alternancia de fondo por sección */
+    .section--a{ background: var(--bgA); }
+    .section--b{ background: var(--bgB); }
+    .footer--b{ background: var(--bgB); }
+
+    /* Por si tu .section ya tenía fondo propio: forzamos el de arriba */
+    .section.section--a,
+    .section.section--b{ background-clip: padding-box; }
+
+    /* ✅ Cortes “quebrados” (tipo foto) entre apartados */
+    .sectionBreak{
+      height: var(--break-h);
+      width: 100%;
+      line-height: 0;
+      overflow: hidden;
+      position: relative;
+      z-index: 2;
+    }
+    .sectionBreak svg{
+      display:block;
+      width: 100%;
+      height: 100%;
+    }
+    /* rellenos controlados por clase */
+    .sectionBreak--a-to-b{ background: var(--bgB); }
+    .sectionBreak--b-to-a{ background: var(--bgA); }
+    .sectionBreak--a-to-b .sbFill{ fill: var(--bgA); }
+    .sectionBreak--b-to-a .sbFill{ fill: var(--bgB); }
+
+    @media (max-width: 768px){
+      .sectionBreak{ height: var(--break-h-mobile); }
+    }
+
+    /* ✅ Quitar separadores “línea dorada” entre apartados */
+    .sectionSepMinimal{ display:none !important; }
+
+    /* ✅ Iconos “Momentos clave” más grandes en móvil (y un pelín en web) */
+    .tDot{ transform: translateZ(0); }
+    .tLottie{ display:inline-flex; align-items:center; justify-content:center; }
+    .tIcon{ font-size: 1.25rem; line-height: 1; }
+
+    @media (min-width: 769px){
+      .tIcon{ font-size: 1.35rem; }
+      .tDot{ transform: scale(1.02); }
+    }
+    @media (max-width: 768px){
+      .tDot{ transform: scale(1.22); }
+      .tIcon{ font-size: 1.6rem; }
+      /* texto timeline un poco más grande */
+      .tTime{ font-size: 1.05rem !important; }
+      .tLabel{ font-size: 1.05rem !important; }
+    }
+
+    /* ✅ “Todo lo que necesitas” iconos más grandes en móvil */
+    @media (max-width: 768px){
+      .actionIcon{ font-size: 2.05rem !important; }
+      .actionTitle{ font-size: 1.08rem !important; }
+      .actionSub{ font-size: 0.98rem !important; }
+    }
+
+    /* ✅ Flechas galería: más “premium” (botón circular + SVG) */
+    .galleryNav{
+      width: 44px !important;
+      height: 44px !important;
+      border-radius: 999px !important;
+      display: grid !important;
+      place-items: center !important;
+      font-size: 0 !important; /* ocultamos el carácter */
+      line-height: 0 !important;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .galleryNav svg{
+      width: 20px;
+      height: 20px;
+      opacity: .92;
+    }
+    @media (max-width: 768px){
+      .galleryNav{ width: 48px !important; height: 48px !important; }
+      .galleryNav svg{ width: 22px; height: 22px; }
+    }
+
+    /* ✅ Mejor “click” en imágenes para lightbox (sin cambiar tu JS): */
+    img[data-gallery="true"]{ cursor: zoom-in; }
+  </style>
 </head>
 
 <body>
-
   <!-- INTRO SOBRE -->
   <div id="intro" class="intro" role="dialog" aria-modal="true" aria-label="Invitación">
     <button id="openEnvelope" class="envelopeBtn" type="button" aria-label="Abrir invitación">
@@ -32,8 +124,6 @@
           <div class="envelopeTop">
             <div class="envelopeNamesTop envelopeNamesTop--baskerville">Gema &amp; Alberto</div>
           </div>
-
-          <!-- ✅ Eliminado: .envelopeSeal (ya no existe lacre.png) -->
 
           <div class="envelopeBottom" aria-hidden="true">
             <div class="envelopeTextBottom envelopeTextBottom--allura">
@@ -66,10 +156,9 @@
 
   <main id="site" class="site site--hidden">
 
-    <!-- HERO -->
-    <section class="section hero js-hero-anim" id="inicio">
+    <!-- HERO (PORTADA) — color A (el que ya tenga) -->
+    <section class="section hero js-hero-anim section--a" id="inicio">
       <div class="heroStage">
-
         <div class="heroPhoto heroPhoto--full" data-parallax="hero" style="--hero-image:url('assets/img/hero.jpg');">
           <div class="heroPhoto__bg" aria-hidden="true"></div>
           <img class="heroPhoto__img" src="assets/img/hero.jpg" alt="Gema y Alberto">
@@ -96,75 +185,84 @@
           <div class="hr-gold" aria-hidden="true"></div>
           <div class="heroBand heroBand--bottom" aria-hidden="true"></div>
         </div>
-
       </div>
 
       <div class="heroFade" aria-hidden="true"></div>
     </section>
 
-    <!-- ✅ SEPARADOR PREMIUM: pavo real (se queda) -->
-    <div class="sepImage sepImage--bg" aria-hidden="true"></div>
+<!-- ✅ SEPARADOR PREMIUM: pavo real (mismo color que Faltan) -->
+<!-- ✅ BLOQUE OSCURO SOLO PARA: banda + Faltan -->
+<div class="sectionBlock sectionBlock--faltan">
 
-    <!-- CUENTA ATRÁS -->
-    <section class="section" id="faltan">
-      <div class="frame section__inner">
+  <!-- ✅ SEPARADOR PREMIUM: pavo real -->
+  <div class="sepImage sepImage--bg" aria-hidden="true"></div>
 
-        <div class="sectionHead">
-          <span class="sectionHead__line" aria-hidden="true"></span>
-          <h2 class="sectionHead__title">Faltan…</h2>
-        </div>
+  <!-- ✅ CUENTA ATRÁS -->
+  <section class="section" id="faltan">
+    <div class="frame section__inner">
 
-        <div class="countdownWrap" id="countdown" aria-label="Cuenta atrás" data-parallax="countdown">
-          <div class="cdChip" role="group" aria-label="Cuenta atrás hasta el 26.06.2026 a las 19:00">
-            <div class="cdUnit">
-              <div class="cdNum" data-cd="days">000</div>
-              <div class="cdLab">Días</div>
-            </div>
-
-            <div class="cdDivider" aria-hidden="true"></div>
-
-            <div class="cdUnit">
-              <div class="cdNum" data-cd="hours">00</div>
-              <div class="cdLab">Horas</div>
-            </div>
-
-            <div class="cdDivider" aria-hidden="true"></div>
-
-            <div class="cdUnit">
-              <div class="cdNum" data-cd="mins">00</div>
-              <div class="cdLab">Min</div>
-            </div>
-
-            <div class="cdDivider" aria-hidden="true"></div>
-
-            <div class="cdUnit">
-              <div class="cdNum" data-cd="secs">00</div>
-              <div class="cdLab">Seg</div>
-            </div>
-          </div>
-        </div>
-
-        <p class="sectionHead__sub">Y cada día estamos un poquito más cerca.</p>
-
+      <div class="sectionHead">
+        <span class="sectionHead__line" aria-hidden="true"></span>
+        <h2 class="sectionHead__title">Faltan…</h2>
       </div>
-    </section>
 
-    <!-- ✅ NUEVO SEPARADOR (fino, minimalista, identidad) -->
-    <div class="sectionSepMinimal" aria-hidden="true">
-      <svg class="sectionSepMinimal__svg" viewBox="0 0 1440 28" preserveAspectRatio="none" focusable="false" aria-hidden="true">
-        <path class="sectionSepMinimal__path"
-          d="M0 14
-             C 220 10, 420 18, 640 14
-             S 1060 10, 1280 14
-             S 1440 16, 1440 14" />
-        <circle class="sectionSepMinimal__dot" cx="720" cy="14" r="2.2" />
-      </svg>
+      <div class="countdownWrap" id="countdown" aria-label="Cuenta atrás" data-parallax="countdown">
+        <div class="cdChip" role="group" aria-label="Cuenta atrás hasta el 26.06.2026 a las 19:00">
+
+          <div class="cdUnit">
+            <div class="cdNum" data-cd="days">000</div>
+            <div class="cdLab">Días</div>
+          </div>
+
+          <div class="cdDivider" aria-hidden="true"></div>
+
+          <div class="cdUnit">
+            <div class="cdNum" data-cd="hours">00</div>
+            <div class="cdLab">Horas</div>
+          </div>
+
+          <div class="cdDivider" aria-hidden="true"></div>
+
+          <div class="cdUnit">
+            <div class="cdNum" data-cd="mins">00</div>
+            <div class="cdLab">Min</div>
+          </div>
+
+          <div class="cdDivider" aria-hidden="true"></div>
+
+          <div class="cdUnit">
+            <div class="cdNum" data-cd="secs">00</div>
+            <div class="cdLab">Seg</div>
+          </div>
+
+        </div>
+      </div>
+
+      <p class="sectionHead__sub">Y cada día estamos un poquito más cerca.</p>
+
     </div>
+  </section>
 
-    <!-- UBICACIÓN -->
-    <section class="section" id="ubicacion">
+</div>
+
+<!-- ✅ CORTE REAL hacia el siguiente apartado (déjalo tal cual lo tengas en tu lógica) -->
+<div class="sectionBreak sectionBreak--a-to-b" aria-hidden="true">
+  <svg viewBox="0 0 1440 80" preserveAspectRatio="none" focusable="false" aria-hidden="true">
+    <path class="sbFill"
+      d="M0,0 H1440 V48
+         C1320,70 1240,18 1140,44
+         C1040,74 980,10 880,42
+         C780,78 720,12 620,46
+         C520,76 460,14 360,44
+         C260,72 170,20 0,46 Z">
+    </path>
+  </svg>
+</div>
+
+
+    <!-- UBICACIÓN — color A -->
+    <section class="section section--a" id="ubicacion">
       <div class="frame section__inner">
-
         <div class="sectionHead">
           <span class="sectionHead__line" aria-hidden="true"></span>
           <h2 class="sectionHead__title">Dónde será</h2>
@@ -174,7 +272,6 @@
         <div class="placeGrid">
           <div class="placeCard placeCard--centerDesktop">
             <div class="placeHead">
-
               <div class="placePin placePin--icon" aria-hidden="true">
                 <svg class="pinIcon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                   <path d="M12 22s7-5.2 7-12A7 7 0 0 0 5 10c0 6.8 7 12 7 12z"></path>
@@ -199,26 +296,23 @@
             </div>
           </div>
         </div>
-
       </div>
     </section>
 
-    <!-- ✅ NUEVO SEPARADOR (variación un pelín más marcada) -->
-    <div class="sectionSepMinimal sectionSepMinimal--strong" aria-hidden="true">
-      <svg class="sectionSepMinimal__svg" viewBox="0 0 1440 28" preserveAspectRatio="none" focusable="false" aria-hidden="true">
-        <path class="sectionSepMinimal__path"
-          d="M0 14
-             C 200 20, 420 6, 640 14
-             S 1060 22, 1280 14
-             S 1440 10, 1440 14" />
-        <circle class="sectionSepMinimal__dot" cx="720" cy="14" r="2.2" />
+    <!-- ✅ CORTE “QUEBRADO” (dónde A -> momentos B) -->
+    <div class="sectionBreak sectionBreak--a-to-b" aria-hidden="true">
+      <svg viewBox="0 0 1440 60" preserveAspectRatio="none" focusable="false" aria-hidden="true">
+        <path class="sbFill" d="M0,0 H1440 V30
+          C1320,55 1200,12 1080,30
+          C960,50 840,10 720,30
+          C600,48 480,14 360,30
+          C240,44 120,18 0,30 Z"></path>
       </svg>
     </div>
 
-    <!-- MOMENTOS CLAVE -->
-    <section class="section" id="momentos">
+    <!-- MOMENTOS CLAVE — color B -->
+    <section class="section section--b" id="momentos">
       <div class="frame section__inner">
-
         <div class="sectionHead">
           <span class="sectionHead__line" aria-hidden="true"></span>
           <h2 class="sectionHead__title">Momentos clave</h2>
@@ -227,7 +321,6 @@
 
         <div class="timelineWrap">
           <div class="timeline timeline--pro" id="timeline" data-timeline>
-
             <svg class="timelineLine" viewBox="0 0 10 1100" preserveAspectRatio="none" aria-hidden="true">
               <path class="timelineLine__path" d="M5 0 L5 1100"></path>
             </svg>
@@ -407,22 +500,19 @@
       </div>
     </section>
 
-    <!-- ✅ NUEVO SEPARADOR -->
-    <div class="sectionSepMinimal" aria-hidden="true">
-      <svg class="sectionSepMinimal__svg" viewBox="0 0 1440 28" preserveAspectRatio="none" focusable="false" aria-hidden="true">
-        <path class="sectionSepMinimal__path"
-          d="M0 14
-             C 220 10, 420 18, 640 14
-             S 1060 10, 1280 14
-             S 1440 16, 1440 14" />
-        <circle class="sectionSepMinimal__dot" cx="720" cy="14" r="2.2" />
+    <!-- ✅ CORTE “QUEBRADO” (momentos B -> asistencia A) -->
+    <div class="sectionBreak sectionBreak--b-to-a" aria-hidden="true">
+      <svg viewBox="0 0 1440 60" preserveAspectRatio="none" focusable="false" aria-hidden="true">
+        <path class="sbFill" d="M0,0 H1440 V30
+          C1200,6 1080,56 900,30
+          C720,10 600,52 420,30
+          C240,12 120,48 0,30 Z"></path>
       </svg>
     </div>
 
-    <!-- ASISTENCIA -->
-    <section class="section" id="asistencia">
+    <!-- ASISTENCIA — color A -->
+    <section class="section section--a" id="asistencia">
       <div class="frame section__inner">
-
         <div class="sectionHead">
           <span class="sectionHead__line" aria-hidden="true"></span>
           <h2 class="sectionHead__title">Todo lo que necesitas</h2>
@@ -454,185 +544,142 @@
       </div>
     </section>
 
-    <!-- ✅ NUEVO SEPARADOR (strong) -->
-    <div class="sectionSepMinimal sectionSepMinimal--strong" aria-hidden="true">
-      <svg class="sectionSepMinimal__svg" viewBox="0 0 1440 28" preserveAspectRatio="none" focusable="false" aria-hidden="true">
-        <path class="sectionSepMinimal__path"
-          d="M0 14
-             C 200 20, 420 6, 640 14
-             S 1060 22, 1280 14
-             S 1440 10, 1440 14" />
-        <circle class="sectionSepMinimal__dot" cx="720" cy="14" r="2.2" />
+    <!-- ✅ CORTE “QUEBRADO” (asistencia A -> galería B) -->
+    <div class="sectionBreak sectionBreak--a-to-b" aria-hidden="true">
+      <svg viewBox="0 0 1440 60" preserveAspectRatio="none" focusable="false" aria-hidden="true">
+        <path class="sbFill" d="M0,0 H1440 V32
+          C1260,60 1140,10 960,32
+          C780,54 660,14 480,32
+          C300,52 180,18 0,32 Z"></path>
       </svg>
     </div>
 
-    <!-- GALERÍA -->
-    <section class="section" id="galeria">
+    <!-- GALERÍA — color B -->
+    <section class="section section--b" id="galeria">
       <div class="frame section__inner">
-
         <div class="sectionHead">
           <span class="sectionHead__line" aria-hidden="true"></span>
           <h2 class="sectionHead__title">Nuestros momentos</h2>
         </div>
         <p class="sectionHead__sub">Un pequeño adelanto de lo que hemos vivido… y lo que viene.</p>
 
-<div class="gallery gallery--scroll gallery--polaroid" aria-label="Galería (desliza)">
-  <div class="galleryTrack" role="list">
-    <button class="galleryNav galleryNav--prev" type="button" aria-label="Anterior">‹</button>
-<button class="galleryNav galleryNav--next" type="button" aria-label="Siguiente">›</button>
+        <div class="gallery gallery--scroll gallery--polaroid" aria-label="Galería (desliza)">
+          <div class="galleryTrack" role="list">
 
+            <!-- ✅ Flechas “bonitas” -->
+            <button class="galleryNav galleryNav--prev" type="button" aria-label="Anterior">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </button>
 
-    <!-- FOTO 1 -->
-    <figure class="galleryItem galleryItem--polaroid" role="listitem">
-      <div class="galleryFrame">
-        <img src="assets/galeria/foto1.jpeg"
-             alt="Gema y Alberto en..."
-             class="galleryImg"
-             data-gallery="true"
-             data-full="assets/galeria/foto1.jpeg"
-             loading="lazy"
-             decoding="async">
+            <button class="galleryNav galleryNav--next" type="button" aria-label="Siguiente">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </button>
+
+            <!-- FOTO 1 -->
+            <figure class="galleryItem galleryItem--polaroid" role="listitem">
+              <div class="galleryFrame">
+                <img src="assets/galeria/foto1.jpeg" alt="Gema y Alberto en..." class="galleryImg"
+                     data-gallery="true" data-full="assets/galeria/foto1.jpeg" loading="lazy" decoding="async">
+              </div>
+            </figure>
+
+            <!-- FOTO 2 -->
+            <figure class="galleryItem galleryItem--polaroid" role="listitem">
+              <div class="galleryFrame">
+                <img src="assets/galeria/foto2.jpeg" alt="Momento especial..." class="galleryImg"
+                     data-gallery="true" data-full="assets/galeria/foto2.jpeg" loading="lazy" decoding="async">
+              </div>
+            </figure>
+
+            <!-- FOTO 3 -->
+            <figure class="galleryItem galleryItem--polaroid" role="listitem">
+              <div class="galleryFrame">
+                <img src="assets/galeria/foto3.jpeg" alt="Viaje juntos..." class="galleryImg"
+                     data-gallery="true" data-full="assets/galeria/foto3.jpeg" loading="lazy" decoding="async">
+              </div>
+            </figure>
+
+            <!-- FOTO 4 -->
+            <figure class="galleryItem galleryItem--polaroid" role="listitem">
+              <div class="galleryFrame">
+                <img src="assets/galeria/foto4.jpeg" alt="Celebrando..." class="galleryImg"
+                     data-gallery="true" data-full="assets/galeria/foto4.jpeg" loading="lazy" decoding="async">
+              </div>
+            </figure>
+
+            <!-- FOTO 5 -->
+            <figure class="galleryItem galleryItem--polaroid" role="listitem">
+              <div class="galleryFrame">
+                <img src="assets/galeria/foto5.jpeg" alt="Recuerdo bonito..." class="galleryImg"
+                     data-gallery="true" data-full="assets/galeria/foto5.jpeg" loading="lazy" decoding="async">
+              </div>
+            </figure>
+
+            <!-- FOTO 6 -->
+            <figure class="galleryItem galleryItem--polaroid" role="listitem">
+              <div class="galleryFrame">
+                <img src="assets/galeria/foto6.jpeg" alt="Sonriendo juntos..." class="galleryImg"
+                     data-gallery="true" data-full="assets/galeria/foto6.jpeg" loading="lazy" decoding="async">
+              </div>
+            </figure>
+
+            <!-- FOTO 7 -->
+            <figure class="galleryItem galleryItem--polaroid" role="listitem">
+              <div class="galleryFrame">
+                <img src="assets/galeria/foto7.jpeg" alt="Otro momento..." class="galleryImg"
+                     data-gallery="true" data-full="assets/galeria/foto7.jpeg" loading="lazy" decoding="async">
+              </div>
+            </figure>
+
+            <!-- FOTO 8 -->
+            <figure class="galleryItem galleryItem--polaroid" role="listitem">
+              <div class="galleryFrame">
+                <img src="assets/galeria/foto8.jpeg" alt="Mirada cómplice..." class="galleryImg"
+                     data-gallery="true" data-full="assets/galeria/foto8.jpeg" loading="lazy" decoding="async">
+              </div>
+            </figure>
+
+            <!-- FOTO 9 -->
+            <figure class="galleryItem galleryItem--polaroid" role="listitem">
+              <div class="galleryFrame">
+                <img src="assets/galeria/foto9.jpeg" alt="Recuerdo especial..." class="galleryImg"
+                     data-gallery="true" data-full="assets/galeria/foto9.jpeg" loading="lazy" decoding="async">
+              </div>
+            </figure>
+
+            <!-- FOTO 10 -->
+            <figure class="galleryItem galleryItem--polaroid" role="listitem">
+              <div class="galleryFrame">
+                <img src="assets/galeria/foto10.jpeg" alt="Siempre juntos..." class="galleryImg"
+                     data-gallery="true" data-full="assets/galeria/foto10.jpeg" loading="lazy" decoding="async">
+              </div>
+            </figure>
+
+          </div>
+
+          <div class="galleryHint" aria-hidden="true">Desliza →</div>
+        </div>
       </div>
-    </figure>
+    </section>
 
-    <!-- FOTO 2 -->
-    <figure class="galleryItem galleryItem--polaroid" role="listitem">
-      <div class="galleryFrame">
-        <img src="assets/galeria/foto2.jpeg"
-             alt="Momento especial..."
-             class="galleryImg"
-             data-gallery="true"
-             data-full="assets/galeria/foto2.jpeg"
-             loading="lazy"
-             decoding="async">
-      </div>
-    </figure>
-
-    <!-- FOTO 3 -->
-    <figure class="galleryItem galleryItem--polaroid" role="listitem">
-      <div class="galleryFrame">
-        <img src="assets/galeria/foto3.jpeg"
-             alt="Viaje juntos..."
-             class="galleryImg"
-             data-gallery="true"
-             data-full="assets/galeria/foto3.jpeg"
-             loading="lazy"
-             decoding="async">
-      </div>
-    </figure>
-
-    <!-- FOTO 4 -->
-    <figure class="galleryItem galleryItem--polaroid" role="listitem">
-      <div class="galleryFrame">
-        <img src="assets/galeria/foto4.jpeg"
-             alt="Celebrando..."
-             class="galleryImg"
-             data-gallery="true"
-             data-full="assets/galeria/foto4.jpeg"
-             loading="lazy"
-             decoding="async">
-      </div>
-    </figure>
-
-    <!-- FOTO 5 -->
-    <figure class="galleryItem galleryItem--polaroid" role="listitem">
-      <div class="galleryFrame">
-        <img src="assets/galeria/foto5.jpeg"
-             alt="Recuerdo bonito..."
-             class="galleryImg"
-             data-gallery="true"
-             data-full="assets/galeria/foto5.jpeg"
-             loading="lazy"
-             decoding="async">
-      </div>
-    </figure>
-
-    <!-- FOTO 6 -->
-    <figure class="galleryItem galleryItem--polaroid" role="listitem">
-      <div class="galleryFrame">
-        <img src="assets/galeria/foto6.jpeg"
-             alt="Sonriendo juntos..."
-             class="galleryImg"
-             data-gallery="true"
-             data-full="assets/galeria/foto6.jpeg"
-             loading="lazy"
-             decoding="async">
-      </div>
-    </figure>
-
-    <!-- FOTO 7 -->
-    <figure class="galleryItem galleryItem--polaroid" role="listitem">
-      <div class="galleryFrame">
-        <img src="assets/galeria/foto7.jpeg"
-             alt="Otro momento..."
-             class="galleryImg"
-             data-gallery="true"
-             data-full="assets/galeria/foto7.jpeg"
-             loading="lazy"
-             decoding="async">
-      </div>
-    </figure>
-
-    <!-- FOTO 8 -->
-    <figure class="galleryItem galleryItem--polaroid" role="listitem">
-      <div class="galleryFrame">
-        <img src="assets/galeria/foto8.jpeg"
-             alt="Mirada cómplice..."
-             class="galleryImg"
-             data-gallery="true"
-             data-full="assets/galeria/foto8.jpeg"
-             loading="lazy"
-             decoding="async">
-      </div>
-    </figure>
-
-    <!-- FOTO 9 -->
-    <figure class="galleryItem galleryItem--polaroid" role="listitem">
-      <div class="galleryFrame">
-        <img src="assets/galeria/foto9.jpeg"
-             alt="Recuerdo especial..."
-             class="galleryImg"
-             data-gallery="true"
-             data-full="assets/galeria/foto9.jpeg"
-             loading="lazy"
-             decoding="async">
-      </div>
-    </figure>
-
-    <!-- FOTO 10 -->
-    <figure class="galleryItem galleryItem--polaroid" role="listitem">
-      <div class="galleryFrame">
-        <img src="assets/galeria/foto10.jpeg"
-             alt="Siempre juntos..."
-             class="galleryImg"
-             data-gallery="true"
-             data-full="assets/galeria/foto10.jpeg"
-             loading="lazy"
-             decoding="async">
-      </div>
-    </figure>
-
-  </div>
-
-  <div class="galleryHint" aria-hidden="true">Desliza →</div>
-</div>
-
-    <!-- ✅ NUEVO SEPARADOR -->
-    <div class="sectionSepMinimal" aria-hidden="true">
-      <svg class="sectionSepMinimal__svg" viewBox="0 0 1440 28" preserveAspectRatio="none" focusable="false" aria-hidden="true">
-        <path class="sectionSepMinimal__path"
-          d="M0 14
-             C 220 10, 420 18, 640 14
-             S 1060 10, 1280 14
-             S 1440 16, 1440 14" />
-        <circle class="sectionSepMinimal__dot" cx="720" cy="14" r="2.2" />
+    <!-- ✅ CORTE “QUEBRADO” (galería B -> otros puntos A) -->
+    <div class="sectionBreak sectionBreak--b-to-a" aria-hidden="true">
+      <svg viewBox="0 0 1440 60" preserveAspectRatio="none" focusable="false" aria-hidden="true">
+        <path class="sbFill" d="M0,0 H1440 V30
+          C1320,8 1200,54 1080,30
+          C960,12 840,52 720,30
+          C600,14 480,50 360,30
+          C240,16 120,48 0,30 Z"></path>
       </svg>
     </div>
 
-    <!-- ✅ OTROS PUNTOS DE VISTA -->
-    <section class="section" id="puntos-de-vista">
+    <!-- ✅ OTROS PUNTOS DE VISTA — color A -->
+    <section class="section section--a" id="puntos-de-vista">
       <div class="frame section__inner">
-
         <div class="sectionHead">
           <span class="sectionHead__line" aria-hidden="true"></span>
           <h2 class="sectionHead__title">Otros puntos de vista</h2>
@@ -640,18 +687,15 @@
         <p class="sectionHead__sub">Los dibujos de los peques de Gema… y el retrato que irá en nuestra invitación.</p>
 
         <div class="kidsGrid">
-
           <figure class="kidsFeatured">
             <div class="kidsFeaturedFrame">
-              <img
-                class="opvChosenImg"
-                src="assets/img/dibujo-invitacion.png"
-                alt="Dibujo elegido para la invitación"
-                data-gallery="true"
-                data-full="assets/img/dibujo-invitacion.png"
-                loading="lazy"
-                decoding="async"
-              >
+              <img class="opvChosenImg"
+                   src="assets/img/dibujo-invitacion.png"
+                   alt="Dibujo elegido para la invitación"
+                   data-gallery="true"
+                   data-full="assets/img/dibujo-invitacion.png"
+                   loading="lazy"
+                   decoding="async">
             </div>
             <figcaption class="kidsCaption">Dibujo elegido para la invitación</figcaption>
           </figure>
@@ -661,69 +705,33 @@
               <div class="cube" id="kidsCube" data-cube aria-label="Cubo 3D de dibujos" role="group">
 
                 <button class="cubeFace cubeFace--front" type="button" aria-label="Ver dibujo 1">
-                  <img
-                    src="assets/img/dibujo-1.jpeg"
-                    alt="Dibujo 1"
-                    data-gallery="true"
-                    data-full="assets/img/ninos/dibujo-1.jpg"
-                    loading="lazy"
-                    decoding="async"
-                  >
+                  <img src="assets/img/dibujo-1.jpeg" alt="Dibujo 1"
+                       data-gallery="true" data-full="assets/img/ninos/dibujo-1.jpg" loading="lazy" decoding="async">
                 </button>
 
                 <button class="cubeFace cubeFace--back" type="button" aria-label="Ver dibujo 2">
-                  <img
-                    src="assets/img/dibujo-2.jpeg"
-                    alt="Dibujo 2"
-                    data-gallery="true"
-                    data-full="assets/img/ninos/dibujo-2.jpg"
-                    loading="lazy"
-                    decoding="async"
-                  >
+                  <img src="assets/img/dibujo-2.jpeg" alt="Dibujo 2"
+                       data-gallery="true" data-full="assets/img/ninos/dibujo-2.jpg" loading="lazy" decoding="async">
                 </button>
 
                 <button class="cubeFace cubeFace--right" type="button" aria-label="Ver dibujo 3">
-                  <img
-                    src="assets/img/dibujo-3.jpeg"
-                    alt="Dibujo 3"
-                    data-gallery="true"
-                    data-full="assets/img/ninos/dibujo-3.jpg"
-                    loading="lazy"
-                    decoding="async"
-                  >
+                  <img src="assets/img/dibujo-3.jpeg" alt="Dibujo 3"
+                       data-gallery="true" data-full="assets/img/ninos/dibujo-3.jpg" loading="lazy" decoding="async">
                 </button>
 
                 <button class="cubeFace cubeFace--left" type="button" aria-label="Ver dibujo 4">
-                  <img
-                    src="assets/img/dibujo-4.jpeg"
-                    alt="Dibujo 4"
-                    data-gallery="true"
-                    data-full="assets/img/ninos/dibujo-4.jpg"
-                    loading="lazy"
-                    decoding="async"
-                  >
+                  <img src="assets/img/dibujo-4.jpeg" alt="Dibujo 4"
+                       data-gallery="true" data-full="assets/img/ninos/dibujo-4.jpg" loading="lazy" decoding="async">
                 </button>
 
                 <button class="cubeFace cubeFace--top" type="button" aria-label="Ver dibujo 5">
-                  <img
-                    src="assets/img/dibujo-5.jpeg"
-                    alt="Dibujo 5"
-                    data-gallery="true"
-                    data-full="assets/img/ninos/dibujo-5.jpg"
-                    loading="lazy"
-                    decoding="async"
-                  >
+                  <img src="assets/img/dibujo-5.jpeg" alt="Dibujo 5"
+                       data-gallery="true" data-full="assets/img/ninos/dibujo-5.jpg" loading="lazy" decoding="async">
                 </button>
 
                 <button class="cubeFace cubeFace--bottom" type="button" aria-label="Ver dibujo 6">
-                  <img
-                    src="assets/img/dibujo-6.jpeg"
-                    alt="Dibujo 6"
-                    data-gallery="true"
-                    data-full="assets/img/ninos/dibujo-6.jpg"
-                    loading="lazy"
-                    decoding="async"
-                  >
+                  <img src="assets/img/dibujo-6.jpeg" alt="Dibujo 6"
+                       data-gallery="true" data-full="assets/img/ninos/dibujo-6.jpg" loading="lazy" decoding="async">
                 </button>
 
               </div>
@@ -731,26 +739,23 @@
 
             <div class="kidsCubeHint" aria-hidden="true">Arrastra para girar →</div>
           </div>
-
         </div>
 
       </div>
     </section>
 
-    <!-- ✅ NUEVO SEPARADOR -->
-    <div class="sectionSepMinimal" aria-hidden="true">
-      <svg class="sectionSepMinimal__svg" viewBox="0 0 1440 28" preserveAspectRatio="none" focusable="false" aria-hidden="true">
-        <path class="sectionSepMinimal__path"
-          d="M0 14
-             C 220 10, 420 18, 640 14
-             S 1060 10, 1280 14
-             S 1440 16, 1440 14" />
-        <circle class="sectionSepMinimal__dot" cx="720" cy="14" r="2.2" />
+    <!-- ✅ CORTE “QUEBRADO” (otros puntos A -> final/footer B) -->
+    <div class="sectionBreak sectionBreak--a-to-b" aria-hidden="true">
+      <svg viewBox="0 0 1440 60" preserveAspectRatio="none" focusable="false" aria-hidden="true">
+        <path class="sbFill" d="M0,0 H1440 V32
+          C1200,58 1080,6 900,32
+          C720,52 600,14 420,32
+          C240,46 120,18 0,32 Z"></path>
       </svg>
     </div>
 
-    <!-- FOOTER -->
-    <footer class="footer" id="final">
+    <!-- FOOTER — color B -->
+    <footer class="footer footer--b" id="final">
       <div class="frame footer__inner">
         <div class="footerTop">
           <div class="footerBrand">
@@ -784,7 +789,6 @@
 
   <!-- ✅ Lottie (ligero) -->
   <script defer src="https://unpkg.com/lottie-web/build/player/lottie_light.min.js"></script>
-
   <!-- Tu JS -->
   <script defer src="js/main.js"></script>
 </body>

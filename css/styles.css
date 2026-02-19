@@ -1,17 +1,13 @@
 /* =========================
-   GA WEB — styles.css (PRO) — 2026 (FIXED + OPTIMIZADO)
-   + Timeline Lottie (elegante, creativo, rendimiento PRO)
-   Fixes aplicados:
-   - Fondo unificado (mismo look “portada” en toda la web)
-   - Banda1: ancho completo SIN distorsión (repeat-x), desktop finita, móvil como ahora
-   - Ubicación: botón “Cómo llegar” centrado en móvil; desktop opcional centrado con .placeCard--centerDesktop
-   - Subtítulos Allura: +1 punto aprox y consistentes en toda la web
-   - Galería polaroid: cuadrado perfecto, todas iguales, sin overflow en móvil/web
-   - Track horizontal PRO: sin barras + drag feel
-   - Action cards centradas (Dress/Bus/Tips) en móvil y web
-   - Sección “Otros puntos de vista”: layout (dibujo + cubo) + estilos cubo 3D + fix fondo blanco
-   - Cubo: preparado para drag (touch/mouse) + mantiene clicks en caras (modal)
-   - ✅ Timeline: soporte para Lottie (contenedor .tLottie) + fallback emoji + animación on-viewport (clase .is-in)
+   GA WEB — styles.css (PRO) — 2026
+   FIXED + OPTIMIZADO (V2)
+   Cambios clave (de lo último que hablamos):
+   - ✅ Alternancia de fondos por secciones (A/B) + soporte .footer--b
+   - ✅ Separadores “quebrados” .sectionBreak (para el efecto de corte entre apartados)
+   - ✅ Eliminadas las líneas/separadores dorados entre apartados (.sectionSepMinimal oculto)
+   - ✅ Timeline: iconos + textos más grandes en móvil (y más legibles)
+   - ✅ Flechas galería “bonitas” (botón circular + SVG), sin depender del carácter ‹ ›
+   - ✅ Limpieza: eliminado duplicado de .musicBtn y pequeños ajustes de consistencia
    ========================= */
 
 /* =========================
@@ -30,14 +26,11 @@
 
   --font: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 
-  /* ✅ coherente con el stack: Libre Baskerville (títulos), Allura (subtítulos), Inter (texto)
-     Dejo --font-display porque lo usas en varios sitios (hero, h3, footer, etc.)
-     Si queréis 100% purista: cambiadlo a var(--font-title) y listo. */
   --font-display: "Libre Baskerville", Georgia, "Times New Roman", serif;
-
   --font-title: "Libre Baskerville", Georgia, "Times New Roman", serif;
   --font-script: "Allura", cursive;
 
+  /* granate */
   --garnet: #6b1f2b;
 
   --radius-xl: 28px;
@@ -61,11 +54,21 @@
   --timeline-line: rgba(200,162,74,.28);
   --timeline-line-strong: rgba(200,162,74,.50);
 
-  /* ✅ Timeline motion tokens */
   --ease-out: cubic-bezier(.16, 1, .3, 1);
 
   /* Cubo */
   --cube-z: 150px;
+
+  /* ✅ Alternancia fondos A/B (puedes ajustar si quieres) */
+  --bgA: #f6f1ea;
+  --bgB: #efe5d9;
+
+  /* “corte quebrado” */
+  --break-h: 44px;
+  --break-h-mobile: 34px;
+
+  /* Separadores (por si algún día vuelves a activarlos) */
+  --garnet-ink: #C8A24A;
 }
 
 /* =========================
@@ -84,7 +87,7 @@ body{
   font-family: var(--font);
   color: var(--ink);
 
-  /* ✅ Fondo unificado (portada) */
+  /* Fondo global (sigue dando ese look “portada”) */
   background:
     radial-gradient(1100px 640px at 18% 0%, rgba(200,162,74,.12), rgba(200,162,74,0) 62%),
     radial-gradient(980px 600px at 82% 6%, rgba(22,22,22,.07), rgba(22,22,22,0) 62%),
@@ -111,6 +114,44 @@ a{ color: inherit; text-decoration: none; }
 .section{
   position: relative;
   padding: var(--section-pad) 0;
+}
+
+/* =========================
+   ✅ Fondos alternos por sección
+   (usados con .section--a / .section--b en el HTML)
+   ========================= */
+.section--a{ background: var(--bgA); }
+.section--b{ background: var(--bgB); }
+.footer--b{ background: var(--bgB); }
+
+/* Evita raros con sombras/clip */
+.section.section--a,
+.section.section--b{ background-clip: padding-box; }
+
+/* =========================
+   ✅ Corte “quebrado” entre apartados
+   (usado con .sectionBreak en el HTML)
+   ========================= */
+.sectionBreak{
+  height: var(--break-h);
+  width: 100%;
+  line-height: 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+}
+.sectionBreak svg{
+  display:block;
+  width: 100%;
+  height: 100%;
+}
+.sectionBreak--a-to-b{ background: var(--bgB); }
+.sectionBreak--b-to-a{ background: var(--bgA); }
+.sectionBreak--a-to-b .sbFill{ fill: var(--bgA); }
+.sectionBreak--b-to-a .sbFill{ fill: var(--bgB); }
+
+@media (max-width: 768px){
+  .sectionBreak{ height: var(--break-h-mobile); }
 }
 
 /* Helpers legacy */
@@ -178,7 +219,7 @@ a{ color: inherit; text-decoration: none; }
 }
 
 /* =========================
-   Header de sección (línea + Baskerville + Allura)
+   Header de sección
    ========================= */
 .sectionHead{
   display:flex;
@@ -203,8 +244,6 @@ a{ color: inherit; text-decoration: none; }
   color: var(--garnet);
   text-shadow: 0 16px 34px rgba(0,0,0,.06);
 }
-
-/* ✅ Subtítulos: un pelín más grandes, consistentes en toda la web */
 .sectionHead__sub{
   margin: 6px 0 0;
   font-family: var(--font-script);
@@ -214,11 +253,8 @@ a{ color: inherit; text-decoration: none; }
 }
 
 /* =========================
-   INTRO (SOBRE) — FINAL PRO (WEB OK + MÓVIL CLAVADO)
-   - lacre ya fusionado en assets/img/envelope.png (NO .envelopeSeal en HTML)
-   - en móvil: 3 textos totalmente independientes (como la fecha)
+   INTRO (SOBRE)
    ========================= */
-
 .intro{
   position: fixed;
   inset: 0;
@@ -243,7 +279,7 @@ a{ color: inherit; text-decoration: none; }
 }
 
 .envelopeCard{
-  position: relative; /* ✅ ancla los absolutos al sobre */
+  position: relative;
   width: 100%;
   border-radius: var(--card-radius);
   overflow: hidden;
@@ -252,13 +288,8 @@ a{ color: inherit; text-decoration: none; }
   transition: transform 900ms cubic-bezier(.2,.8,.2,1), filter 900ms cubic-bezier(.2,.8,.2,1);
 }
 
-.envelopeImg{
-  display:block;
-  width:100%;
-  height:auto;
-}
+.envelopeImg{ display:block; width:100%; height:auto; }
 
-/* Luz suave para “papel” */
 .envelopeCard::after{
   content:"";
   position:absolute;
@@ -275,14 +306,9 @@ a{ color: inherit; text-decoration: none; }
   padding: 18px;
   text-align: center;
   color: rgba(34,34,34,.84);
-
-  /* ✅ asegura que los absolutos (móvil) se referencian AQUÍ también */
   pointer-events: none;
 }
 
-/* =========================
-   TOP: nombres
-   ========================= */
 .envelopeTop{
   position:absolute;
   top: 10%;
@@ -308,17 +334,9 @@ a{ color: inherit; text-decoration: none; }
   text-shadow: 0 12px 26px rgba(0,0,0,.08);
 }
 
-/* =========================
-   SEAL: deshabilitado (lacre ya viene en envelope.png)
-   ========================= */
 .envelopeSeal,
-.envelopeSeal__logo{
-  display:none !important;
-}
+.envelopeSeal__logo{ display:none !important; }
 
-/* =========================
-   DESKTOP/TABLET (flujo normal, se ve bien en web)
-   ========================= */
 .envelopeBottom{
   position:absolute;
   left: 50%;
@@ -335,7 +353,6 @@ a{ color: inherit; text-decoration: none; }
   font-family: var(--font-script);
   font-size: clamp(16px, 2.2vw, 22px);
   color: rgba(0,0,0,.72);
-  opacity: 1;
   max-width: 26ch;
   margin: 0 auto;
   line-height: 1.12;
@@ -348,11 +365,9 @@ a{ color: inherit; text-decoration: none; }
   font-size: 18px;
   letter-spacing: .25px;
   color: rgba(0,0,0,.80);
-  opacity: 1;
   text-shadow: 0 1px 0 rgba(255,255,255,.30);
 }
 
-/* Fecha (siempre independiente) */
 .envelopeDate{
   position:absolute;
   left: 0;
@@ -363,11 +378,9 @@ a{ color: inherit; text-decoration: none; }
   font-weight: 900;
   text-transform: uppercase;
   color: rgba(0,0,0,.84);
-  opacity: 1;
   pointer-events:none;
 }
 
-/* Hover / open */
 @media (hover:hover){
   .envelopeBtn:hover .envelopeCard{ transform: translateY(-6px) scale(1.01); }
 }
@@ -376,36 +389,20 @@ a{ color: inherit; text-decoration: none; }
   filter: brightness(1.03);
 }
 
-/* =========================
-   MOBILE (≤430px) — 3 TEXTOS INDEPENDIENTES Y CLAVADOS
-   ✅ “Esta invitación…” arriba
-   ✅ “Pulsa para abrir” en medio
-   ✅ Fecha abajo (como ya estaba)
-   ========================= */
 @media (max-width: 430px){
-
-  /* ✅ el overlay es el “marco” para posicionar */
-  .envelopeOverlay{
-    position: absolute;
-    inset: 0;
-  }
-
-  /* ✅ apagamos el layout del contenedor para que NO arrastre nada */
+  .envelopeOverlay{ position: absolute; inset: 0; }
   .envelopeBottom{
     position: static !important;
-    left: auto;
-    bottom: auto;
     transform: none;
     width: auto;
-    display: contents; /* ✅ evita que el contenedor afecte */
+    display: contents;
   }
 
-  /* 1) “Esta invitación…” ARRIBA (ajusta solo este valor si quieres) */
   .envelopeTextBottom{
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    bottom: 17.0%;            /* 👈 ARRIBA: sube/baja SOLO este */
+    bottom: 17.0%;
     width: min(360px, 76%);
     max-width: 24ch;
     margin: 0;
@@ -413,18 +410,16 @@ a{ color: inherit; text-decoration: none; }
     line-height: 1.10;
   }
 
-  /* 2) “Pulsa para abrir” EN MEDIO */
   .envelopeHint{
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    bottom: 8%;             /* 👈 MEDIO: sube/baja SOLO este */
+    bottom: 8%;
     width: min(360px, 76%);
     margin: 0;
     text-align: center;
   }
 
-  /* 3) Fecha ABAJO (perfecta) */
   .envelopeDate{
     bottom: 3%;
     font-size: 11px;
@@ -432,34 +427,7 @@ a{ color: inherit; text-decoration: none; }
 }
 
 /* =========================
-   MUSIC BUTTON
-   ========================= */
-.musicBtn{
-  position: fixed;
-  top: 14px;
-  right: 14px;
-  z-index: 9000;
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  border: 1px solid rgba(22,22,22,.12);
-  background: rgba(245,241,231,.72);
-  box-shadow: 0 14px 34px rgba(0,0,0,.10);
-  cursor: pointer;
-  font-weight: 900;
-  color: rgba(22,22,22,.86);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-.musicBtn.is-on{
-  border-color: rgba(200,162,74,.55);
-  background: rgba(255,255,255,.78);
-}
-
-
-
-/* =========================
-   MUSIC BUTTON
+   MUSIC BUTTON (✅ sin duplicados)
    ========================= */
 .musicBtn{
   position: fixed;
@@ -534,7 +502,7 @@ a{ color: inherit; text-decoration: none; }
 }
 
 /* =========================
-   HERO (contain + blur behind) — 50/50 desktop
+   HERO
    ========================= */
 .hero{ padding: 0 !important; margin: 0 !important; }
 
@@ -725,7 +693,6 @@ a{ color: inherit; text-decoration: none; }
 
   animation: shine 3.6s ease-in-out infinite;
 }
-
 @keyframes shine{
   0%{ background-position: 0% 50%; }
   50%{ background-position: 100% 50%; }
@@ -741,9 +708,7 @@ a{ color: inherit; text-decoration: none; }
 }
 
 /* =========================
-   ✅ BANDA1 como BACKGROUND (ancho completo sin distorsión)
-   - Mobile: alto como ahora
-   - Desktop: finita
+   BANDA1 (repeat-x)
    ========================= */
 .sepImage.sepImage--bg{
   width: 100%;
@@ -757,87 +722,19 @@ a{ color: inherit; text-decoration: none; }
   background-size: auto 100%;
   filter: drop-shadow(0 10px 18px rgba(0,0,0,.10));
 }
-
-/* Móvil (como ahora) */
 @media (max-width: 979px){
   .sepImage.sepImage--bg{ height: 170px; }
 }
-
-/* Desktop (finita) */
 @media (min-width: 980px){
   .sepImage.sepImage--bg{ height: 70px; }
 }
 
 /* =========================
-   ✅ SEPARADOR MINIMAL — G&A (EDITORIAL)
-   - sustituye al separador “ola” anterior
-   - fino, elegante, coherente con vuestra paleta
-   - usa el granate real de la web
+   ✅ Separadores “minimal” (ANTES)
+   Ahora los ocultamos porque ya usamos .sectionBreak
    ========================= */
-
-/* (Opcional) ajusta si quieres que el granate sea EXACTAMENTE #68212A */
-:root{
-  --garnet-ink: #C8A24A; /* nuevo token para trazos */
-}
-
-/* Nuevo separador */
-.sectionSepMinimal{
-  width: 100%;
-  margin: clamp(18px, 3vw, 34px) 0;
-  pointer-events: none;
-  opacity: .95;
-}
-
-/* Centramos el SVG y lo dejamos respirando */
-.sectionSepMinimal__svg{
-  display: block;
-  width: min(1180px, calc(100% - 40px));
-  height: 22px;
-  margin: 0 auto;
-}
-
-/* Línea orgánica ultra sutil */
-.sectionSepMinimal__path{
-  fill: none;
-  stroke: color-mix(in srgb, var(--garnet-ink) 62%, transparent);
-  stroke-width: 1.65;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-  filter: drop-shadow(0 10px 18px rgba(0,0,0,.06));
-}
-
-/* Micro-acento central (punto) */
-.sectionSepMinimal__dot{
-  fill: color-mix(in srgb, var(--garnet-ink) 48%, transparent);
-}
-
-/* Versión un pelín más marcada para alternar secciones */
-.sectionSepMinimal--strong .sectionSepMinimal__path{
-  stroke: color-mix(in srgb, var(--garnet-ink) 78%, transparent);
-  stroke-width: 1.85;
-}
-.sectionSepMinimal--strong .sectionSepMinimal__dot{
-  fill: color-mix(in srgb, var(--garnet-ink) 62%, transparent);
-}
-
-/* Responsive fino: en móvil aún más ligero */
-@media (max-width: 520px){
-  .sectionSepMinimal__svg{ width: min(980px, calc(100% - 28px)); height: 20px; }
-  .sectionSepMinimal__path{ stroke-width: 1.45; }
-}
-
-/* Fallback por si algún navegador no soporta color-mix() */
-@supports not (color: color-mix(in srgb, #000 50%, transparent)){
-  .sectionSepMinimal__path{ stroke: rgba(104,33,42,.55); } /* #68212A */
-  .sectionSepMinimal__dot{ fill: rgba(104,33,42,.40); }
-  .sectionSepMinimal--strong .sectionSepMinimal__path{ stroke: rgba(104,33,42,.72); }
-  .sectionSepMinimal--strong .sectionSepMinimal__dot{ fill: rgba(104,33,42,.55); }
-}
-
-/* Seguridad: si te queda algún .sectionSep viejo por error, lo ocultamos */
-.sectionSep{ display: none !important; }
-
+.sectionSepMinimal{ display:none !important; }
+.sectionSep{ display:none !important; }
 
 /* =========================
    BUTTONS
@@ -882,20 +779,16 @@ a{ color: inherit; text-decoration: none; }
   align-items: center;
   padding: 12px 0;
 }
-
 .cdChip{
   width: min(820px, 100%);
   display: grid;
   grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
   align-items: center;
-  gap: 0;
   padding: 14px 14px;
   border-radius: 26px;
-
   background: var(--card-white);
   border: 1px solid rgba(22,22,22,.10);
   box-shadow: 0 18px 52px rgba(0,0,0,.10);
-
   position: relative;
   clip-path: polygon(3% 0%, 97% 0%, 100% 18%, 100% 82%, 97% 100%, 3% 100%, 0% 82%, 0% 18%);
 }
@@ -908,7 +801,6 @@ a{ color: inherit; text-decoration: none; }
   pointer-events:none;
   opacity:.9;
 }
-
 .cdUnit{
   display: grid;
   justify-items: center;
@@ -932,20 +824,16 @@ a{ color: inherit; text-decoration: none; }
   font-weight: 900;
   text-transform: uppercase;
 }
-
 .cdDivider{
   width: 1px;
   height: 44px;
   background: linear-gradient(180deg, rgba(200,162,74,0), rgba(200,162,74,.45), rgba(200,162,74,0));
   opacity: .9;
 }
-
 @media (max-width: 520px){
   .cdChip{ padding: 12px 10px; border-radius: 22px; }
   .cdDivider{ height: 38px; }
 }
-
-/* ✅ Faltan: subtítulo centrado sin romper el tamaño global */
 #faltan .sectionHead__sub{ text-align: center; }
 
 /* =========================
@@ -965,7 +853,6 @@ a{ color: inherit; text-decoration: none; }
    UBICACIÓN
    ========================= */
 .placeGrid{ margin-top: 18px; display:grid; grid-template-columns: 1fr; gap: 14px; }
-
 .placeCard{
   border-radius: var(--radius-xl);
   box-shadow: 0 18px 52px rgba(0,0,0,.10);
@@ -973,7 +860,6 @@ a{ color: inherit; text-decoration: none; }
   position: relative;
   overflow: hidden;
 }
-
 .placeHead{ display:flex; gap: 14px; align-items: flex-start; position: relative; z-index: 1; }
 .placeHead__text{ flex: 1; min-width: 0; }
 .placeTag{
@@ -1013,7 +899,6 @@ a{ color: inherit; text-decoration: none; }
   filter: drop-shadow(0 10px 16px rgba(0,0,0,.08));
 }
 
-/* ✅ móvil: centra el botón de maps */
 @media (max-width: 520px){
   .placeBtns{ justify-content: center; }
   .placeBtns .btn{
@@ -1021,8 +906,6 @@ a{ color: inherit; text-decoration: none; }
     justify-content: center;
   }
 }
-
-/* ✅ desktop: si usas .placeCard--centerDesktop, centra toda la tarjeta */
 @media (min-width: 980px){
   .placeCard--centerDesktop .placeHead{
     flex-direction: column;
@@ -1040,7 +923,6 @@ a{ color: inherit; text-decoration: none; }
    TIMELINE (PRO + Lottie)
    ========================= */
 .timelineWrap{ margin-top: 24px; display:grid; place-items:center; }
-
 .timeline{
   width: min(920px, 100%);
   position: relative;
@@ -1078,11 +960,10 @@ a{ color: inherit; text-decoration: none; }
   gap: 12px;
   padding: 18px 0;
   z-index: 1;
-
-  /* ✅ “premium reveal” controlado por JS (on viewport) */
   opacity: 1;
   transform: none;
 }
+
 @media (min-width: 860px){
   .tItem{ grid-template-columns: 1fr 72px 1fr; align-items:center; }
   .tSide--left{ grid-column: 1; }
@@ -1090,7 +971,6 @@ a{ color: inherit; text-decoration: none; }
   .tSide--right{ grid-column: 3; }
 }
 
-/* ✅ Estado inicial (si JS añade .is-ready al timeline) */
 .timeline.is-ready .tItem{
   opacity: 0;
   transform: translateY(12px);
@@ -1101,9 +981,11 @@ a{ color: inherit; text-decoration: none; }
   transition: opacity 520ms var(--ease-out), transform 520ms var(--ease-out);
 }
 
-/* Dot */
+/* Dot (desktop) */
 .tDot{
-  width: 85px; height: 85px; border-radius: 999px; display:grid; place-items:center;
+  width: 86px; height: 86px;
+  border-radius: 999px;
+  display:grid; place-items:center;
   background: rgba(255,255,255,.92);
   border: 1px solid rgba(200,162,74,.26);
   box-shadow: 0 16px 36px rgba(0,0,0,.08);
@@ -1111,7 +993,6 @@ a{ color: inherit; text-decoration: none; }
   position: relative;
 }
 
-/* ✅ Lottie container: ocupa el dot y centra SVG; fallback emoji por debajo */
 .tLottie{
   width: 100%;
   height: 100%;
@@ -1119,21 +1000,16 @@ a{ color: inherit; text-decoration: none; }
   place-items: center;
   border-radius: 999px;
   overflow: hidden;
-
-  /* el icono no debe “mover” layout cuando cargue */
   transform: translateZ(0);
 }
-
-/* El SVG de lottie lo inyecta lottie-web dentro; le damos tamaño */
 .tLottie > svg{
   width: 72%;
   height: 72%;
   display: block;
 }
 
-/* fallback emoji (si no hay lottie / reduce motion) */
 .tIcon{
-  font-size: 18px;
+  font-size: 20px; /* desktop */
   line-height: 1;
   position: absolute;
   inset: 0;
@@ -1141,13 +1017,8 @@ a{ color: inherit; text-decoration: none; }
   place-items: center;
   opacity: .95;
 }
+.tDot.has-lottie .tIcon{ opacity: 0; }
 
-/* cuando lottie esté activo, el JS pondrá .has-lottie en .tDot */
-.tDot.has-lottie .tIcon{
-  opacity: 0;
-}
-
-/* Pulse */
 .tPulse{
   position:absolute; inset: -2px; border-radius: 999px;
   border: 1px solid rgba(22,22,22,.10);
@@ -1160,15 +1031,12 @@ a{ color: inherit; text-decoration: none; }
   100%{ transform: scale(1.14); opacity:0; }
 }
 
-/* Card */
 .tCard{
   border-radius: var(--radius-xl);
   padding: 14px 16px;
   box-shadow: 0 14px 38px rgba(0,0,0,.08);
   max-width: 460px;
   position: relative;
-
-  /* ✅ sutil “borde editorial” */
   outline: 1px solid rgba(200,162,74,.12);
   outline-offset: -1px;
 }
@@ -1192,20 +1060,23 @@ a{ color: inherit; text-decoration: none; }
   line-height: 1.35;
 }
 
+/* ✅ Móvil: iconos + texto más grandes (lo que pediste) */
 @media (max-width: 859px){
   .timelineLine__path{
     stroke: var(--timeline-line-strong);
     stroke-width: 2.0;
   }
+
   .tItem{
-    grid-template-columns: 1fr 60px 1fr;
+    grid-template-columns: 1fr 72px 1fr; /* más aire que antes */
     align-items: center;
-    gap: 10px;
-    padding: 14px 0;
+    gap: 12px;
+    padding: 16px 0;
   }
-  .tDot{ width: 44px; height: 44px; }
-  .tIcon{ font-size: 16px; }
-  .tLottie > svg{ width: 74%; height: 74%; }
+
+  .tDot{ width: 58px; height: 58px; }      /* ✅ MÁS GRANDE */
+  .tIcon{ font-size: 22px; }               /* ✅ MÁS GRANDE */
+  .tLottie > svg{ width: 76%; height: 76%; }
 
   .tCard{
     width: 100%;
@@ -1213,6 +1084,11 @@ a{ color: inherit; text-decoration: none; }
     padding: 12px 12px;
     border-radius: 22px;
   }
+
+  /* ✅ texto más grande y legible */
+  .tTime{ font-size: 13px; }
+  .tLabel{ font-size: 15px; line-height: 1.32; }
+
   .tSide[aria-hidden="true"]{ visibility: hidden; }
   .tSide--left{ padding-right: 8px; }
   .tSide--right{ padding-left: 8px; }
@@ -1320,7 +1196,6 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 .rsvpActions{ margin-top: 14px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
 .rsvpFine{ margin: 10px 0 0; font-size: 12px; color: rgba(22,22,22,.55); line-height: 1.5; }
 
-/* Hover card */
 .hoverCardInner{
   position: relative;
   width: 100%;
@@ -1380,7 +1255,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 }
 
 /* =========================
-   ✅ ASISTENCIA CARDS centradas
+   ASISTENCIA CARDS (centradas)
    ========================= */
 .actionGrid{
   margin-top: 22px;
@@ -1407,7 +1282,11 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 
   min-height: 168px;
 }
-.actionCard:hover{ transform: translateY(-2px); box-shadow: 0 22px 60px rgba(0,0,0,.14); background: rgba(255,255,255,.98); }
+.actionCard:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 22px 60px rgba(0,0,0,.14);
+  background: rgba(255,255,255,.98);
+}
 
 @media (max-width: 979px){
   .actionGrid--centerMobile{ justify-items: center; }
@@ -1415,7 +1294,9 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 }
 
 .actionIcon{
-  width: 48px; height: 48px; border-radius: 16px; display:grid; place-items:center;
+  width: 48px; height: 48px;
+  border-radius: 16px;
+  display:grid; place-items:center;
   background: rgba(255,255,255,.92);
   border: 1px solid rgba(200,162,74,.30);
   box-shadow: 0 14px 34px rgba(0,0,0,.08);
@@ -1446,10 +1327,17 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   font-size: 13px;
 }
 
+/* ✅ Móvil: iconos y textos un pelín más grandes */
+@media (max-width: 768px){
+  .actionIcon{ width: 54px; height: 54px; font-size: 22px; }
+  .actionTitle{ font-size: 13px; }
+  .actionSub{ font-size: 15px; }
+}
+
 /* =========================
-   ✅ GALERÍA PRO + POLAROID PERFECTO
+   GALERÍA PRO + POLAROID
    ========================= */
-.gallery{ margin-top: 22px; }
+.gallery{ margin-top: 22px; position: relative; }
 
 .galleryTrack{
   display: grid;
@@ -1484,7 +1372,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   border: 4px solid rgba(22,22,22,.88);
   box-shadow: 0 20px 60px rgba(0,0,0,.16);
   padding: 10px;
-  cursor: pointer;
+  cursor: zoom-in;
   transform: translateZ(0);
   transition: transform 180ms ease;
   overflow: hidden;
@@ -1536,9 +1424,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   -webkit-user-drag: none;
 }
 
-/* Flechas galería (solo desktop) */
-.gallery{ position: relative; }
-
+/* ✅ Flechas galería “bonitas” (desktop) + SVG */
 .galleryNav{
   display: none;
   position: absolute;
@@ -1551,20 +1437,28 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   background: rgba(255,255,255,.78);
   box-shadow: 0 18px 44px rgba(0,0,0,.12);
   cursor: pointer;
-  font-size: 28px;
-  line-height: 1;
-  font-weight: 900;
+  font-size: 0;          /* ✅ ya no usamos ‹ › */
+  line-height: 0;
   color: rgba(22,22,22,.80);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 5;
+  display: grid;
+  place-items: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.galleryNav svg{
+  width: 20px;
+  height: 20px;
+  opacity: .92;
 }
 
 .galleryNav--prev{ left: -10px; }
 .galleryNav--next{ right: -10px; }
 
 @media (min-width: 980px){
-  .galleryNav{ display: grid; place-items: center; }
+  .galleryNav{ display: grid; }
   .galleryNav:hover{ transform: translateY(-50%) scale(1.04); }
 }
 
@@ -1573,14 +1467,13 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   .galleryNav{ display: none !important; }
 }
 
-
 /* =========================
    Ring3D (por ahora oculto)
    ========================= */
 .ring3dWrap{ display:none; }
 
 /* =========================
-   ✅ OTROS PUNTOS DE VISTA (dibujo + cubo)
+   OTROS PUNTOS DE VISTA (dibujo + cubo)
    ========================= */
 .kidsGrid{
   margin-top: 22px;
@@ -1597,7 +1490,6 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 }
 
 .kidsFeatured{ margin: 0; }
-
 .kidsFeaturedFrame{
   border-radius: 22px;
   background: transparent;
@@ -1605,14 +1497,12 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   box-shadow: none;
   padding: 0;
 }
-
 .kidsFeaturedImg{
   width: 100%;
   height: auto;
   display: block;
   border-radius: 0;
 }
-
 .kidsCaption{
   margin-top: 10px;
   font-size: 12px;
@@ -1709,9 +1599,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   100%{ transform: rotateX(-16deg) rotateY(360deg); }
 }
 
-/* =========================================
-   FIX DIBUJO IZQUIERDA (PNG sin fondo)
-   ========================================= */
+/* Dibujo izquierda (PNG sin fondo) */
 .opvChosenImg{
   display:block;
   width:100%;
@@ -1724,7 +1612,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   cursor: zoom-in;
 }
 
-/* =========================================
+/* =========================
    FOOTER
    ========================= */
 .footer{ padding: 42px 0 70px; }
@@ -1814,4 +1702,18 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   .hoverCardInner{ transition: none !important; }
   .cube{ animation: none !important; }
   .tPulse{ animation: none !important; opacity: .15 !important; }
+}
+
+/* ✅ SOLO este tramo (banda + Faltan) va con el color “oscuro” */
+.sectionBlock--faltan{
+  background: var(--bgB); /* <-- aquí va TU color oscuro */
+}
+
+/* ✅ evita que el body claro se cuele detrás de la banda */
+.sectionBlock--faltan .sepImage.sepImage--bg{
+  background-color: var(--bgB);
+}
+
+.sepImage.sepImage--bg{
+  background-color: var(--bgB);
 }

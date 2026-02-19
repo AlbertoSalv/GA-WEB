@@ -1,23 +1,32 @@
 /* =========================================================
-   GA WEB — main.js (PRO) — FIX + OPTIMIZADO (2026)
+   GA WEB — main.js (PRO) — FIX + OPTIMIZADO (2026) — V2
+   ✅ Incluye TODO lo hablado + arregla el “código pegado dentro del keydown”
    - Intro sobre + fadeIn (animate.css)
    - Countdown exacta: 26/06/2026 19:00 Europe/Madrid
    - RSVP: abre/cierra + estado “recibido” (modo demo)
    - Timeline:
        • línea se dibuja al entrar en pantalla
        • items reveal on-viewport (premium)
-       • iconos Lottie: load ligero + play once al entrar (fallback emoji)
+       • iconos Lottie: carga ligera + play once al entrar (fallback emoji)
    - Música: toggle sin autoplay + estado real
    - Microparallax suave (hero + countdown, solo desktop)
-   - Modales accesibles + click-to-open (galería + cubo)
-   - Galería: drag-to-scroll pro (mouse + touch) + evita “click” tras arrastrar
-   - Cubo: drag rotate (mouse + touch) + inercia + auto-rotate + click en caras abre modal
+   - Modales accesibles + click-to-open (galería + cubo) + scroll-lock robusto
+   - Galería:
+       • drag-to-scroll pro (mouse + touch)
+       • flechas (desktop) por “paso” de tarjeta
+       • evita “click fantasma” tras drag (abre imagen solo si fue click real)
+   - Cubo:
+       • drag rotate (mouse + touch) + inercia + auto-rotate
+       • click en caras abre modal (y no se rompe por drag)
    - Add to Calendar (.ics)
    ========================================================= */
 
 (() => {
   "use strict";
 
+  // =========================================================
+  // Utils
+  // =========================================================
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
@@ -239,22 +248,21 @@
     const items = $$("[data-tl-item]", timeline);
     const lottieHolders = $$("[data-lottie]", timeline);
 
-    // Si no hay items, no hacemos nada
     if (!items.length) return;
 
-    // Si reduce motion, no animamos: dejamos contenido visible y emojis.
     if (prefersReducedMotion || !("IntersectionObserver" in window)) {
-      // Asegura que no quede en estado "is-ready" oculto
       timeline.classList.remove("is-ready");
       items.forEach((it) => it.classList.add("is-in"));
       return;
     }
 
-    // Activamos estado inicial (CSS hará los items invisibles hasta entrar)
     timeline.classList.add("is-ready");
 
-    // Carga de Lottie (si existe librería). Si no existe, solo reveal.
-    const hasLottieLib = typeof window.lottie !== "undefined" && window.lottie && typeof window.lottie.loadAnimation === "function";
+    const hasLottieLib =
+      typeof window.lottie !== "undefined" &&
+      window.lottie &&
+      typeof window.lottie.loadAnimation === "function";
+
     const instances = new Map();
 
     if (hasLottieLib && lottieHolders.length) {
@@ -278,14 +286,13 @@
             }
           });
 
-          // Estado inicial: frame 0, y ocultamos emoji fallback cuando haya lottie
           anim.goToAndStop(0, true);
           instances.set(holder, anim);
 
           const dot = holder.closest(".tDot");
           if (dot) dot.classList.add("has-lottie");
         } catch {
-          // Si falla una animación, simplemente dejamos el emoji
+          // fallback emoji
         }
       });
     }
@@ -296,10 +303,8 @@
           if (!entry.isIntersecting) return;
           const item = entry.target;
 
-          // Reveal item
           item.classList.add("is-in");
 
-          // Play Lottie once (si existe y no se ha reproducido)
           const holder = $("[data-lottie]", item);
           const anim = holder ? instances.get(holder) : null;
 
@@ -350,7 +355,6 @@
 
   function closeRSVP() {
     if (!rsvpPanel) return;
-
     rsvpPanel.classList.remove("is-open");
     rsvpPanel.setAttribute("aria-hidden", "true");
     if (rsvpToggle) rsvpToggle.setAttribute("aria-expanded", "false");
@@ -421,7 +425,6 @@
   function saveMusicPref(on) {
     try { localStorage.setItem(MUSIC_KEY, on ? "1" : "0"); } catch {}
   }
-
   function loadMusicPref() {
     try { return localStorage.getItem(MUSIC_KEY) === "1"; } catch { return false; }
   }
@@ -558,10 +561,8 @@
   }
 
   function downloadICS() {
-    // Evento empieza 26/06/2026 19:00 (Madrid)
     const startUtcMs = tzDateToUtcMs({ ...EVENT, hour: 19, minute: 0, second: 0 });
 
-    // Termina 27/06/2026 02:00 (Madrid)
     const endUtcMs = tzDateToUtcMs({
       year: 2026, month: 6, day: 27, hour: 2, minute: 0, second: 0, timeZone: EVENT.timeZone
     });
@@ -697,33 +698,46 @@
     });
   }
 
-  // ✅ Click-to-open universal: data-gallery="true" + (data-full opcional)
-  function bindGalleryClickables(root = document) {
-    const clickables = $$('[data-gallery="true"]', root);
-    if (!clickables.length) return;
+  // ✅ Abrir imagen: solo si fue un click real (no drag)
+  let recentlyDragged = false;
+  let dragResetTimer = 0;
 
-    clickables.forEach((el) => {
-      if (el.__gaBound) return;
-      el.__gaBound = true;
-
-      el.addEventListener("click", () => {
-        const full = (el.getAttribute("data-full") || "").trim();
-        const src = full || el.getAttribute("src") || el.getAttribute("data-src");
-        const alt = el.getAttribute("alt") || el.getAttribute("aria-label") || "Imagen";
-        if (!src) return;
-
-        const html = `
-          <h2>Galería</h2>
-          <p style="margin-top:6px; color: rgba(22,22,22,.62);">${alt}</p>
-          <img class="modalImage" src="${src}" alt="${alt}">
-        `;
-        openModalHTML(html, el);
-      });
-    });
+  function markDragged() {
+    recentlyDragged = true;
+    window.clearTimeout(dragResetTimer);
+    dragResetTimer = window.setTimeout(() => { recentlyDragged = false; }, 220);
   }
 
-  bindGalleryClickables();
+  function openImageFromEl(el) {
+    const full = (el.getAttribute("data-full") || "").trim();
+    const src = full || el.getAttribute("src") || el.getAttribute("data-src");
+    const alt = el.getAttribute("alt") || el.getAttribute("aria-label") || "Imagen";
+    if (!src) return;
 
+    const safeAlt = alt.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const safeSrc = String(src).replace(/"/g, "%22");
+
+    const html = `
+      <h2>Galería</h2>
+      <p style="margin-top:6px; color: rgba(22,22,22,.62);">${safeAlt}</p>
+      <img class="modalImage" src="${safeSrc}" alt="${safeAlt}">
+    `;
+    openModalHTML(html, el);
+  }
+
+  // Delegación: vale para galería + cubo + dibujo grande
+  document.addEventListener("click", (e) => {
+    const img = e.target && e.target.closest ? e.target.closest('img[data-gallery="true"]') : null;
+    if (!img) return;
+
+    // si venimos de drag, no abrimos
+    if (recentlyDragged) return;
+
+    e.preventDefault();
+    openImageFromEl(img);
+  }, true);
+
+  // Cerrar modal por backdrop
   if (modal) {
     modal.addEventListener("click", (e) => {
       const t = e.target;
@@ -736,73 +750,122 @@
   if (closeBtn) closeBtn.addEventListener("click", closeModal);
 
   // =========================================================
-  // 9) Galería: drag-to-scroll PRO (y evita click tras drag)
+  // 9) Galería: drag-to-scroll PRO + flechas por “paso”
   // =========================================================
-  function enableDragScroll(track, { dragThresholdPx = 6 } = {}) {
-    if (!track) return;
+  function enableDragScroll(track, { dragThresholdPx = 10 } = {}) {
+  if (!track) return;
 
-    let isDown = false;
-    let startX = 0;
-    let startScrollLeft = 0;
-    let pointerId = null;
-    let moved = false;
+  let isDown = false;
+  let startX = 0;
+  let startScrollLeft = 0;
+  let moved = false;
+  let pointerId = null;
 
-    const onDown = (e) => {
-      if (e.pointerType === "mouse" && e.button !== 0) return;
+  const isInteractiveTarget = (target) => {
+    if (!target) return false;
+    return !!target.closest('img[data-gallery="true"], .galleryNav, button, a, input, textarea, select, label');
+  };
 
-      isDown = true;
-      moved = false;
-      pointerId = e.pointerId;
+  const onDown = (e) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
 
-      try { track.setPointerCapture(pointerId); } catch {}
+    // ✅ Si pinchas una foto o una flecha, NO activamos drag
+    if (isInteractiveTarget(e.target)) return;
 
-      startX = e.clientX;
-      startScrollLeft = track.scrollLeft;
+    isDown = true;
+    moved = false;
+    pointerId = e.pointerId;
 
-      track.classList.add("is-dragging");
-    };
+    try { track.setPointerCapture(pointerId); } catch {}
 
-    const onMove = (e) => {
-      if (!isDown) return;
-      const dx = e.clientX - startX;
-      if (Math.abs(dx) > dragThresholdPx) moved = true;
-      track.scrollLeft = startScrollLeft - dx;
-    };
+    startX = e.clientX;
+    startScrollLeft = track.scrollLeft;
 
-    const onUp = () => {
-      if (!isDown) return;
-      isDown = false;
-      pointerId = null;
-      track.classList.remove("is-dragging");
+    track.classList.add("is-dragging");
+  };
 
-      // Si arrastró, bloquea click fantasma
-      if (moved) {
-        const killClick = (ev) => {
-          ev.preventDefault();
-          ev.stopPropagation();
-          track.removeEventListener("click", killClick, true);
-        };
-        track.addEventListener("click", killClick, true);
-        window.setTimeout(() => track.removeEventListener("click", killClick, true), 180);
-      }
-    };
+  const onMove = (e) => {
+    if (!isDown) return;
 
-    track.addEventListener("pointerdown", onDown);
-    track.addEventListener("pointermove", onMove);
-    track.addEventListener("pointerup", onUp);
-    track.addEventListener("pointercancel", onUp);
-    track.addEventListener("mouseleave", onUp);
-  }
+    const dx = e.clientX - startX;
+    if (Math.abs(dx) > dragThresholdPx) moved = true;
+
+    track.scrollLeft = startScrollLeft - dx;
+
+    if (moved) markDragged(); // tu función global (recentlyDragged)
+  };
+
+  const onUp = () => {
+    if (!isDown) return;
+    isDown = false;
+    pointerId = null;
+    track.classList.remove("is-dragging");
+  };
+
+  track.addEventListener("pointerdown", onDown);
+  track.addEventListener("pointermove", onMove);
+  track.addEventListener("pointerup", onUp);
+  track.addEventListener("pointercancel", onUp);
+  track.addEventListener("mouseleave", onUp);
+}
 
   $$(".galleryTrack").forEach((t) => enableDragScroll(t));
 
+function bindGalleryArrows() {
+  const track = $(".galleryTrack");
+  if (!track) return;
+
+  const prevBtn = $(".galleryNav--prev");
+  const nextBtn = $(".galleryNav--next");
+
+  const getStep = () => {
+    const firstItem = track.querySelector(".galleryItem");
+    if (!firstItem) return 320;
+
+    const itemWidth = firstItem.getBoundingClientRect().width;
+    const gap = 14; // coincide con tu CSS
+    return itemWidth + gap;
+  };
+
+  const scrollByOneCard = (dir) => {
+    const step = getStep();
+    track.scrollBy({
+      left: dir * step,
+      behavior: prefersReducedMotion ? "auto" : "smooth"
+    });
+  };
+
+  const onArrowClick = (dir) => (e) => {
+    // ✅ evita que el drag-to-scroll capture el pointer/click
+    e.preventDefault();
+    e.stopPropagation();
+
+    // ✅ en algunos casos el handler global de click puede engancharse
+    if (typeof e.stopImmediatePropagation === "function") e.stopImmediatePropagation();
+
+    scrollByOneCard(dir);
+  };
+
+  // ✅ usa pointerdown para que responda más “rápido” y no se pelee con el drag
+  if (prevBtn) {
+    prevBtn.addEventListener("pointerdown", onArrowClick(-1), { passive: false });
+    prevBtn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); }, true);
+  }
+  if (nextBtn) {
+    nextBtn.addEventListener("pointerdown", onArrowClick(1), { passive: false });
+    nextBtn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); }, true);
+  }
+}
+
+bindGalleryArrows();
+
+
   // =========================================================
-  // 10) CUBO: drag rotate + inercia + auto-rotate + click-to-open
+  // 10) CUBO: drag rotate + inercia + auto-rotate
   // =========================================================
   function enableCube(cubeEl, { threshold = 10 } = {}) {
     if (!cubeEl) return;
 
-    // Marca para CSS (cursor/touch-action)
     cubeEl.setAttribute("data-cube", "true");
 
     let isDown = false;
@@ -899,7 +962,7 @@
       cubeEl.classList.add("is-dragging");
       try { cubeEl.setPointerCapture(e.pointerId); } catch {}
 
-      // Pausa animación CSS mientras arrastras (si estuviera)
+      // Pausa animación CSS mientras arrastras
       cubeEl.style.animation = "none";
     }
 
@@ -930,6 +993,9 @@
 
       lastX = x;
       lastY = y;
+
+      // marca drag para evitar abrir imagen accidental
+      if (movedPx > threshold) markDragged();
     }
 
     function onUp() {
@@ -938,16 +1004,10 @@
       cubeEl.classList.remove("is-dragging");
 
       if (movedPx >= threshold) {
-        const killClick = (ev) => {
-          ev.preventDefault();
-          ev.stopPropagation();
-          cubeEl.removeEventListener("click", killClick, true);
-        };
-        cubeEl.addEventListener("click", killClick, true);
-        window.setTimeout(() => cubeEl.removeEventListener("click", killClick, true), 220);
-
+        // drag real: inercia
         startInertia();
       } else {
+        // click: volvemos a auto
         cubeEl.style.animation = "";
         startAuto();
       }
@@ -963,19 +1023,20 @@
     startAuto();
   }
 
-  const cubeEl = $('[data-cube], #kidsCube');
+  const cubeEl = $("#kidsCube") || $("[data-cube]");
   if (cubeEl) enableCube(cubeEl);
 
   // =========================================================
-  // ESC global + trap focus modal
+  // 11) Accesibilidad: ESC + trap focus modal
   // =========================================================
   document.addEventListener("keydown", (e) => {
-    // 1) Modal abierto
+    // Modal abierto
     if (modal && modal.classList.contains("is-open")) {
       if (e.key === "Escape") {
         closeModal();
         return;
       }
+
       if (e.key === "Tab") {
         const panel = $(".modal__panel", modal);
         if (!panel) return;
@@ -1001,89 +1062,7 @@
       return;
     }
 
-  (function () {
-  const track = document.querySelector(".galleryTrack");
-  if (!track) return;
-
-  // --- 1) Diferenciar click vs drag (desktop) ---
-  let isPointerDown = false;
-  let startX = 0;
-  let startY = 0;
-  let dragged = false;
-
-  const DRAG_THRESHOLD = 8; // px
-
-  track.addEventListener("pointerdown", (e) => {
-    isPointerDown = true;
-    dragged = false;
-    startX = e.clientX;
-    startY = e.clientY;
-  });
-
-  track.addEventListener("pointermove", (e) => {
-    if (!isPointerDown) return;
-    const dx = Math.abs(e.clientX - startX);
-    const dy = Math.abs(e.clientY - startY);
-    if (dx > DRAG_THRESHOLD || dy > DRAG_THRESHOLD) dragged = true;
-  });
-
-  track.addEventListener("pointerup", () => {
-    isPointerDown = false;
-  });
-
-  track.addEventListener("pointercancel", () => {
-    isPointerDown = false;
-  });
-
-  // --- 2) Abrir modal al click REAL (no drag) ---
-  document.addEventListener("click", (e) => {
-    const img = e.target.closest('img[data-gallery="true"]');
-    if (!img) return;
-
-    // si venimos de arrastre, no abrimos
-    if (dragged) return;
-
-    const modal = document.getElementById("modal");
-    const modalContent = document.getElementById("modalContent");
-    if (!modal || !modalContent) return;
-
-    const full = img.getAttribute("data-full") || img.getAttribute("src");
-    const alt = img.getAttribute("alt") || "Imagen";
-    if (!full) return;
-
-    e.preventDefault();
-
-    modalContent.innerHTML = `
-      <h2>Galería</h2>
-      <p>${alt}</p>
-      <img class="modalImage" src="${full}" alt="${alt}">
-    `;
-    modal.classList.add("is-open");
-    modal.setAttribute("aria-hidden", "false");
-  }, { passive: true });
-
-  // --- 3) Flechas desktop para mover carrusel ---
-  const prevBtn = document.querySelector(".galleryNav--prev");
-  const nextBtn = document.querySelector(".galleryNav--next");
-
-  const scrollByOneCard = (dir) => {
-    // ancho de una tarjeta aprox
-    const firstItem = track.querySelector(".galleryItem");
-    if (!firstItem) return;
-
-    const itemWidth = firstItem.getBoundingClientRect().width;
-    const gap = 14; // coincide con tu CSS
-    const step = itemWidth + gap;
-
-    track.scrollBy({ left: dir * step, behavior: "smooth" });
-  };
-
-  if (prevBtn) prevBtn.addEventListener("click", () => scrollByOneCard(-1));
-  if (nextBtn) nextBtn.addEventListener("click", () => scrollByOneCard(1));
-})();
-
-
-    // 2) Modal NO abierto: ESC puede cerrar RSVP
+    // Modal NO abierto: ESC cierra RSVP
     if (e.key === "Escape") {
       if (rsvpPanel && rsvpPanel.classList.contains("is-open")) closeRSVP();
     }
