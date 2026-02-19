@@ -1001,6 +1001,88 @@
       return;
     }
 
+  (function () {
+  const track = document.querySelector(".galleryTrack");
+  if (!track) return;
+
+  // --- 1) Diferenciar click vs drag (desktop) ---
+  let isPointerDown = false;
+  let startX = 0;
+  let startY = 0;
+  let dragged = false;
+
+  const DRAG_THRESHOLD = 8; // px
+
+  track.addEventListener("pointerdown", (e) => {
+    isPointerDown = true;
+    dragged = false;
+    startX = e.clientX;
+    startY = e.clientY;
+  });
+
+  track.addEventListener("pointermove", (e) => {
+    if (!isPointerDown) return;
+    const dx = Math.abs(e.clientX - startX);
+    const dy = Math.abs(e.clientY - startY);
+    if (dx > DRAG_THRESHOLD || dy > DRAG_THRESHOLD) dragged = true;
+  });
+
+  track.addEventListener("pointerup", () => {
+    isPointerDown = false;
+  });
+
+  track.addEventListener("pointercancel", () => {
+    isPointerDown = false;
+  });
+
+  // --- 2) Abrir modal al click REAL (no drag) ---
+  document.addEventListener("click", (e) => {
+    const img = e.target.closest('img[data-gallery="true"]');
+    if (!img) return;
+
+    // si venimos de arrastre, no abrimos
+    if (dragged) return;
+
+    const modal = document.getElementById("modal");
+    const modalContent = document.getElementById("modalContent");
+    if (!modal || !modalContent) return;
+
+    const full = img.getAttribute("data-full") || img.getAttribute("src");
+    const alt = img.getAttribute("alt") || "Imagen";
+    if (!full) return;
+
+    e.preventDefault();
+
+    modalContent.innerHTML = `
+      <h2>Galería</h2>
+      <p>${alt}</p>
+      <img class="modalImage" src="${full}" alt="${alt}">
+    `;
+    modal.classList.add("is-open");
+    modal.setAttribute("aria-hidden", "false");
+  }, { passive: true });
+
+  // --- 3) Flechas desktop para mover carrusel ---
+  const prevBtn = document.querySelector(".galleryNav--prev");
+  const nextBtn = document.querySelector(".galleryNav--next");
+
+  const scrollByOneCard = (dir) => {
+    // ancho de una tarjeta aprox
+    const firstItem = track.querySelector(".galleryItem");
+    if (!firstItem) return;
+
+    const itemWidth = firstItem.getBoundingClientRect().width;
+    const gap = 14; // coincide con tu CSS
+    const step = itemWidth + gap;
+
+    track.scrollBy({ left: dir * step, behavior: "smooth" });
+  };
+
+  if (prevBtn) prevBtn.addEventListener("click", () => scrollByOneCard(-1));
+  if (nextBtn) nextBtn.addEventListener("click", () => scrollByOneCard(1));
+})();
+
+
     // 2) Modal NO abierto: ESC puede cerrar RSVP
     if (e.key === "Escape") {
       if (rsvpPanel && rsvpPanel.classList.contains("is-open")) closeRSVP();

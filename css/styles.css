@@ -1536,6 +1536,44 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   -webkit-user-drag: none;
 }
 
+/* Flechas galería (solo desktop) */
+.gallery{ position: relative; }
+
+.galleryNav{
+  display: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(22,22,22,.12);
+  background: rgba(255,255,255,.78);
+  box-shadow: 0 18px 44px rgba(0,0,0,.12);
+  cursor: pointer;
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 900;
+  color: rgba(22,22,22,.80);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 5;
+}
+
+.galleryNav--prev{ left: -10px; }
+.galleryNav--next{ right: -10px; }
+
+@media (min-width: 980px){
+  .galleryNav{ display: grid; place-items: center; }
+  .galleryNav:hover{ transform: translateY(-50%) scale(1.04); }
+}
+
+/* En móvil no queremos flechas */
+@media (max-width: 979px){
+  .galleryNav{ display: none !important; }
+}
+
+
 /* =========================
    Ring3D (por ahora oculto)
    ========================= */
