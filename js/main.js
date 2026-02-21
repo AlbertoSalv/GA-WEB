@@ -624,7 +624,7 @@
   const modalTemplates = {
     dress: `
       <h2>Dress Code</h2>
-      <p>Sin etiqueta. Ven cómodo y con tu estilo, con un toque arreglado.</p>
+      <p>Sin etiqueta. Ven cómodo y con tu estilo, pero añade un toque elegante.</p>
       <p><strong>Evita el blanco</strong> para no coincidir con la novia.</p>
     `,
     bus: `
@@ -633,7 +633,8 @@
     `,
     tips: `
       <h2>Tips y notas</h2>
-      <p>Información adicional: alojamientos, recomendaciones, etc.</p>
+      <p>- El cóctel será en jardín, tenlo en cuenta para el calzado.</p>
+      <p>- Ante cualquier duda, contáctanos. Alberto: 620 57 91 01 Gema: 680 96 21 64</p>
     `,
     save: `
       <h2>Guardar la web</h2>
