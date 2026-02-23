@@ -378,27 +378,69 @@
     rsvpStatus.classList.add("is-ok");
   }
 
-  if (rsvpForm) {
-    rsvpForm.addEventListener("submit", (e) => {
-      const action = (rsvpForm.getAttribute("action") || "").trim();
-      const isPlaceholder = action === "" || action === "#";
+if (rsvpForm) {
+  rsvpForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      if (isPlaceholder) {
-        e.preventDefault();
-        setRSVPStatus("✅ ¡Recibido! Gracias por confirmarlo. (Modo demo: después lo conectamos para que llegue de verdad)");
-        closeRSVP();
-        try { rsvpForm.reset(); } catch {}
+    const action = (rsvpForm.getAttribute("action") || "").trim();
+    if (!action || action === "#") {
+      setRSVPStatus("⚠️ Falta conectar el formulario (action).");
+      return;
+    }
+
+    // recogemos datos del form
+    const fd = new FormData(rsvpForm);
+    const payload = Object.fromEntries(fd.entries());
+
+    // botón enviar (para bloquear mientras envía)
+    const submitBtn = rsvpForm.querySelector('button[type="submit"]');
+    const prevText = submitBtn ? submitBtn.textContent : "";
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Enviando…";
+    }
+
+    try {
+      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwL-KXOAkh25Mch4__SFcXX_zuGpsdQIvis_cg33bW-QO80cTR-icGkQZ-EgHYPCt3r/exec";
+
+await fetch(SCRIPT_URL, {
+  method: "POST",
+  mode: "no-cors", // ✅ clave para que el navegador no bloquee por CORS
+  headers: { "Content-Type": "text/plain;charset=utf-8" }, // ✅ petición simple (sin preflight)
+  body: JSON.stringify(payload),
+});
+
+// ✅ aquí ya no podemos leer respuesta (opaque), pero SI se envió
+setRSVPStatus("✅ ¡Recibido! Gracias por confirmarlo. Te esperamos 💓");
+closeRSVP();
+try { rsvpForm.reset(); } catch {}
+
+      // Apps Script suele devolver 200 + JSON
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      // si devuelve JSON, lo leemos (no es obligatorio, pero útil)
+      let data = null;
+      try { data = await res.json(); } catch {}
+
+      if (data && data.status && data.status !== "ok") {
+        throw new Error("Respuesta no OK");
       }
-    });
-  }
 
-  const footerRSVPLink = $("#footerRSVPLink");
-  if (footerRSVPLink) {
-    footerRSVPLink.addEventListener("click", (e) => {
-      e.preventDefault();
-      openRSVP({ scrollIntoView: true });
-    });
-  }
+      setRSVPStatus("✅ ¡Recibido! Gracias por confirmarlo. Te esperamos 💗");
+      closeRSVP();
+      try { rsvpForm.reset(); } catch {}
+    } catch (err) {
+      setRSVPStatus("❌ No se pudo enviar. Prueba de nuevo en unos segundos.");
+      // si quieres, para debug rápido:
+      // console.error(err);
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = prevText || "Enviar";
+      }
+    }
+  });
+}
 
   // =========================================================
   // 5) Música (toggle)
@@ -633,7 +675,8 @@
     `,
     tips: `
       <h2>Tips y notas</h2>
-      <p>Información adicional: alojamientos, recomendaciones, etc.</p>
+      <p>- El cóctel es en el jardin, tenlo en cuenta para el calzado.</p>
+      <p>- Si tienes cualquier duda, contacta con nosotros. ALBERTO 620 57 91 01 GEMA 680 96 21 64</p>
     `,
     save: `
       <h2>Guardar la web</h2>
