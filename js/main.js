@@ -388,11 +388,11 @@ if (rsvpForm) {
       return;
     }
 
-    // recogemos datos del form
+    // Datos del formulario
     const fd = new FormData(rsvpForm);
     const payload = Object.fromEntries(fd.entries());
 
-    // botón enviar (para bloquear mientras envía)
+    // Botón enviar (bloquear mientras envía)
     const submitBtn = rsvpForm.querySelector('button[type="submit"]');
     const prevText = submitBtn ? submitBtn.textContent : "";
     if (submitBtn) {
@@ -401,37 +401,23 @@ if (rsvpForm) {
     }
 
     try {
-      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwL-KXOAkh25Mch4__SFcXX_zuGpsdQIvis_cg33bW-QO80cTR-icGkQZ-EgHYPCt3r/exec";
+      // Importante:
+      // - mode: "no-cors" evita el bloqueo por CORS (Apps Script no devuelve cabeceras CORS)
+      // - Content-Type text/plain => "simple request" (sin preflight)
+      // - En no-cors NO podemos leer la respuesta (opaque), pero el POST se envía.
+      await fetch(action, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload),
+      });
 
-await fetch(SCRIPT_URL, {
-  method: "POST",
-  mode: "no-cors", // ✅ clave para que el navegador no bloquee por CORS
-  headers: { "Content-Type": "text/plain;charset=utf-8" }, // ✅ petición simple (sin preflight)
-  body: JSON.stringify(payload),
-});
-
-// ✅ aquí ya no podemos leer respuesta (opaque), pero SI se envió
-setRSVPStatus("✅ ¡Recibido! Gracias por confirmarlo. Te esperamos 💓");
-closeRSVP();
-try { rsvpForm.reset(); } catch {}
-
-      // Apps Script suele devolver 200 + JSON
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-      // si devuelve JSON, lo leemos (no es obligatorio, pero útil)
-      let data = null;
-      try { data = await res.json(); } catch {}
-
-      if (data && data.status && data.status !== "ok") {
-        throw new Error("Respuesta no OK");
-      }
-
-      setRSVPStatus("✅ ¡Recibido! Gracias por confirmarlo. Te esperamos 💗");
+      setRSVPStatus("✅ ¡Recibido! Gracias por confirmarlo. Te esperamos 💓");
       closeRSVP();
       try { rsvpForm.reset(); } catch {}
     } catch (err) {
       setRSVPStatus("❌ No se pudo enviar. Prueba de nuevo en unos segundos.");
-      // si quieres, para debug rápido:
+      // Para debug rápido si quieres:
       // console.error(err);
     } finally {
       if (submitBtn) {
@@ -666,7 +652,7 @@ try { rsvpForm.reset(); } catch {}
   const modalTemplates = {
     dress: `
       <h2>Dress Code</h2>
-      <p>Sin etiqueta. Ven cómodo y con tu estilo, con un toque arreglado.</p>
+      <p>Sin etiqueta. Ven cómodo y con tu estilo, pero añade un toque elegante.</p>
       <p><strong>Evita el blanco</strong> para no coincidir con la novia.</p>
     `,
     bus: `
@@ -675,8 +661,8 @@ try { rsvpForm.reset(); } catch {}
     `,
     tips: `
       <h2>Tips y notas</h2>
-      <p>- El cóctel es en el jardin, tenlo en cuenta para el calzado.</p>
-      <p>- Si tienes cualquier duda, contacta con nosotros. ALBERTO 620 57 91 01 GEMA 680 96 21 64</p>
+      <p>- El cóctel será en el jardin, tenlo en cuenta para el calzado.</p>
+      <p>- Si tienes cualquier duda, contactanos. ALBERTO 620 57 91 01 GEMA 680 96 21 64</p>
     `,
     save: `
       <h2>Guardar la web</h2>
@@ -770,8 +756,11 @@ try { rsvpForm.reset(); } catch {}
 
   // Delegación: vale para galería + cubo + dibujo grande
   document.addEventListener("click", (e) => {
-    const img = e.target && e.target.closest ? e.target.closest('img[data-gallery="true"]') : null;
-    if (!img) return;
+    const img =
+  (e.target && e.target.closest && e.target.closest('img[data-gallery="true"]')) ||
+  (e.target && e.target.closest && e.target.closest('.cubeFace') && e.target.closest('.cubeFace').querySelector('img[data-gallery="true"]'));
+
+if (!img) return;
 
     // si venimos de drag, no abrimos
     if (recentlyDragged) return;
@@ -906,165 +895,194 @@ bindGalleryArrows();
   // =========================================================
   // 10) CUBO: drag rotate + inercia + auto-rotate
   // =========================================================
-  function enableCube(cubeEl, { threshold = 10 } = {}) {
-    if (!cubeEl) return;
+function enableCube(cubeEl, { thresholdMouse = 10, thresholdTouch = 16 } = {}) {
+  if (!cubeEl) return;
 
-    cubeEl.setAttribute("data-cube", "true");
+  cubeEl.setAttribute("data-cube", "true");
 
-    let isDown = false;
-    let lastX = 0;
-    let lastY = 0;
+  let isPointerDown = false;
+  let isDragging = false;
 
-    let rotX = -14;
-    let rotY = 28;
+  let startX = 0;
+  let startY = 0;
 
-    let movedPx = 0;
-    let vx = 0;
-    let vy = 0;
-    let lastTs = 0;
+  let lastX = 0;
+  let lastY = 0;
 
-    let inertiaRaf = 0;
-    let autoRaf = 0;
-    let auto = true;
+  let rotX = -14;
+  let rotY = 28;
 
-    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+  let vx = 0;
+  let vy = 0;
+  let lastTs = 0;
 
-    function apply() {
-      cubeEl.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-    }
+  let inertiaRaf = 0;
+  let autoRaf = 0;
+  let auto = true;
 
-    function stopAuto() {
-      auto = false;
-      cancelAnimationFrame(autoRaf);
-      autoRaf = 0;
-    }
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
-    function startAuto() {
-      if (prefersReducedMotion) return;
-      stopAuto();
-      auto = true;
+  function apply() {
+    cubeEl.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+  }
 
-      const loop = () => {
-        if (!auto || isDown) return;
-        rotY += 0.12;
-        rotX = clamp(rotX, -70, 70);
-        apply();
-        autoRaf = requestAnimationFrame(loop);
-      };
+  function stopAuto() {
+    auto = false;
+    cancelAnimationFrame(autoRaf);
+    autoRaf = 0;
+  }
+
+  function startAuto() {
+    if (prefersReducedMotion) return;
+    stopAuto();
+    auto = true;
+
+    const loop = () => {
+      if (!auto || isPointerDown || isDragging) return;
+      rotY += 0.12;
+      rotX = clamp(rotX, -70, 70);
+      apply();
       autoRaf = requestAnimationFrame(loop);
-    }
+    };
+    autoRaf = requestAnimationFrame(loop);
+  }
 
-    function stopInertia() {
-      cancelAnimationFrame(inertiaRaf);
-      inertiaRaf = 0;
-    }
+  function stopInertia() {
+    cancelAnimationFrame(inertiaRaf);
+    inertiaRaf = 0;
+  }
 
-    function startInertia() {
-      stopInertia();
-      if (prefersReducedMotion) return;
+  function startInertia() {
+    stopInertia();
+    if (prefersReducedMotion) return;
 
-      const friction = 0.92;
+    const friction = 0.92;
 
-      const step = () => {
-        vx *= friction;
-        vy *= friction;
+    const step = () => {
+      vx *= friction;
+      vy *= friction;
 
-        if (Math.abs(vx) < 0.01 && Math.abs(vy) < 0.01) {
-          stopInertia();
-          cubeEl.style.animation = "";
-          startAuto();
-          return;
-        }
+      if (Math.abs(vx) < 0.01 && Math.abs(vy) < 0.01) {
+        stopInertia();
+        cubeEl.style.animation = "";
+        startAuto();
+        return;
+      }
 
-        rotY += vx;
-        rotX -= vy;
-        rotX = clamp(rotX, -70, 70);
-        apply();
-
-        inertiaRaf = requestAnimationFrame(step);
-      };
+      rotY += vx;
+      rotX -= vy;
+      rotX = clamp(rotX, -70, 70);
+      apply();
 
       inertiaRaf = requestAnimationFrame(step);
-    }
+    };
 
-    function onDown(e) {
-      if (e.pointerType === "mouse" && e.button !== 0) return;
+    inertiaRaf = requestAnimationFrame(step);
+  }
 
-      isDown = true;
-      movedPx = 0;
-      vx = 0;
-      vy = 0;
+  function getThreshold(e) {
+    return e.pointerType === "touch" ? thresholdTouch : thresholdMouse;
+  }
 
-      lastX = e.clientX;
-      lastY = e.clientY;
-      lastTs = performance.now();
+  function onDown(e) {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
 
-      stopAuto();
-      stopInertia();
+    isPointerDown = true;
+    isDragging = false;
 
+    startX = lastX = e.clientX;
+    startY = lastY = e.clientY;
+
+    vx = 0;
+    vy = 0;
+    lastTs = performance.now();
+
+    stopAuto();
+    stopInertia();
+
+    // IMPORTANTE: NO ponemos is-dragging todavía.
+    // Primero decidimos si es TAP (click) o DRAG (arrastre).
+  }
+
+  function onMove(e) {
+    if (!isPointerDown) return;
+
+    const x = e.clientX;
+    const y = e.clientY;
+
+    const dxFromStart = x - startX;
+    const dyFromStart = y - startY;
+
+    const dist = Math.hypot(dxFromStart, dyFromStart);
+    const threshold = getThreshold(e);
+
+    // hasta que no supere umbral, no se considera drag
+    if (!isDragging) {
+      if (dist < threshold) return;
+
+      isDragging = true;
       cubeEl.classList.add("is-dragging");
+
+      // ya sí capturamos pointer
       try { cubeEl.setPointerCapture(e.pointerId); } catch {}
 
       // Pausa animación CSS mientras arrastras
       cubeEl.style.animation = "none";
     }
 
-    function onMove(e) {
-      if (!isDown) return;
+    // si arrastramos, bloqueamos scroll y rotamos
+    e.preventDefault();
 
-      const x = e.clientX;
-      const y = e.clientY;
+    const dx = x - lastX;
+    const dy = y - lastY;
 
-      const dx = x - lastX;
-      const dy = y - lastY;
+    const sens = e.pointerType === "touch" ? 0.22 : 0.12;
 
-      movedPx += Math.abs(dx) + Math.abs(dy);
+    rotY += dx * sens;
+    rotX -= dy * sens;
+    rotX = clamp(rotX, -70, 70);
 
-      const sens = 0.18;
-      rotY += dx * sens;
-      rotX -= dy * sens;
-      rotX = clamp(rotX, -70, 70);
-
-      // Velocidad para inercia
-      const now = performance.now();
-      const dt = Math.max(16, now - lastTs);
-      vx = (dx * sens) / (dt / 16);
-      vy = (dy * sens) / (dt / 16);
-      lastTs = now;
-
-      apply();
-
-      lastX = x;
-      lastY = y;
-
-      // marca drag para evitar abrir imagen accidental
-      if (movedPx > threshold) markDragged();
-    }
-
-    function onUp() {
-      if (!isDown) return;
-      isDown = false;
-      cubeEl.classList.remove("is-dragging");
-
-      if (movedPx >= threshold) {
-        // drag real: inercia
-        startInertia();
-      } else {
-        // click: volvemos a auto
-        cubeEl.style.animation = "";
-        startAuto();
-      }
-    }
-
-    cubeEl.addEventListener("pointerdown", onDown);
-    cubeEl.addEventListener("pointermove", onMove);
-    cubeEl.addEventListener("pointerup", onUp);
-    cubeEl.addEventListener("pointercancel", onUp);
-    cubeEl.addEventListener("mouseleave", onUp);
+    // velocidad para inercia
+    const now = performance.now();
+    const dt = Math.max(16, now - lastTs);
+    vx = (dx * sens) / (dt / 16);
+    vy = (dy * sens) / (dt / 16);
+    lastTs = now;
 
     apply();
-    startAuto();
+
+    lastX = x;
+    lastY = y;
+
+    // solo marcamos "drag" si de verdad se arrastró
+    markDragged();
   }
+
+  function onUp() {
+    if (!isPointerDown) return;
+
+    isPointerDown = false;
+
+    if (isDragging) {
+      isDragging = false;
+      cubeEl.classList.remove("is-dragging");
+      startInertia();
+    } else {
+      // TAP: dejamos que el click ocurra (abrirá el modal por tu handler global de img[data-gallery="true"])
+      cubeEl.style.animation = "";
+      startAuto();
+    }
+  }
+
+  cubeEl.addEventListener("pointerdown", onDown);
+  cubeEl.addEventListener("pointermove", onMove, { passive: false });
+  cubeEl.addEventListener("pointerup", onUp);
+  cubeEl.addEventListener("pointercancel", onUp);
+  cubeEl.addEventListener("mouseleave", onUp);
+
+  apply();
+  startAuto();
+}
 
   const cubeEl = $("#kidsCube") || $("[data-cube]");
   if (cubeEl) enableCube(cubeEl);

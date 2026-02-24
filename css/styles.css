@@ -1619,23 +1619,30 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 .ring3dWrap{ display:none; }
 
 /* =========================
-   OTROS PUNTOS DE VISTA (dibujo + cubo)
+   OTROS PUNTOS DE VISTA (dibujo + cubo) — PRO (tap vs drag + size auto)
    ========================= */
+
 .kidsGrid{
   margin-top: 22px;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  gap: 18px;
   align-items: center;
 }
+
 @media (min-width: 980px){
   .kidsGrid{
     grid-template-columns: 1.1fr .9fr;
-    gap: 20px;
+    gap: 26px;
+    align-items: center;
   }
 }
 
+/* -------------------------
+   Dibujo elegido (izquierda)
+   ------------------------- */
 .kidsFeatured{ margin: 0; }
+
 .kidsFeaturedFrame{
   border-radius: 22px;
   background: transparent;
@@ -1643,12 +1650,14 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   box-shadow: none;
   padding: 0;
 }
+
 .kidsFeaturedImg{
   width: 100%;
   height: auto;
   display: block;
   border-radius: 0;
 }
+
 .kidsCaption{
   margin-top: 10px;
   font-size: 12px;
@@ -1658,30 +1667,83 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   font-weight: 900;
 }
 
+@media (max-width: 768px){
+  .opvChosenImg{
+    width: min(520px, 92vw);
+    margin: 0 auto;
+  }
+  .kidsCaption{ text-align: center; }
+}
+
+/* -------------------------
+   Wrapper del cubo (derecha)
+   ------------------------- */
 .kidsCubeWrap{
   display: grid;
   place-items: center;
   gap: 10px;
+
+  padding: 16px 16px 14px;
+  border-radius: 26px;
+  background: rgba(255,255,255,.72);
+  border: 1px solid rgba(200,162,74,.24);
+  box-shadow: 0 18px 52px rgba(0,0,0,.10);
+  position: relative;
+  overflow: visible;
 }
+
+/* brillo suave */
+.kidsCubeWrap::before{
+  content:"";
+  position:absolute;
+  inset:-40px -40px auto -40px;
+  height: 170px;
+  background: radial-gradient(circle at 30% 30%, rgba(200,162,74,.18), rgba(200,162,74,0) 65%);
+  pointer-events:none;
+  opacity: .9;
+}
+
 .kidsCubeHint{
-  font-size: 12px;
-  letter-spacing: 1.2px;
+  font-size: 11px;
+  letter-spacing: 1.4px;
   text-transform: uppercase;
   color: rgba(22,22,22,.55);
   font-weight: 900;
+  margin-top: 10px;
 }
 
+@media (max-width: 768px){
+  .kidsCubeWrap{
+    padding: 14px 14px 12px;
+    border-radius: 24px;
+  }
+}
+
+/* -------------------------
+   Cubo 3D (scene + cube)
+   - tamaño controlado
+   - profundidad (Z) automática según tamaño del cubo
+   ------------------------- */
 .cubeScene{
-  width: min(320px, 86vw);
+  --cube-size: clamp(250px, 30vw, 330px);
+  width: var(--cube-size);
   aspect-ratio: 1 / 1;
+
+  /* profundidad proporcional al tamaño (evita “tocho” en móvil) */
+  --cube-z: calc((var(--cube-size) / 2) - 14px);
+
   perspective: 900px;
   display: grid;
   place-items: center;
   overflow: visible;
 }
 
-@media (min-width: 980px){
-  :root{ --cube-z: 160px; }
+/* móvil: más pequeño + menos perspectiva */
+@media (max-width: 768px){
+  .cubeScene{
+    --cube-size: clamp(210px, 62vw, 260px);
+    perspective: 760px;
+  }
 }
 
 .cube{
@@ -1689,18 +1751,23 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
-  transform: rotateX(-16deg) rotateY(28deg);
-  transition: transform 220ms ease;
+  transform: rotateX(-14deg) rotateY(28deg);
   will-change: transform;
 }
 
+/* interacción */
 [data-cube]{
   cursor: grab;
-  touch-action: none;
+  /* IMPORTANTE: dejamos que el scroll vertical del móvil funcione
+     y solo bloqueamos cuando realmente arrastramos (lo hace el JS). */
+  touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;
 }
-[data-cube].is-dragging{ cursor: grabbing; }
+[data-cube].is-dragging{
+  cursor: grabbing;
+  touch-action: none; /* al arrastrar de verdad, bloqueamos scroll */
+}
 
 .cubeFace{
   position: absolute;
@@ -1709,15 +1776,22 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   place-items: center;
   padding: 0;
   border: 0;
-  background: transparent;
+  background: rgba(255,255,255,.94);
   cursor: pointer;
 
   border-radius: 22px;
   overflow: hidden;
 
-  background: rgba(255,255,255,.92);
   border: 1px solid rgba(22,22,22,.10);
   box-shadow: 0 18px 52px rgba(0,0,0,.12);
+}
+
+/* un pelín más fino en móvil */
+@media (max-width: 768px){
+  .cubeFace{
+    border-radius: 20px;
+    box-shadow: 0 14px 34px rgba(0,0,0,.12);
+  }
 }
 
 .cubeFace img{
@@ -1725,10 +1799,13 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   height: 100%;
   object-fit: cover;
   display: block;
-  pointer-events: auto;
   cursor: zoom-in;
 }
+/* Deja pasar el drag al cubo, pero sigue permitiendo click */
+.cubeFace { touch-action: none; }
+.cubeFace img { pointer-events: none; } /* el click lo capturamos desde la cara */
 
+/* posiciones 3D */
 .cubeFace--front{  transform: rotateY(0deg) translateZ(var(--cube-z)); }
 .cubeFace--back{   transform: rotateY(180deg) translateZ(var(--cube-z)); }
 .cubeFace--right{  transform: rotateY(90deg) translateZ(var(--cube-z)); }
@@ -1736,14 +1813,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 .cubeFace--top{    transform: rotateX(90deg) translateZ(var(--cube-z)); }
 .cubeFace--bottom{ transform: rotateX(-90deg) translateZ(var(--cube-z)); }
 
-@media (hover:hover) and (prefers-reduced-motion: no-preference){
-  .cube{ animation: cubeSpin 14s linear infinite; }
-  .cubeScene:hover .cube{ animation-play-state: paused; }
-}
-@keyframes cubeSpin{
-  0%{ transform: rotateX(-16deg) rotateY(0deg); }
-  100%{ transform: rotateX(-16deg) rotateY(360deg); }
-}
+
 
 /* Dibujo izquierda (PNG sin fondo) */
 .opvChosenImg{
