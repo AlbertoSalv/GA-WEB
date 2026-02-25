@@ -138,11 +138,12 @@
     </button>
   </div>
 
-  <!-- Música (no autoplay) -->
-  <button class="musicBtn" id="musicToggle" type="button" aria-pressed="false" aria-label="Activar música">♪</button>
-  <audio id="bgMusic" preload="none" loop>
-    <!-- <source src="assets/audio/cancion.mp3" type="audio/mpeg"> -->
-  </audio>
+<!-- Música (no autoplay) -->
+<button class="musicBtn" id="musicToggle" type="button" aria-pressed="false" aria-label="Activar música">♪</button>
+
+<audio id="bgMusic" preload="auto" loop>
+  <source src="assets/musica/cancion.mp3" type="audio/mpeg">
+</audio>
 
   <!-- Corazoncitos -->
   <div class="floatHearts" aria-hidden="true">
@@ -418,87 +419,111 @@
           </div>
         </div>
 
-        <!-- RSVP CALLOUT -->
-        <div class="rsvpCallout" aria-label="Información importante">
-          <div class="rsvpCallout__kicker">IMPORTANTE</div>
-          <p class="rsvpCallout__text">
-            Nos haría muchísima ilusión contar contigo este día. Por favor, confirma tu asistencia para poder organizarlo todo con cariño (una confirmación por persona).
-          </p>
+<!-- RSVP CALLOUT -->
+<div class="rsvpCallout" aria-label="Información importante">
+  <div class="rsvpCallout__kicker">IMPORTANTE</div>
+  <p class="rsvpCallout__text">
+    Nos haría muchísima ilusión contar contigo este día. Por favor, confirma tu asistencia para poder organizarlo todo con cariño (una confirmación por persona).
+  </p>
 
-          <button class="hoverCardBtn" id="rsvpToggle" type="button" aria-expanded="false" aria-controls="rsvpPanel">
-            <span class="hoverCardInner" aria-hidden="true">
-              <span class="hoverCardFace hoverCardFront">
-                <span class="hoverCardIcon">✉️</span>
-                <span class="hoverCardTitle">Confirmar asistencia</span>
-                <span class="hoverCardHint">Pincha aquí</span>
-              </span>
-              <span class="hoverCardFace hoverCardBack">
-                <span class="hoverCardTitle">¡Vamos allá!</span>
-                <span class="hoverCardHint">Haz clic para abrir el formulario</span>
-              </span>
-            </span>
-            <span class="srOnly">Confirmar asistencia</span>
-          </button>
+  <button class="hoverCardBtn" id="rsvpToggle" type="button" aria-expanded="false" aria-controls="rsvpPanel">
+    <span class="hoverCardInner" aria-hidden="true">
+      <span class="hoverCardFace hoverCardFront">
+        <span class="hoverCardIcon">✉️</span>
+        <span class="hoverCardTitle">Confirmar asistencia</span>
+        <span class="hoverCardHint">Pincha aquí</span>
+      </span>
+      <span class="hoverCardFace hoverCardBack">
+        <span class="hoverCardTitle">¡Vamos allá!</span>
+        <span class="hoverCardHint">Haz clic para abrir el formulario</span>
+      </span>
+    </span>
+    <span class="srOnly">Confirmar asistencia</span>
+  </button>
 
-          <div class="rsvpStatus" id="rsvpStatus" aria-live="polite"></div>
-        </div>
+  <div class="rsvpStatus" id="rsvpStatus" aria-live="polite"></div>
+</div>
 
-        <div class="rsvpPanel" id="rsvpPanel" aria-hidden="true">
-          <div class="rsvpHead">
-            <div class="kicker">Confirmación</div>
-            <h3 class="h3">Confirmar asistencia</h3>
-            <p class="p">Nombre, asistencia, alergias, autobús y (opcional) canción sugerida.</p>
-          </div>
+<div class="rsvpPanel" id="rsvpPanel" aria-hidden="true">
+  <div class="rsvpHead">
+    <div class="kicker">Confirmación</div>
+    <h3 class="h3">Confirmar asistencia</h3>
+    <p class="p">Nombre, asistencia, alergias, autobús y (opcional) canción sugerida.</p>
+  </div>
 
-          <form class="rsvpForm" id="rsvpForm" method="POST" action="https://script.google.com/macros/s/AKfycbwL-KXOAkh25Mch4__SFcXX_zuGpsdQIvis_cg33bW-QO80cTR-icGkQZ-EgHYPCt3r/exec" autocomplete="on">
-            <div class="rsvpGrid">
-              <label class="field">
-                <span class="field__label">Nombre y apellidos</span>
-                <input class="field__input" type="text" name="nombre" required placeholder="Tu nombre completo" />
-              </label>
+  <form class="rsvpForm"
+        id="rsvpForm"
+        method="POST"
+        action="https://script.google.com/macros/s/AKfycbwL-KXOAkh25Mch4__SFcXX_zuGpsdQIvis_cg33bW-QO80cTR-icGkQZ-EgHYPCt3r/exec"
+        autocomplete="on">
 
-              <label class="field">
-                <span class="field__label">¿Asistirás?</span>
-                <select class="field__input" name="asistencia" required>
-                  <option value="" selected disabled>Selecciona</option>
-                  <option value="Si">Sí</option>
-                  <option value="No">No</option>
-                </select>
-              </label>
+    <!-- Honeypot anti-bots (NO TOCAR) -->
+    <div class="hp-field" aria-hidden="true">
+      <label for="website">Website</label>
+      <input type="text"
+             id="website"
+             name="website"
+             tabindex="-1"
+             autocomplete="off">
+    </div>
 
-              <label class="field field--full">
-                <span class="field__label">Alergias / intolerancias (si no tienes, escribe “Ninguna”)</span>
-                <textarea class="field__input" name="alergias" rows="3" placeholder="Ej. frutos secos, gluten, lactosa…"></textarea>
-              </label>
+    <div class="rsvpGrid">
+      <label class="field">
+        <span class="field__label">Nombre y apellidos</span>
+        <input class="field__input"
+               type="text"
+               name="nombre"
+               required
+               placeholder="Tu nombre completo" />
+      </label>
 
-              <label class="field">
-                <span class="field__label">¿Necesitas autobús?</span>
-                <select class="field__input" name="autobus" required>
-                  <option value="" selected disabled>Selecciona</option>
-                  <option value="Si">Sí</option>
-                  <option value="No">No</option>
-                </select>
-              </label>
+      <label class="field">
+        <span class="field__label">¿Asistirás?</span>
+        <select class="field__input" name="asistencia" required>
+          <option value="" selected disabled>Selecciona</option>
+          <option value="Si">Sí</option>
+          <option value="No">No</option>
+        </select>
+      </label>
 
-              <label class="field field--full">
-                <span class="field__label">Canción sugerida (opcional)</span>
-                <input class="field__input" type="text" name="cancion" placeholder="Artista — Título" />
-              </label>
-            </div>
+      <label class="field field--full">
+        <span class="field__label">
+          Alergias / intolerancias (si no tienes, escribe “Ninguna”)
+        </span>
+        <textarea class="field__input"
+                  name="alergias"
+                  rows="3"
+                  placeholder="Ej. frutos secos, gluten, lactosa…"></textarea>
+      </label>
 
-            <div class="rsvpActions">
-              <button class="btn btn--primary" type="submit">Enviar</button>
-              <button class="btn btn--ghost" type="button" id="rsvpCloseBtn">Cerrar</button>
-            </div>
+      <label class="field">
+        <span class="field__label">¿Necesitas autobús?</span>
+        <select class="field__input" name="autobus" required>
+          <option value="" selected disabled>Selecciona</option>
+          <option value="Si">Sí</option>
+          <option value="No">No</option>
+        </select>
+      </label>
 
-            <p class="rsvpFine">
-              * Espera la confirmación de envío.
-            </p>
-          </form>
-        </div>
+      <label class="field field--full">
+        <span class="field__label">Canción sugerida (opcional)</span>
+        <input class="field__input"
+               type="text"
+               name="cancion"
+               placeholder="Artista — Título" />
+      </label>
+    </div>
 
-      </div>
-    </section>
+    <div class="rsvpActions">
+      <button class="btn btn--primary" type="submit">Enviar</button>
+      <button class="btn btn--ghost" type="button" id="rsvpCloseBtn">Cerrar</button>
+    </div>
+
+    <p class="rsvpFine">
+      * Espera la confirmación de envío.
+    </p>
+  </form>
+</div>
 
     <!-- ✅ CORTE “QUEBRADO” (momentos B -> asistencia A) -->
     <div class="sectionBreak sectionBreak--b-to-a" aria-hidden="true">

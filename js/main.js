@@ -329,54 +329,54 @@
   initTimelineLottieAndReveal();
 
   // =========================================================
-  // 4) RSVP
-  // =========================================================
-  const rsvpToggle = $("#rsvpToggle");
-  const rsvpPanel = $("#rsvpPanel");
-  const rsvpForm = $("#rsvpForm");
-  const rsvpCloseBtn = $("#rsvpCloseBtn");
-  const rsvpStatus = $("#rsvpStatus");
+// 4) RSVP (con honeypot anti-bots)
+// =========================================================
+const rsvpToggle = $("#rsvpToggle");
+const rsvpPanel = $("#rsvpPanel");
+const rsvpForm = $("#rsvpForm");
+const rsvpCloseBtn = $("#rsvpCloseBtn");
+const rsvpStatus = $("#rsvpStatus");
 
-  function openRSVP({ scrollIntoView = false } = {}) {
-    if (!rsvpPanel) return;
+function openRSVP({ scrollIntoView = false } = {}) {
+  if (!rsvpPanel) return;
 
-    rsvpPanel.classList.add("is-open");
-    rsvpPanel.setAttribute("aria-hidden", "false");
-    if (rsvpToggle) rsvpToggle.setAttribute("aria-expanded", "true");
+  rsvpPanel.classList.add("is-open");
+  rsvpPanel.setAttribute("aria-hidden", "false");
+  if (rsvpToggle) rsvpToggle.setAttribute("aria-expanded", "true");
 
-    if (scrollIntoView) {
-      const top = rsvpPanel.getBoundingClientRect().top + window.pageYOffset - 12;
-      window.scrollTo({ top, behavior: prefersReducedMotion ? "auto" : "smooth" });
-    }
-
-    const firstInput = $("input, select, textarea", rsvpPanel);
-    if (firstInput) window.setTimeout(() => firstInput.focus(), 80);
+  if (scrollIntoView) {
+    const top = rsvpPanel.getBoundingClientRect().top + window.pageYOffset - 12;
+    window.scrollTo({ top, behavior: prefersReducedMotion ? "auto" : "smooth" });
   }
 
-  function closeRSVP() {
-    if (!rsvpPanel) return;
-    rsvpPanel.classList.remove("is-open");
-    rsvpPanel.setAttribute("aria-hidden", "true");
-    if (rsvpToggle) rsvpToggle.setAttribute("aria-expanded", "false");
-  }
+  const firstInput = $("input, select, textarea", rsvpPanel);
+  if (firstInput) window.setTimeout(() => firstInput.focus(), 80);
+}
 
-  function toggleRSVP({ scrollIntoView = false } = {}) {
-    if (!rsvpPanel) return;
-    const isOpen = rsvpPanel.classList.contains("is-open");
-    if (isOpen) closeRSVP();
-    else openRSVP({ scrollIntoView });
-  }
+function closeRSVP() {
+  if (!rsvpPanel) return;
+  rsvpPanel.classList.remove("is-open");
+  rsvpPanel.setAttribute("aria-hidden", "true");
+  if (rsvpToggle) rsvpToggle.setAttribute("aria-expanded", "false");
+}
 
-  if (rsvpToggle && rsvpPanel) {
-    rsvpToggle.addEventListener("click", () => toggleRSVP({ scrollIntoView: true }));
-  }
-  if (rsvpCloseBtn) rsvpCloseBtn.addEventListener("click", closeRSVP);
+function toggleRSVP({ scrollIntoView = false } = {}) {
+  if (!rsvpPanel) return;
+  const isOpen = rsvpPanel.classList.contains("is-open");
+  if (isOpen) closeRSVP();
+  else openRSVP({ scrollIntoView });
+}
 
-  function setRSVPStatus(msg) {
-    if (!rsvpStatus) return;
-    rsvpStatus.textContent = msg;
-    rsvpStatus.classList.add("is-ok");
-  }
+if (rsvpToggle && rsvpPanel) {
+  rsvpToggle.addEventListener("click", () => toggleRSVP({ scrollIntoView: true }));
+}
+if (rsvpCloseBtn) rsvpCloseBtn.addEventListener("click", closeRSVP);
+
+function setRSVPStatus(msg, ok = true) {
+  if (!rsvpStatus) return;
+  rsvpStatus.textContent = msg;
+  rsvpStatus.classList.toggle("is-ok", ok);
+}
 
 if (rsvpForm) {
   rsvpForm.addEventListener("submit", async (e) => {
@@ -384,13 +384,26 @@ if (rsvpForm) {
 
     const action = (rsvpForm.getAttribute("action") || "").trim();
     if (!action || action === "#") {
-      setRSVPStatus("⚠️ Falta conectar el formulario (action).");
+      setRSVPStatus("⚠️ Falta conectar el formulario (action).", false);
+      return;
+    }
+
+    // ✅ Honeypot anti-bots (campo invisible "website")
+    const hp = rsvpForm.querySelector('input[name="website"]');
+    if (hp && (hp.value || "").trim().length > 0) {
+      // Simulamos éxito para que el bot “crea” que ha enviado
+      setRSVPStatus("✅ ¡Recibido! Gracias por confirmarlo. Te esperamos 💓", true);
+      closeRSVP();
+      try { rsvpForm.reset(); } catch {}
       return;
     }
 
     // Datos del formulario
     const fd = new FormData(rsvpForm);
     const payload = Object.fromEntries(fd.entries());
+
+    // (Opcional) eliminamos el honeypot del payload para no ensuciar la hoja
+    delete payload.website;
 
     // Botón enviar (bloquear mientras envía)
     const submitBtn = rsvpForm.querySelector('button[type="submit"]');
@@ -401,10 +414,6 @@ if (rsvpForm) {
     }
 
     try {
-      // Importante:
-      // - mode: "no-cors" evita el bloqueo por CORS (Apps Script no devuelve cabeceras CORS)
-      // - Content-Type text/plain => "simple request" (sin preflight)
-      // - En no-cors NO podemos leer la respuesta (opaque), pero el POST se envía.
       await fetch(action, {
         method: "POST",
         mode: "no-cors",
@@ -412,12 +421,11 @@ if (rsvpForm) {
         body: JSON.stringify(payload),
       });
 
-      setRSVPStatus("✅ ¡Recibido! Gracias por confirmarlo. Te esperamos 💓");
+      setRSVPStatus("✅ ¡Recibido! Gracias por confirmarlo. Te esperamos 💓", true);
       closeRSVP();
       try { rsvpForm.reset(); } catch {}
     } catch (err) {
-      setRSVPStatus("❌ No se pudo enviar. Prueba de nuevo en unos segundos.");
-      // Para debug rápido si quieres:
+      setRSVPStatus("❌ No se pudo enviar. Prueba de nuevo en unos segundos.", false);
       // console.error(err);
     } finally {
       if (submitBtn) {
@@ -444,11 +452,12 @@ if (rsvpForm) {
   }
 
   function setMusicUI(on) {
-    if (!musicBtn) return;
-    musicBtn.classList.toggle("is-on", on);
-    musicBtn.setAttribute("aria-pressed", on ? "true" : "false");
-    musicBtn.setAttribute("aria-label", on ? "Pausar música" : "Activar música");
-  }
+  if (!musicBtn) return;
+  musicBtn.classList.toggle("is-on", on);
+  musicBtn.setAttribute("aria-pressed", on ? "true" : "false");
+  musicBtn.setAttribute("aria-label", on ? "Pausar música" : "Activar música");
+  musicBtn.textContent = on ? "♫" : "♪";
+}
 
   function saveMusicPref(on) {
     try { localStorage.setItem(MUSIC_KEY, on ? "1" : "0"); } catch {}
@@ -661,8 +670,8 @@ if (rsvpForm) {
     `,
     tips: `
       <h2>Tips y notas</h2>
-      <p>- El cóctel será en el jardin, tenlo en cuenta para el calzado.</p>
-      <p>- Si tienes cualquier duda, contactanos. ALBERTO 620 57 91 01 - GEMA 680 96 21 64</p>
+      <p>- El cóctel será en el jardín, tenlo en cuenta para el calzado.</p>
+      <p>- Si tienes cualquier duda, contáctanos. ALBERTO 620 57 91 01 - GEMA 680 96 21 64</p>
     `,
     save: `
       <h2>Guardar la web</h2>

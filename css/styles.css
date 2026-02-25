@@ -727,13 +727,39 @@ a{ color: inherit; text-decoration: none; }
   filter: drop-shadow(0 10px 18px rgba(0,0,0,.10));
 }
 
+/* =========================
+   COMPACTAR BLOQUE FALTAN (solo móvil)
+   ========================= */
 @media (max-width: 979px){
-  .sepImage.sepImage--bg{
-    height: 150px;                    /* 🔥 altura optimizada */
-    background-position: center 60%;  /* 🔥 sube el dibujo suavemente */
-    background-size: contain;
-    background-repeat: no-repeat;
+
+  /* 🔹 Reducimos aire general de la sección */
+  #faltan.section{
+    padding-top: 10px;
+    padding-bottom: 26px;
   }
+
+  /* 🔹 Banda un poco más fina */
+  .sepImage.sepImage--bg{
+    height: 110px;
+    background-position: center 65%;
+  }
+
+  /* 🔹 Título más pegado */
+  #faltan .sectionHead{
+    margin-bottom: 4px;
+  }
+
+  /* 🔹 Countdown más compacto */
+  .countdownWrap{
+    margin-top: 10px;
+    padding: 6px 0;
+  }
+
+  /* 🔹 Frase inferior más cercana */
+  #faltan .sectionHead__sub{
+    margin-top: 10px;
+  }
+
 }
 @media (min-width: 980px){
   .sepImage.sepImage--bg{
@@ -988,7 +1014,7 @@ a{ color: inherit; text-decoration: none; }
     grid-column: 1;
     display: flex;
     justify-content: flex-end;
-    justify-self: end;       /* ✅ NUEVO: pega la card al centro */
+    justify-self: end;       /* ✅ pega la card al centro */
   }
 
   .tDot{
@@ -1001,7 +1027,7 @@ a{ color: inherit; text-decoration: none; }
     grid-column: 3;
     display: flex;
     justify-content: flex-start;
-    justify-self: start;     /* ✅ NUEVO: pega la card al centro */
+    justify-self: start;     /* ✅ pega la card al centro */
   }
 }
 
@@ -1025,6 +1051,21 @@ a{ color: inherit; text-decoration: none; }
   box-shadow: 0 16px 36px rgba(0,0,0,.08);
   margin: 0 auto;
   position: relative;
+}
+
+/* ✅ Lottie “pop” cuando está activo */
+.tDot.has-lottie{
+  transform: scale(1);
+  will-change: transform;
+  animation: lottiePop .42s cubic-bezier(.16, 1, .3, 1) both;
+}
+@keyframes lottiePop{
+  0%{ transform: scale(.96); }
+  60%{ transform: scale(1.03); }
+  100%{ transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce){
+  .tDot.has-lottie{ animation: none !important; }
 }
 
 .tLottie{
@@ -1130,11 +1171,8 @@ a{ color: inherit; text-decoration: none; }
 }
 
 @media (min-width: 860px){
-
   /* Reducimos ligeramente el ancho para que no “floten” */
-  .tCard{
-    max-width: 440px;
-  }
+  .tCard{ max-width: 440px; }
 
   /* IZQUIERDA */
   .tItem:nth-child(odd) .tCard{
@@ -1149,7 +1187,6 @@ a{ color: inherit; text-decoration: none; }
     margin-left: 7px;    /* 👈 acercamos al círculo */
     text-align: left;
   }
-
 }
 
 /* ✅ Tipografía más limpia */
@@ -1570,6 +1607,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   .gallery--polaroid .galleryFrame:hover{ transform: translateY(-2px) rotate(0.6deg); }
 }
 
+/* ✅ Hint “premium” con fade suave */
 .galleryHint{
   margin-top: 10px;
   font-size: 12px;
@@ -1577,6 +1615,20 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   text-transform: uppercase;
   color: rgba(22,22,22,.55);
   font-weight: 900;
+
+  /* fade */
+  opacity: .72;
+  transition: opacity .35s ease;
+}
+
+/* Desktop: aparece más “presente” al interactuar */
+@media (hover:hover){
+  .gallery:hover .galleryHint{ opacity: 1; }
+}
+
+/* Respeto accesibilidad */
+@media (prefers-reduced-motion: reduce){
+  .galleryHint{ transition: none; }
 }
 
 .galleryTrack, .galleryImg{
@@ -1766,7 +1818,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   position: relative;
   transform-style: preserve-3d;
   transform: rotateX(-14deg) rotateY(28deg);
-  will-change: transform;
+  will-change: auto;
 }
 
 /* interacción */
@@ -1874,12 +1926,36 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 .footerNote{ font-size: 12px; color: rgba(22,22,22,.60); }
 
 /* =========================
-   MODAL
+   MODAL (scale-in premium)
    ========================= */
-.modal{ position: fixed; inset: 0; display: none; z-index: 99999; }
-.modal.is-open{ display: block; }
-.modal__backdrop{ position:absolute; inset:0; background: rgba(0,0,0,.58); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.modal{
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 99999;
+}
 
+.modal.is-open{
+  display: block;
+}
+
+/* Backdrop con fade suave */
+.modal__backdrop{
+  position:absolute;
+  inset:0;
+  background: rgba(0,0,0,.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+
+.modal.is-open .modal__backdrop{
+  opacity: 1;
+}
+
+/* Panel con scale-in */
 .modal__panel{
   position: relative;
   width: min(820px, calc(100vw - 32px));
@@ -1891,7 +1967,21 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   border: 1px solid rgba(200,162,74,.22);
   box-shadow: 0 30px 100px rgba(0,0,0,.34);
   padding: 18px 18px 20px;
+
+  /* animación inicial */
+  transform: scale(.94) translateY(10px);
+  opacity: 0;
+  transition:
+    transform .42s cubic-bezier(.16, 1, .3, 1),
+    opacity .32s ease;
 }
+
+.modal.is-open .modal__panel{
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* Botón cerrar */
 .modal__close{
   position:absolute;
   right: 12px;
@@ -1903,10 +1993,32 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   border-radius: 999px;
   cursor: pointer;
   font-size: 18px;
+  transition: background .2s ease, transform .2s ease;
 }
-.modal__content{ padding-top: 18px; color: rgba(22,22,22,.84); line-height: 1.65; font-size: 14px; }
-.modal__content h2{ font-family: var(--font-display); margin: 0 0 10px; font-size: 26px; line-height: 1.1; }
-.modal__content p{ margin: 10px 0; }
+
+.modal__close:hover{
+  background: rgba(22,22,22,.14);
+  transform: scale(1.05);
+}
+
+/* Contenido */
+.modal__content{
+  padding-top: 18px;
+  color: rgba(22,22,22,.84);
+  line-height: 1.65;
+  font-size: 14px;
+}
+
+.modal__content h2{
+  font-family: var(--font-display);
+  margin: 0 0 10px;
+  font-size: 26px;
+  line-height: 1.1;
+}
+
+.modal__content p{
+  margin: 10px 0;
+}
 
 .modal__content .modalImage{
   width: 100%;
@@ -1920,6 +2032,14 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   box-shadow: 0 18px 44px rgba(0,0,0,.16);
   border: 1px solid rgba(22,22,22,.10);
   background: rgba(255,255,255,.20);
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce){
+  .modal__backdrop,
+  .modal__panel{
+    transition: none !important;
+  }
 }
 
 /* =========================
@@ -1942,4 +2062,13 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 /* ✅ evita que el body claro se cuele detrás de la banda */
 .sectionBlock--faltan .sepImage.sepImage--bg{
   background-color: var(--bgB);
+}
+
+/* Honeypot invisible */
+.hp-field{
+  position:absolute !important;
+  left:-9999px !important;
+  width:1px !important;
+  height:1px !important;
+  overflow:hidden !important;
 }
