@@ -662,7 +662,7 @@ if (rsvpForm) {
     tips: `
       <h2>Tips y notas</h2>
       <p>- El cóctel será en el jardin, tenlo en cuenta para el calzado.</p>
-      <p>- Si tienes cualquier duda, contactanos. ALBERTO 620 57 91 01 GEMA 680 96 21 64</p>
+      <p>- Si tienes cualquier duda, contactanos. ALBERTO 620 57 91 01 - GEMA 680 96 21 64</p>
     `,
     save: `
       <h2>Guardar la web</h2>
