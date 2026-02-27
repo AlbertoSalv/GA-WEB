@@ -1532,7 +1532,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 }
 
 /* =========================
-   GALERÍA PRO + POLAROID
+   GALERÍA PRO + POLAROID (mimetizado premium)
    ========================= */
 .gallery{ margin-top: 22px; position: relative; }
 
@@ -1560,51 +1560,81 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   overflow: visible;
 }
 
+/* =========================
+   POLAROID (borde ajustado a la FOTO + 2 bordes detrás)
+   ========================= */
+
 .gallery--polaroid .galleryFrame{
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: 18px;
+
+  /* Polaroid base */
+  padding: 12px; /* marco blanco */
   background: rgba(255,255,255,.94);
-  border: 4px solid rgba(22,22,22,.88);
   box-shadow: 0 20px 60px rgba(0,0,0,.16);
-  padding: 10px;
   cursor: zoom-in;
   transform: translateZ(0);
   transition: transform 180ms ease;
-  overflow: hidden;
+
+  /* dejamos ver los bordes detrás */
+  overflow: visible;
 }
 
+/* La foto es el “cuadradito” */
+.gallery--polaroid .galleryImg{
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 14px; /* cuadrado redondeado */
+  object-fit: cover;
+  object-position: center;
+
+  /* ✅ BORDE PRINCIPAL ajustado a la foto */
+  outline: 4px solid rgba(22,22,22,.88);
+  outline-offset: 0;
+  background: rgba(255,255,255,.20);
+}
+
+/* ✅ 2 bordes detrás (del tamaño de la foto, no del marco blanco) */
 .gallery--polaroid .galleryFrame::before,
 .gallery--polaroid .galleryFrame::after{
   content:"";
   position: absolute;
-  inset: 0;
-  border-radius: 18px;
-  background: rgba(255,255,255,.94);
+
+  /* 👇 ESTA ES LA CLAVE:
+     colocamos el borde justo donde empieza la foto:
+     padding 12px => el cuadrado empieza a 12px */
+  left: 12px;
+  right: 12px;
+  top: 12px;
+  bottom: 12px;
+
+  border-radius: 14px;
   border: 4px solid rgba(22,22,22,.88);
+  background: transparent;
+  pointer-events: none;
   z-index: -1;
 }
+
+/* borde detrás 1 */
 .gallery--polaroid .galleryFrame::before{
-  transform: translate(-8px, 6px) rotate(-3.2deg);
-  opacity: .95;
+  transform: translate(-10px, 8px) rotate(-2.2deg);
+  opacity: .70;
 }
+
+/* borde detrás 2 */
 .gallery--polaroid .galleryFrame::after{
-  transform: translate(8px, 10px) rotate(3.0deg);
-  opacity: .90;
+  transform: translate(10px, 12px) rotate(2.0deg);
+  opacity: .55;
 }
 
-.gallery--polaroid .galleryImg{
-  width: 100%;
-  height: 100%;
-  border-radius: 12px;
-  object-fit: cover;
-  object-position: center;
-  display:block;
-}
-
+/* Hover */
 @media (hover:hover){
-  .gallery--polaroid .galleryFrame:hover{ transform: translateY(-2px) rotate(0.6deg); }
+  .gallery--polaroid .galleryFrame:hover{
+    transform: translateY(-2px) rotate(0.6deg);
+  }
 }
 
 /* ✅ Hint “premium” con fade suave */
@@ -1616,17 +1646,14 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   color: rgba(22,22,22,.55);
   font-weight: 900;
 
-  /* fade */
   opacity: .72;
   transition: opacity .35s ease;
 }
 
-/* Desktop: aparece más “presente” al interactuar */
 @media (hover:hover){
   .gallery:hover .galleryHint{ opacity: 1; }
 }
 
-/* Respeto accesibilidad */
 @media (prefers-reduced-motion: reduce){
   .galleryHint{ transition: none; }
 }
@@ -1649,13 +1676,12 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   background: rgba(255,255,255,.78);
   box-shadow: 0 18px 44px rgba(0,0,0,.12);
   cursor: pointer;
-  font-size: 0;          /* ✅ ya no usamos ‹ › */
+  font-size: 0;
   line-height: 0;
   color: rgba(22,22,22,.80);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 5;
-  display: grid;
   place-items: center;
   -webkit-tap-highlight-color: transparent;
 }
@@ -1674,7 +1700,6 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   .galleryNav:hover{ transform: translateY(-50%) scale(1.04); }
 }
 
-/* En móvil no queremos flechas */
 @media (max-width: 979px){
   .galleryNav{ display: none !important; }
 }

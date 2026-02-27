@@ -853,49 +853,76 @@ if (!img) return;
   $$(".galleryTrack").forEach((t) => enableDragScroll(t));
 
 function bindGalleryArrows() {
-  const track = $(".galleryTrack");
-  if (!track) return;
+  // Soporta múltiples galerías en la página
+  $$(".gallery").forEach((gallery) => {
+    const track = gallery.querySelector(".galleryTrack");
+    if (!track) return;
 
-  const prevBtn = $(".galleryNav--prev");
-  const nextBtn = $(".galleryNav--next");
+    const prevBtn = gallery.querySelector(".galleryNav--prev");
+    const nextBtn = gallery.querySelector(".galleryNav--next");
 
-  const getStep = () => {
-    const firstItem = track.querySelector(".galleryItem");
-    if (!firstItem) return 320;
+    const getStep = () => {
+      const firstItem = track.querySelector(".galleryItem");
+      if (!firstItem) return 320;
 
-    const itemWidth = firstItem.getBoundingClientRect().width;
-    const gap = 14; // coincide con tu CSS
-    return itemWidth + gap;
-  };
+      const itemWidth = firstItem.getBoundingClientRect().width;
+      const gap = 14; // coincide con tu CSS
+      return itemWidth + gap;
+    };
 
-  const scrollByOneCard = (dir) => {
-    const step = getStep();
-    track.scrollBy({
-      left: dir * step,
-      behavior: prefersReducedMotion ? "auto" : "smooth"
-    });
-  };
+    const isAtStart = () => track.scrollLeft <= 2;
 
-  const onArrowClick = (dir) => (e) => {
-    // ✅ evita que el drag-to-scroll capture el pointer/click
-    e.preventDefault();
-    e.stopPropagation();
+    const isAtEnd = () => {
+      const max = track.scrollWidth - track.clientWidth;
+      return track.scrollLeft >= (max - 2);
+    };
 
-    // ✅ en algunos casos el handler global de click puede engancharse
-    if (typeof e.stopImmediatePropagation === "function") e.stopImmediatePropagation();
+    const scrollToPos = (left) => {
+      track.scrollTo({
+        left,
+        behavior: prefersReducedMotion ? "auto" : "smooth",
+      });
+    };
 
-    scrollByOneCard(dir);
-  };
+    const scrollByOneCard = (dir) => {
+      const step = getStep();
 
-  // ✅ usa pointerdown para que responda más “rápido” y no se pelee con el drag
-  if (prevBtn) {
-    prevBtn.addEventListener("pointerdown", onArrowClick(-1), { passive: false });
-    prevBtn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); }, true);
-  }
-  if (nextBtn) {
-    nextBtn.addEventListener("pointerdown", onArrowClick(1), { passive: false });
-    nextBtn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); }, true);
-  }
+      // ✅ Wrap infinito
+      if (dir > 0 && isAtEnd()) {
+        scrollToPos(0); // vuelve al inicio
+        return;
+      }
+      if (dir < 0 && isAtStart()) {
+        scrollToPos(track.scrollWidth); // salta al final
+        return;
+      }
+
+      // normal
+      track.scrollBy({
+        left: dir * step,
+        behavior: prefersReducedMotion ? "auto" : "smooth",
+      });
+    };
+
+    const onArrowClick = (dir) => (e) => {
+      // evita que el drag-to-scroll capture el pointer/click
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof e.stopImmediatePropagation === "function") e.stopImmediatePropagation();
+
+      scrollByOneCard(dir);
+    };
+
+    // pointerdown para respuesta rápida y evitar pelea con drag
+    if (prevBtn) {
+      prevBtn.addEventListener("pointerdown", onArrowClick(-1), { passive: false });
+      prevBtn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); }, true);
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener("pointerdown", onArrowClick(1), { passive: false });
+      nextBtn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); }, true);
+    }
+  });
 }
 
 bindGalleryArrows();
@@ -1067,21 +1094,45 @@ function enableCube(cubeEl, { thresholdMouse = 10, thresholdTouch = 16 } = {}) {
     markDragged();
   }
 
-  function onUp() {
-    if (!isPointerDown) return;
+function onUp(e) {
+  if (!isPointerDown) return;
 
-    isPointerDown = false;
+  isPointerDown = false;
 
-    if (isDragging) {
-      isDragging = false;
-      cubeEl.classList.remove("is-dragging");
-      startInertia();
-    } else {
-      // TAP: dejamos que el click ocurra (abrirá el modal por tu handler global de img[data-gallery="true"])
-      cubeEl.style.animation = "";
-      startAuto();
+  if (isDragging) {
+    isDragging = false;
+    cubeEl.classList.remove("is-dragging");
+    startInertia();
+  } else {
+    // ===============================
+    // TAP real (no drag)
+    // ===============================
+
+    cubeEl.style.animation = "";
+    startAuto();
+
+    // ✅ Si existe bandera global de drag reciente, la limpiamos
+    if (typeof recentlyDragged !== "undefined") {
+      recentlyDragged = false;
+    }
+
+    // ✅ Reenviamos el click a la imagen activa del cubo
+    if (e && e.target) {
+      const face = e.target.closest(".cubeFace");
+      if (face) {
+        const img = face.querySelector('img[data-gallery="true"]');
+        if (img) {
+          img.dispatchEvent(
+            new MouseEvent("click", {
+              bubbles: true,
+              cancelable: true
+            })
+          );
+        }
+      }
     }
   }
+}
 
   cubeEl.addEventListener("pointerdown", onDown);
   cubeEl.addEventListener("pointermove", onMove, { passive: false });
@@ -1095,6 +1146,29 @@ function enableCube(cubeEl, { thresholdMouse = 10, thresholdTouch = 16 } = {}) {
 
   const cubeEl = $("#kidsCube") || $("[data-cube]");
   if (cubeEl) enableCube(cubeEl);
+
+  // =========================================================
+// 10.1) Cubo: TAP robusto (reenvía click a la imagen)
+// =========================================================
+(function bindCubeTapToImage(){
+  const cubeRoot = $("#kidsCube") || $("[data-cube]");
+  if (!cubeRoot) return;
+
+  cubeRoot.addEventListener("click", (e) => {
+    // Si vienes de un drag reciente, no hacemos nada
+    // (usa tu bandera global si existe; si no, no bloquea)
+    if (typeof recentlyDragged !== "undefined" && recentlyDragged) return;
+
+    const face = e.target.closest(".cubeFace");
+    if (!face) return;
+
+    const img = face.querySelector('img[data-gallery="true"]');
+    if (!img) return;
+
+    // Re-disparamos un click sobre la imagen para reutilizar tu handler global
+    img.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+  }, true);
+})();
 
   // =========================================================
   // 11) Accesibilidad: ESC + trap focus modal
