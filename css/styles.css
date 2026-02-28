@@ -29,6 +29,11 @@
   --font-display: "Libre Baskerville", Georgia, "Times New Roman", serif;
   --font-title: "Libre Baskerville", Georgia, "Times New Roman", serif;
   --font-script: "Allura", cursive;
+  --font-elegant: "Playfair Display", Georgia, "Times New Roman", serif;
+
+  /* ✅ Subtítulos (Allura) — control centralizado */
+  --sub-size: clamp(21px, 2.25vw, 33px);  /* base (desktop+mobile) */
+  --sub-size-m: 24px;                     /* móvil (sube/baja aquí) */
 
   /* granate */
   --garnet: #6b1f2b;
@@ -248,9 +253,13 @@ a{ color: inherit; text-decoration: none; }
 .sectionHead__sub{
   margin: 6px 0 0;
   font-family: var(--font-script);
-  font-size: clamp(21px, 2.25vw, 33px);
+  font-size: var(--sub-size);
   color: rgba(22,22,22,.52);
   line-height: 1.25;
+}
+
+@media (max-width: 768px){
+  .sectionHead__sub{ font-size: var(--sub-size-m); }
 }
 
 /* =========================
@@ -1271,15 +1280,18 @@ html, body{ -webkit-text-size-adjust: 100%; }
   }
 }
 
-/* ✅ Tipografía más limpia */
+/* ✅ Tipografía timeline en Playfair Display */
 .tTime{
+  font-family: var(--font-elegant);
   font-weight: 900;
   letter-spacing: 1px;
   font-size: 12.5px;
-  color: rgba(107,31,43,.88); /* garnet suave */
+  color: rgba(107,31,43,.88);
   text-transform: uppercase;
 }
+
 .tLabel{
+  font-family: var(--font-elegant);
   margin-top: 6px;
   font-size: 14.5px;
   color: rgba(22,22,22,.66);
