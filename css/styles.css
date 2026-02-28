@@ -2140,17 +2140,24 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   color: rgba(22,22,22,.84);
   line-height: 1.65;
   font-size: 14px;
+
+  /* ✅ TODO el texto del modal en Playfair */
+  font-family: var(--font-elegant);
 }
 
+/* ✅ Título del modal en Playfair */
 .modal__content h2{
-  font-family: var(--font-display);
+  font-family: var(--font-elegant);
   margin: 0 0 10px;
   font-size: 26px;
   line-height: 1.1;
+  font-weight: 700;
 }
 
+/* (Opcional) Afinar párrafos */
 .modal__content p{
   margin: 10px 0;
+  font-family: var(--font-elegant);
 }
 
 .modal__content .modalImage{
