@@ -1269,14 +1269,14 @@ html, body{ -webkit-text-size-adjust: 100%; }
   .tItem:nth-child(odd) .tCard{
     margin-left: auto;
     margin-right: 7px;   /* 👈 acercamos al círculo */
-    text-align: right;
+    text-align: center;  /* ✅ antes right */
   }
 
   /* DERECHA */
   .tItem:nth-child(even) .tCard{
     margin-right: auto;
     margin-left: 7px;    /* 👈 acercamos al círculo */
-    text-align: left;
+    text-align: center;  /* ✅ antes left */
   }
 }
 
@@ -1287,7 +1287,7 @@ html, body{ -webkit-text-size-adjust: 100%; }
   letter-spacing: 1px;
   font-size: 12.5px;
   color: rgba(107,31,43,.88);
-  text-transform: uppercase;
+  text-transform: none;   /* 🔥 antes estaba uppercase */
 }
 
 .tLabel{
@@ -1321,6 +1321,8 @@ html, body{ -webkit-text-size-adjust: 100%; }
     max-width: none;
     padding: 12px 12px;
     border-radius: 22px;
+
+    text-align: center;   /* ✅ centrado también en móvil */
   }
 
   /* ✅ texto más grande y legible */
@@ -1594,8 +1596,18 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   font-size: 18px;
   margin-bottom: 2px;
 }
-.actionTitle{ font-weight:900; letter-spacing:1.4px; text-transform:uppercase; color: rgba(22,22,22,.82); font-size: 12px; }
+/* ✅ Todo lo que necesitas — tipografía en Playfair Display */
+.actionTitle{
+  font-family: var(--font-elegant);
+  font-weight: 700;
+  letter-spacing: .9px;        /* más fino que 1.4px */
+  text-transform: uppercase;   /* se mantiene el look elegante */
+  color: rgba(22,22,22,.82);
+  font-size: 12px;
+}
+
 .actionSub{
+  font-family: var(--font-elegant);
   margin-top: 2px;
   color: rgba(22,22,22,.62);
   font-size: 14px;
@@ -1607,6 +1619,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   justify-content:center;
 }
 .actionBtn{
+  font-family: var(--font-elegant);
   margin-top: 6px;
   display:inline-flex;
   padding: 10px 14px;
@@ -1614,8 +1627,9 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   background: rgba(200,162,74,.14);
   border: 1px solid rgba(200,162,74,.30);
   color: rgba(22,22,22,.86);
-  font-weight: 900;
+  font-weight: 700;          /* antes 900, en Playfair queda más fino */
   font-size: 13px;
+  letter-spacing: .4px;
 }
 
 /* ✅ Móvil: iconos y textos un pelín más grandes */
