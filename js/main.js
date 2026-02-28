@@ -328,7 +328,7 @@
 
   initTimelineLottieAndReveal();
 
-  // =========================================================
+// =========================================================
 // 4) RSVP (con honeypot anti-bots)
 // =========================================================
 const rsvpToggle = $("#rsvpToggle");
@@ -349,8 +349,13 @@ function openRSVP({ scrollIntoView = false } = {}) {
     window.scrollTo({ top, behavior: prefersReducedMotion ? "auto" : "smooth" });
   }
 
-  const firstInput = $("input, select, textarea", rsvpPanel);
-  if (firstInput) window.setTimeout(() => firstInput.focus(), 80);
+  // ✅ Evitar teclado automático en móvil (NO hacemos focus automático)
+  const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+  if (!isMobile) {
+    const firstInput = $("input, select, textarea", rsvpPanel);
+    if (firstInput) window.setTimeout(() => firstInput.focus(), 80);
+  }
 }
 
 function closeRSVP() {
