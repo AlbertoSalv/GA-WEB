@@ -505,6 +505,12 @@ a{ color: inherit; text-decoration: none; }
 /* =========================
    HERO
    ========================= */
+
+/* Evitar que móviles alteren colores en modo oscuro */
+:root{
+  color-scheme: light;
+}
+
 .hero{ padding: 0 !important; margin: 0 !important; }
 
 .heroStage{
@@ -529,6 +535,10 @@ a{ color: inherit; text-decoration: none; }
   }
 }
 
+/* =========================
+   FOTO
+   ========================= */
+
 .heroPhoto--full{
   position: relative;
   overflow: hidden;
@@ -549,6 +559,7 @@ a{ color: inherit; text-decoration: none; }
   filter: blur(18px) saturate(1.06) brightness(.84);
   opacity: .95;
 }
+
 .heroPhoto--full .heroPhoto__bg::after{
   content:"";
   position:absolute;
@@ -567,6 +578,10 @@ a{ color: inherit; text-decoration: none; }
   object-fit: contain;
   object-position: center bottom;
 }
+
+/* =========================
+   DEGRADADOS FOTO
+   ========================= */
 
 @media (max-width: 979px){
   .heroPhoto--full::after{
@@ -600,12 +615,17 @@ a{ color: inherit; text-decoration: none; }
         rgba(245,241,231,.96) 100%
       );
   }
+
   .heroPhoto--full .heroPhoto__bg{
     filter: blur(12px) saturate(1.03) brightness(.88);
     opacity: .62;
     transform: scale(1.06);
   }
 }
+
+/* =========================
+   TEXTO
+   ========================= */
 
 .heroText{
   display:flex;
@@ -619,6 +639,7 @@ a{ color: inherit; text-decoration: none; }
   position: relative;
   z-index: 2;
 }
+
 @media (min-width: 980px){
   .heroText{ padding: 0 74px; }
 }
@@ -630,12 +651,17 @@ a{ color: inherit; text-decoration: none; }
   opacity: .85;
   background: linear-gradient(90deg, rgba(200,162,74,.55), rgba(22,22,22,.10), rgba(200,162,74,0));
 }
+
 .heroBand--top{ margin-bottom: 10px; }
 .heroBand--bottom{ margin-top: 10px; width: 140px; opacity:.65; }
 
+/* =========================
+   NOMBRE (+1 punto)
+   ========================= */
+
 .heroNames{
   font-family: var(--font-display);
-  font-size: clamp(42px, 3.2vw, 64px);
+  font-size: clamp(44px, 3.4vw, 66px);
   line-height: 1.08;
   font-weight: 700;
   letter-spacing: .15px;
@@ -651,37 +677,55 @@ a{ color: inherit; text-decoration: none; }
   padding: 2px 0 6px;
 }
 
+/* =========================
+   FRASE (+2 desktop, +3 móvil)
+   ========================= */
+
 .heroLead{
-  margin-top: 6px;
-  color: var(--muted);
-  line-height: 1.65;
-  font-size: 15px;
-  max-width: 62ch;
+  margin-top: 8px;
+  line-height: 1.6;
+  max-width: 60ch;
 }
+
 .heroLead--allura{
   font-family: var(--font-script);
-  font-size: clamp(18px, 2.0vw, 26px);
-  line-height: 1.25;
-  color: rgba(22,22,22,.58);
+  font-size: clamp(20px, 2.2vw, 28px);
+  line-height: 1.32;
+  color: rgba(22,22,22,.65);
   max-width: 54ch;
+  margin-bottom: 32px;
 }
+
+/* =========================
+   TE ESPERAMOS (+1 punto + más aire)
+   ========================= */
 
 .heroDateLabel{
-  margin-top: 16px;
-  font-size: 12px;
-  color: rgba(22,22,22,.60);
+  margin-top: 8px;
+  font-size: 14px;
+  color: rgba(22,22,22,.70);
   font-weight: 900;
-  letter-spacing: 1.6px;
+  letter-spacing: 2px;
   text-transform: uppercase;
+  margin-bottom: 18px;
 }
 
-.heroDateWrap{ display:flex; justify-content:center; }
+/* =========================
+   FECHA (+1 punto + separación)
+   ========================= */
+
+.heroDateWrap{
+  display:flex;
+  justify-content:center;
+  margin-top: 6px;
+  margin-bottom: 28px;
+}
 
 .heroDate--fancy .heroDate__text{
   display: inline-block;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(42px, 4vw, 72px);
+  font-size: clamp(46px, 4.4vw, 76px);
   letter-spacing: .8px;
   line-height: 1.05;
 
@@ -694,11 +738,20 @@ a{ color: inherit; text-decoration: none; }
 
   animation: shine 3.6s ease-in-out infinite;
 }
+
+/* =========================
+   ANIMACIÓN DORADO
+   ========================= */
+
 @keyframes shine{
   0%{ background-position: 0% 50%; }
   50%{ background-position: 100% 50%; }
   100%{ background-position: 0% 50%; }
 }
+
+/* =========================
+   FADE INFERIOR
+   ========================= */
 
 .heroFade{
   position: absolute;
@@ -706,6 +759,31 @@ a{ color: inherit; text-decoration: none; }
   height: 150px;
   pointer-events:none;
   background: linear-gradient(180deg, rgba(245,241,231,0) 0%, rgba(245,241,231,.90) 55%, rgba(245,241,231,1) 100%);
+}
+
+/* =========================
+   MÓVIL AJUSTES
+   ========================= */
+
+@media (max-width: 768px){
+
+  .heroNames{
+    font-size: 40px;
+  }
+
+  .heroLead--allura{
+    font-size: 21px;
+    line-height: 1.5;
+  }
+
+  .heroDateLabel{
+    font-size: 15px;
+  }
+
+  .heroDate--fancy .heroDate__text{
+    font-size: 44px;
+  }
+
 }
 
 /* =========================
