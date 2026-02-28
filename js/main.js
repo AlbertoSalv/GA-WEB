@@ -129,94 +129,121 @@
     });
   }
 
-  // =========================================================
-  // 2) COUNTDOWN Europe/Madrid (robusto DST)
-  // =========================================================
-  const countdownWrap = $("#countdown");
+// =========================================================
+// 2) COUNTDOWN Europe/Madrid (DST correcto: cuenta atrás real)
+// =========================================================
+const countdownWrap = $("#countdown");
 
-  const EVENT = {
-    year: 2026,
-    month: 6,
-    day: 26,
-    hour: 19,
-    minute: 0,
-    second: 0,
-    timeZone: "Europe/Madrid"
-  };
+const EVENT = {
+  year: 2026,
+  month: 6,
+  day: 26,
+  hour: 19,
+  minute: 0,
+  second: 0,
+  timeZone: "Europe/Madrid"
+};
 
-  function tzDateToUtcMs({ year, month, day, hour, minute, second, timeZone }) {
-    const guess = Date.UTC(year, month - 1, day, hour, minute, second);
+// Devuelve {year,month,day,hour,minute,second} de una Date en una TZ
+function getTZParts(date, timeZone) {
+  const dtf = new Intl.DateTimeFormat("en-GB", {
+    timeZone,
+    hour12: false,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
 
-    const dtf = new Intl.DateTimeFormat("en-GB", {
-      timeZone,
-      hour12: false,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit"
-    });
+  const parts = dtf.formatToParts(date);
+  const map = {};
+  for (const p of parts) if (p.type !== "literal") map[p.type] = p.value;
 
-    const parts = dtf.formatToParts(new Date(guess));
-    const map = {};
-    for (const p of parts) if (p.type !== "literal") map[p.type] = p.value;
+  let y = Number(map.year);
+  let mo = Number(map.month);
+  let d = Number(map.day);
+  let h = Number(map.hour);
+  const mi = Number(map.minute);
+  const s = Number(map.second);
 
-    let y = Number(map.year);
-    let mo = Number(map.month);
-    let d = Number(map.day);
-    let h = Number(map.hour);
-    const mi = Number(map.minute);
-    const s = Number(map.second);
-
-    // Corrección 24:xx
-    if (h === 24) {
-      h = 0;
-      const tmp = new Date(Date.UTC(y, mo - 1, d, 0, mi, s));
-      tmp.setUTCDate(tmp.getUTCDate() + 1);
-      y = tmp.getUTCFullYear();
-      mo = tmp.getUTCMonth() + 1;
-      d = tmp.getUTCDate();
-    }
-
-    const asTZ = Date.UTC(y, mo - 1, d, h, mi, s);
-    const diff = asTZ - guess;
-    return guess - diff;
+  // Corrección 24:xx (algunos navegadores lo devuelven en casos límite)
+  if (h === 24) {
+    h = 0;
+    const tmp = new Date(Date.UTC(y, mo - 1, d, 0, mi, s));
+    tmp.setUTCDate(tmp.getUTCDate() + 1);
+    y = tmp.getUTCFullYear();
+    mo = tmp.getUTCMonth() + 1;
+    d = tmp.getUTCDate();
   }
 
-  const targetUtcMs = tzDateToUtcMs(EVENT);
+  return { year: y, month: mo, day: d, hour: h, minute: mi, second: s };
+}
 
-  function tickCountdown() {
-    if (!countdownWrap) return;
+/**
+ * Convierte una fecha “en zona horaria” (componentes) a UTC ms
+ * de forma robusta con DST.
+ */
+function tzDateToUtcMs({ year, month, day, hour, minute, second, timeZone }) {
+  // 1) Hacemos una suposición en UTC
+  const guess = Date.UTC(year, month - 1, day, hour, minute, second);
 
-    const dEl = $('[data-cd="days"]', countdownWrap);
-    const hEl = $('[data-cd="hours"]', countdownWrap);
-    const mEl = $('[data-cd="mins"]', countdownWrap);
-    const sEl = $('[data-cd="secs"]', countdownWrap);
-    if (!dEl || !hEl || !mEl || !sEl) return;
+  // 2) Miramos cómo se vería esa suposición en la TZ
+  const seen = getTZParts(new Date(guess), timeZone);
 
-    const nowMs = Date.now();
-    let diff = targetUtcMs - nowMs;
-    if (diff < 0) diff = 0;
+  // 3) Calculamos diferencia y corregimos
+  const asTZ = Date.UTC(seen.year, seen.month - 1, seen.day, seen.hour, seen.minute, seen.second);
+  const diff = asTZ - guess;
 
-    const totalSecs = Math.floor(diff / 1000);
-    const days = Math.floor(totalSecs / 86400);
-    const hours = Math.floor((totalSecs % 86400) / 3600);
-    const mins = Math.floor((totalSecs % 3600) / 60);
-    const secs = totalSecs % 60;
+  return guess - diff;
+}
 
-    dEl.textContent = pad3(days);
-    hEl.textContent = pad2(hours);
-    mEl.textContent = pad2(mins);
-    sEl.textContent = pad2(secs);
-  }
+const targetUtcMs = tzDateToUtcMs(EVENT);
 
+// Logs útiles (puedes borrar luego)
+(function debugCountdown() {
+  const targetDateUTC = new Date(targetUtcMs);
+  console.log("TARGET en Madrid:", new Intl.DateTimeFormat("es-ES", {
+    timeZone: EVENT.timeZone, dateStyle: "short", timeStyle: "medium"
+  }).format(targetDateUTC));
+  console.log("TARGET UTC ISO:", targetDateUTC.toISOString());
+  console.log("NOW Madrid:", new Intl.DateTimeFormat("es-ES", {
+    timeZone: EVENT.timeZone, dateStyle: "full", timeStyle: "long"
+  }).format(new Date()));
+})();
+
+function tickCountdown() {
+  if (!countdownWrap) return;
+
+  const dEl = $('[data-cd="days"]', countdownWrap);
+  const hEl = $('[data-cd="hours"]', countdownWrap);
+  const mEl = $('[data-cd="mins"]', countdownWrap);
+  const sEl = $('[data-cd="secs"]', countdownWrap);
+  if (!dEl || !hEl || !mEl || !sEl) return;
+
+  const nowMs = Date.now();
+  let diff = targetUtcMs - nowMs;
+  if (diff < 0) diff = 0;
+
+  const totalSecs = Math.floor(diff / 1000);
+  const days = Math.floor(totalSecs / 86400);
+  const hours = Math.floor((totalSecs % 86400) / 3600);
+  const mins = Math.floor((totalSecs % 3600) / 60);
+  const secs = totalSecs % 60;
+
+  dEl.textContent = pad3(days);
+  hEl.textContent = pad2(hours);
+  mEl.textContent = pad2(mins);
+  sEl.textContent = pad2(secs);
+}
+
+tickCountdown();
+const startDelay = 1000 - (Date.now() % 1000);
+window.setTimeout(() => {
   tickCountdown();
-  const startDelay = 1000 - (Date.now() % 1000);
-  window.setTimeout(() => {
-    tickCountdown();
-    window.setInterval(tickCountdown, 1000);
-  }, startDelay);
+  window.setInterval(tickCountdown, 1000);
+}, startDelay);
 
   // =========================================================
   // 3) Timeline (line draw + item reveal + Lottie icons)
