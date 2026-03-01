@@ -733,10 +733,19 @@
   }
 
   function collectGalleryItems(fromEl) {
-    const gallery = fromEl.closest(".gallery");
-    if (gallery) return $$('img[data-gallery="true"]', gallery);
-    return $$('img[data-gallery="true"]', document);
+  // 1) Si la imagen tiene grupo, SOLO ese grupo (evita mezclar secciones)
+  const group = (fromEl.getAttribute("data-gallery-group") || "").trim();
+  if (group) {
+    return $$(`img[data-gallery="true"][data-gallery-group="${group}"]`, document);
   }
+
+  // 2) Fallback: si está dentro de una .gallery, usa esa galería
+  const gallery = fromEl.closest(".gallery");
+  if (gallery) return $$('img[data-gallery="true"]', gallery);
+
+  // 3) Último recurso: todas (no debería pasar si ya pusiste groups)
+  return $$('img[data-gallery="true"]', document);
+}
 
   function getImgSrc(imgEl) {
     const full = (imgEl.getAttribute("data-full") || "").trim();

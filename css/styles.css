@@ -2073,10 +2073,11 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   width: 46px;
   height: 46px;
   border-radius: 999px;
-  border: 1px solid rgba(22,22,22,.10);
-  background: rgba(255,255,255,.80);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.22);
+background: rgba(255,255,255,.14);         /* ✅ MUCHO más transparente */
+box-shadow: 0 12px 32px rgba(0,0,0,.22);   /* un pelín más “premium” */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   box-shadow: 0 16px 40px rgba(0,0,0,.18);
   cursor: pointer;
   z-index: 5;
@@ -2112,7 +2113,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 @media (hover:hover){
   .modalGalleryNav:hover{
     transform: translateY(-50%) scale(1.06);
-    background: rgba(255,255,255,.92);
+    background: rgba(255,255,255,.22);
   }
 }
 
