@@ -1,24 +1,6 @@
 /* =========================================================
-   GA WEB — main.js (PRO) — FIX + OPTIMIZADO (2026) — V2
-   ✅ Incluye TODO lo hablado + arregla el “código pegado dentro del keydown”
-   - Intro sobre + fadeIn (animate.css)
-   - Countdown exacta: 26/06/2026 19:00 Europe/Madrid
-   - RSVP: abre/cierra + estado “recibido” (modo demo)
-   - Timeline:
-       • línea se dibuja al entrar en pantalla
-       • items reveal on-viewport (premium)
-       • iconos Lottie: carga ligera + play once al entrar (fallback emoji)
-   - Música: toggle sin autoplay + estado real
-   - Microparallax suave (hero + countdown, solo desktop)
-   - Modales accesibles + click-to-open (galería + cubo) + scroll-lock robusto
-   - Galería:
-       • drag-to-scroll pro (mouse + touch)
-       • flechas (desktop) por “paso” de tarjeta
-       • evita “click fantasma” tras drag (abre imagen solo si fue click real)
-   - Cubo:
-       • drag rotate (mouse + touch) + inercia + auto-rotate
-       • click en caras abre modal (y no se rompe por drag)
-   - Add to Calendar (.ics)
+   GA WEB — main.js (PRO) — FIX + OPTIMIZADO (2026) — V3
+   ✅ Todo lo hablado + modal galería con flechas dentro + teclado ← →
    ========================================================= */
 
 (() => {
@@ -92,9 +74,8 @@
     const apply = (el) => {
       if (!el) return;
       el.classList.remove("animate__animated", "animate__fadeIn", "animate__faster");
-      // reflow para reiniciar animación
       // eslint-disable-next-line no-unused-expressions
-      el.offsetHeight;
+      el.offsetHeight; // reflow
       el.classList.add("animate__animated", "animate__fadeIn", "animate__faster");
     };
 
@@ -129,128 +110,104 @@
     });
   }
 
-// =========================================================
-// 2) COUNTDOWN Europe/Madrid (DST correcto: cuenta atrás real)
-// =========================================================
-const countdownWrap = $("#countdown");
+  // =========================================================
+  // 2) COUNTDOWN Europe/Madrid (DST correcto)
+  // =========================================================
+  const countdownWrap = $("#countdown");
 
-const EVENT = {
-  year: 2026,
-  month: 6,
-  day: 26,
-  hour: 19,
-  minute: 0,
-  second: 0,
-  timeZone: "Europe/Madrid"
-};
+  const EVENT = {
+    year: 2026,
+    month: 6,
+    day: 26,
+    hour: 19,
+    minute: 0,
+    second: 0,
+    timeZone: "Europe/Madrid"
+  };
 
-// Devuelve {year,month,day,hour,minute,second} de una Date en una TZ
-function getTZParts(date, timeZone) {
-  const dtf = new Intl.DateTimeFormat("en-GB", {
-    timeZone,
-    hour12: false,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit"
-  });
+  function getTZParts(date, timeZone) {
+    const dtf = new Intl.DateTimeFormat("en-GB", {
+      timeZone,
+      hour12: false,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
 
-  const parts = dtf.formatToParts(date);
-  const map = {};
-  for (const p of parts) if (p.type !== "literal") map[p.type] = p.value;
+    const parts = dtf.formatToParts(date);
+    const map = {};
+    for (const p of parts) if (p.type !== "literal") map[p.type] = p.value;
 
-  let y = Number(map.year);
-  let mo = Number(map.month);
-  let d = Number(map.day);
-  let h = Number(map.hour);
-  const mi = Number(map.minute);
-  const s = Number(map.second);
+    let y = Number(map.year);
+    let mo = Number(map.month);
+    let d = Number(map.day);
+    let h = Number(map.hour);
+    const mi = Number(map.minute);
+    const s = Number(map.second);
 
-  // Corrección 24:xx (algunos navegadores lo devuelven en casos límite)
-  if (h === 24) {
-    h = 0;
-    const tmp = new Date(Date.UTC(y, mo - 1, d, 0, mi, s));
-    tmp.setUTCDate(tmp.getUTCDate() + 1);
-    y = tmp.getUTCFullYear();
-    mo = tmp.getUTCMonth() + 1;
-    d = tmp.getUTCDate();
+    // Corrección 24:xx
+    if (h === 24) {
+      h = 0;
+      const tmp = new Date(Date.UTC(y, mo - 1, d, 0, mi, s));
+      tmp.setUTCDate(tmp.getUTCDate() + 1);
+      y = tmp.getUTCFullYear();
+      mo = tmp.getUTCMonth() + 1;
+      d = tmp.getUTCDate();
+    }
+
+    return { year: y, month: mo, day: d, hour: h, minute: mi, second: s };
   }
 
-  return { year: y, month: mo, day: d, hour: h, minute: mi, second: s };
-}
+  function tzDateToUtcMs({ year, month, day, hour, minute, second, timeZone }) {
+    const guess = Date.UTC(year, month - 1, day, hour, minute, second);
+    const seen = getTZParts(new Date(guess), timeZone);
+    const asTZ = Date.UTC(seen.year, seen.month - 1, seen.day, seen.hour, seen.minute, seen.second);
+    const diff = asTZ - guess;
+    return guess - diff;
+  }
 
-/**
- * Convierte una fecha “en zona horaria” (componentes) a UTC ms
- * de forma robusta con DST.
- */
-function tzDateToUtcMs({ year, month, day, hour, minute, second, timeZone }) {
-  // 1) Hacemos una suposición en UTC
-  const guess = Date.UTC(year, month - 1, day, hour, minute, second);
+  const targetUtcMs = tzDateToUtcMs(EVENT);
 
-  // 2) Miramos cómo se vería esa suposición en la TZ
-  const seen = getTZParts(new Date(guess), timeZone);
+  function tickCountdown() {
+    if (!countdownWrap) return;
 
-  // 3) Calculamos diferencia y corregimos
-  const asTZ = Date.UTC(seen.year, seen.month - 1, seen.day, seen.hour, seen.minute, seen.second);
-  const diff = asTZ - guess;
+    const dEl = $('[data-cd="days"]', countdownWrap);
+    const hEl = $('[data-cd="hours"]', countdownWrap);
+    const mEl = $('[data-cd="mins"]', countdownWrap);
+    const sEl = $('[data-cd="secs"]', countdownWrap);
+    if (!dEl || !hEl || !mEl || !sEl) return;
 
-  return guess - diff;
-}
+    const nowMs = Date.now();
+    let diff = targetUtcMs - nowMs;
+    if (diff < 0) diff = 0;
 
-const targetUtcMs = tzDateToUtcMs(EVENT);
+    const totalSecs = Math.floor(diff / 1000);
+    const days = Math.floor(totalSecs / 86400);
+    const hours = Math.floor((totalSecs % 86400) / 3600);
+    const mins = Math.floor((totalSecs % 3600) / 60);
+    const secs = totalSecs % 60;
 
-// Logs útiles (puedes borrar luego)
-(function debugCountdown() {
-  const targetDateUTC = new Date(targetUtcMs);
-  console.log("TARGET en Madrid:", new Intl.DateTimeFormat("es-ES", {
-    timeZone: EVENT.timeZone, dateStyle: "short", timeStyle: "medium"
-  }).format(targetDateUTC));
-  console.log("TARGET UTC ISO:", targetDateUTC.toISOString());
-  console.log("NOW Madrid:", new Intl.DateTimeFormat("es-ES", {
-    timeZone: EVENT.timeZone, dateStyle: "full", timeStyle: "long"
-  }).format(new Date()));
-})();
+    dEl.textContent = pad3(days);
+    hEl.textContent = pad2(hours);
+    mEl.textContent = pad2(mins);
+    sEl.textContent = pad2(secs);
+  }
 
-function tickCountdown() {
-  if (!countdownWrap) return;
-
-  const dEl = $('[data-cd="days"]', countdownWrap);
-  const hEl = $('[data-cd="hours"]', countdownWrap);
-  const mEl = $('[data-cd="mins"]', countdownWrap);
-  const sEl = $('[data-cd="secs"]', countdownWrap);
-  if (!dEl || !hEl || !mEl || !sEl) return;
-
-  const nowMs = Date.now();
-  let diff = targetUtcMs - nowMs;
-  if (diff < 0) diff = 0;
-
-  const totalSecs = Math.floor(diff / 1000);
-  const days = Math.floor(totalSecs / 86400);
-  const hours = Math.floor((totalSecs % 86400) / 3600);
-  const mins = Math.floor((totalSecs % 3600) / 60);
-  const secs = totalSecs % 60;
-
-  dEl.textContent = pad3(days);
-  hEl.textContent = pad2(hours);
-  mEl.textContent = pad2(mins);
-  sEl.textContent = pad2(secs);
-}
-
-tickCountdown();
-const startDelay = 1000 - (Date.now() % 1000);
-window.setTimeout(() => {
   tickCountdown();
-  window.setInterval(tickCountdown, 1000);
-}, startDelay);
+  const startDelay = 1000 - (Date.now() % 1000);
+  window.setTimeout(() => {
+    tickCountdown();
+    window.setInterval(tickCountdown, 1000);
+  }, startDelay);
 
   // =========================================================
   // 3) Timeline (line draw + item reveal + Lottie icons)
   // =========================================================
   const timeline = $("#timeline");
 
-  // 3.1) Línea se dibuja al entrar
   if (timeline && "IntersectionObserver" in window && !prefersReducedMotion) {
     const ioLine = new IntersectionObserver(
       (entries) => {
@@ -268,13 +225,11 @@ window.setTimeout(() => {
     timeline.classList.add("is-drawn");
   }
 
-  // 3.2) Items: reveal premium + play once Lottie al entrar
   function initTimelineLottieAndReveal() {
     if (!timeline) return;
 
     const items = $$("[data-tl-item]", timeline);
     const lottieHolders = $$("[data-lottie]", timeline);
-
     if (!items.length) return;
 
     if (prefersReducedMotion || !("IntersectionObserver" in window)) {
@@ -344,10 +299,7 @@ window.setTimeout(() => {
           io.unobserve(item);
         });
       },
-      {
-        threshold: 0.45,
-        rootMargin: "0px 0px -10% 0px"
-      }
+      { threshold: 0.45, rootMargin: "0px 0px -10% 0px" }
     );
 
     items.forEach((it) => io.observe(it));
@@ -355,118 +307,110 @@ window.setTimeout(() => {
 
   initTimelineLottieAndReveal();
 
-// =========================================================
-// 4) RSVP (con honeypot anti-bots)
-// =========================================================
-const rsvpToggle = $("#rsvpToggle");
-const rsvpPanel = $("#rsvpPanel");
-const rsvpForm = $("#rsvpForm");
-const rsvpCloseBtn = $("#rsvpCloseBtn");
-const rsvpStatus = $("#rsvpStatus");
+  // =========================================================
+  // 4) RSVP (con honeypot)
+  // =========================================================
+  const rsvpToggle = $("#rsvpToggle");
+  const rsvpPanel = $("#rsvpPanel");
+  const rsvpForm = $("#rsvpForm");
+  const rsvpCloseBtn = $("#rsvpCloseBtn");
+  const rsvpStatus = $("#rsvpStatus");
 
-function openRSVP({ scrollIntoView = false } = {}) {
-  if (!rsvpPanel) return;
+  function openRSVP({ scrollIntoView = false } = {}) {
+    if (!rsvpPanel) return;
 
-  rsvpPanel.classList.add("is-open");
-  rsvpPanel.setAttribute("aria-hidden", "false");
-  if (rsvpToggle) rsvpToggle.setAttribute("aria-expanded", "true");
+    rsvpPanel.classList.add("is-open");
+    rsvpPanel.setAttribute("aria-hidden", "false");
+    if (rsvpToggle) rsvpToggle.setAttribute("aria-expanded", "true");
 
-  if (scrollIntoView) {
-    const top = rsvpPanel.getBoundingClientRect().top + window.pageYOffset - 12;
-    window.scrollTo({ top, behavior: prefersReducedMotion ? "auto" : "smooth" });
+    if (scrollIntoView) {
+      const top = rsvpPanel.getBoundingClientRect().top + window.pageYOffset - 12;
+      window.scrollTo({ top, behavior: prefersReducedMotion ? "auto" : "smooth" });
+    }
+
+    // ✅ Evitar teclado automático en móvil
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    if (!isMobile) {
+      const firstInput = $("input, select, textarea", rsvpPanel);
+      if (firstInput) window.setTimeout(() => firstInput.focus(), 80);
+    }
   }
 
-  // ✅ Evitar teclado automático en móvil (NO hacemos focus automático)
-  const isMobile = window.matchMedia("(max-width: 768px)").matches;
-
-  if (!isMobile) {
-    const firstInput = $("input, select, textarea", rsvpPanel);
-    if (firstInput) window.setTimeout(() => firstInput.focus(), 80);
+  function closeRSVP() {
+    if (!rsvpPanel) return;
+    rsvpPanel.classList.remove("is-open");
+    rsvpPanel.setAttribute("aria-hidden", "true");
+    if (rsvpToggle) rsvpToggle.setAttribute("aria-expanded", "false");
   }
-}
 
-function closeRSVP() {
-  if (!rsvpPanel) return;
-  rsvpPanel.classList.remove("is-open");
-  rsvpPanel.setAttribute("aria-hidden", "true");
-  if (rsvpToggle) rsvpToggle.setAttribute("aria-expanded", "false");
-}
+  function toggleRSVP({ scrollIntoView = false } = {}) {
+    if (!rsvpPanel) return;
+    const isOpen = rsvpPanel.classList.contains("is-open");
+    if (isOpen) closeRSVP();
+    else openRSVP({ scrollIntoView });
+  }
 
-function toggleRSVP({ scrollIntoView = false } = {}) {
-  if (!rsvpPanel) return;
-  const isOpen = rsvpPanel.classList.contains("is-open");
-  if (isOpen) closeRSVP();
-  else openRSVP({ scrollIntoView });
-}
+  if (rsvpToggle && rsvpPanel) {
+    rsvpToggle.addEventListener("click", () => toggleRSVP({ scrollIntoView: true }));
+  }
+  if (rsvpCloseBtn) rsvpCloseBtn.addEventListener("click", closeRSVP);
 
-if (rsvpToggle && rsvpPanel) {
-  rsvpToggle.addEventListener("click", () => toggleRSVP({ scrollIntoView: true }));
-}
-if (rsvpCloseBtn) rsvpCloseBtn.addEventListener("click", closeRSVP);
+  function setRSVPStatus(msg, ok = true) {
+    if (!rsvpStatus) return;
+    rsvpStatus.textContent = msg;
+    rsvpStatus.classList.toggle("is-ok", ok);
+  }
 
-function setRSVPStatus(msg, ok = true) {
-  if (!rsvpStatus) return;
-  rsvpStatus.textContent = msg;
-  rsvpStatus.classList.toggle("is-ok", ok);
-}
+  if (rsvpForm) {
+    rsvpForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-if (rsvpForm) {
-  rsvpForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const action = (rsvpForm.getAttribute("action") || "").trim();
-    if (!action || action === "#") {
-      setRSVPStatus("⚠️ Falta conectar el formulario (action).", false);
-      return;
-    }
-
-    // ✅ Honeypot anti-bots (campo invisible "website")
-    const hp = rsvpForm.querySelector('input[name="website"]');
-    if (hp && (hp.value || "").trim().length > 0) {
-      // Simulamos éxito para que el bot “crea” que ha enviado
-      setRSVPStatus("✅ ¡Recibido! Gracias por confirmarlo. Te esperamos 💓", true);
-      closeRSVP();
-      try { rsvpForm.reset(); } catch {}
-      return;
-    }
-
-    // Datos del formulario
-    const fd = new FormData(rsvpForm);
-    const payload = Object.fromEntries(fd.entries());
-
-    // (Opcional) eliminamos el honeypot del payload para no ensuciar la hoja
-    delete payload.website;
-
-    // Botón enviar (bloquear mientras envía)
-    const submitBtn = rsvpForm.querySelector('button[type="submit"]');
-    const prevText = submitBtn ? submitBtn.textContent : "";
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Enviando…";
-    }
-
-    try {
-      await fetch(action, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload),
-      });
-
-      setRSVPStatus("✅ ¡Recibido! Gracias por confirmarlo. Te esperamos 💓", true);
-      closeRSVP();
-      try { rsvpForm.reset(); } catch {}
-    } catch (err) {
-      setRSVPStatus("❌ No se pudo enviar. Prueba de nuevo en unos segundos.", false);
-      // console.error(err);
-    } finally {
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = prevText || "Enviar";
+      const action = (rsvpForm.getAttribute("action") || "").trim();
+      if (!action || action === "#") {
+        setRSVPStatus("⚠️ Falta conectar el formulario (action).", false);
+        return;
       }
-    }
-  });
-}
+
+      const hp = rsvpForm.querySelector('input[name="website"]');
+      if (hp && (hp.value || "").trim().length > 0) {
+        setRSVPStatus("✅ ¡Recibido! Gracias por confirmarlo. Te esperamos 💓", true);
+        closeRSVP();
+        try { rsvpForm.reset(); } catch {}
+        return;
+      }
+
+      const fd = new FormData(rsvpForm);
+      const payload = Object.fromEntries(fd.entries());
+      delete payload.website;
+
+      const submitBtn = rsvpForm.querySelector('button[type="submit"]');
+      const prevText = submitBtn ? submitBtn.textContent : "";
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Enviando…";
+      }
+
+      try {
+        await fetch(action, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload),
+        });
+
+        setRSVPStatus("✅ ¡Recibido! Gracias por confirmarlo. Te esperamos 💓", true);
+        closeRSVP();
+        try { rsvpForm.reset(); } catch {}
+      } catch {
+        setRSVPStatus("❌ No se pudo enviar. Prueba de nuevo en unos segundos.", false);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = prevText || "Enviar";
+        }
+      }
+    });
+  }
 
   // =========================================================
   // 5) Música (toggle)
@@ -484,12 +428,12 @@ if (rsvpForm) {
   }
 
   function setMusicUI(on) {
-  if (!musicBtn) return;
-  musicBtn.classList.toggle("is-on", on);
-  musicBtn.setAttribute("aria-pressed", on ? "true" : "false");
-  musicBtn.setAttribute("aria-label", on ? "Pausar música" : "Activar música");
-  musicBtn.textContent = on ? "♫" : "♪";
-}
+    if (!musicBtn) return;
+    musicBtn.classList.toggle("is-on", on);
+    musicBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    musicBtn.setAttribute("aria-label", on ? "Pausar música" : "Activar música");
+    musicBtn.textContent = on ? "♫" : "♪";
+  }
 
   function saveMusicPref(on) {
     try { localStorage.setItem(MUSIC_KEY, on ? "1" : "0"); } catch {}
@@ -545,7 +489,7 @@ if (rsvpForm) {
   }
 
   // =========================================================
-  // 6) Microparallax (desktop, suave)
+  // 6) Microparallax (desktop)
   // =========================================================
   function createMicroParallax({ rootSel, targetSel, scale = 1.06, strength = 10 }) {
     const root = $(rootSel);
@@ -631,7 +575,6 @@ if (rsvpForm) {
 
   function downloadICS() {
     const startUtcMs = tzDateToUtcMs({ ...EVENT, hour: 19, minute: 0, second: 0 });
-
     const endUtcMs = tzDateToUtcMs({
       year: 2026, month: 6, day: 27, hour: 2, minute: 0, second: 0, timeZone: EVENT.timeZone
     });
@@ -741,6 +684,15 @@ if (rsvpForm) {
     openModalHTML(modalTemplates[key] || "<p>Contenido no disponible.</p>", openerEl);
   }
 
+  // ====== Estado navegación modal galería ======
+  let modalGalleryItems = [];
+  let modalGalleryIndex = -1;
+
+  function resetModalGalleryState() {
+    modalGalleryItems = [];
+    modalGalleryIndex = -1;
+  }
+
   function closeModal() {
     if (!modal) return;
 
@@ -754,6 +706,8 @@ if (rsvpForm) {
     lastFocusedEl = null;
 
     if (modalContent) modalContent.innerHTML = "";
+
+    resetModalGalleryState();
   }
 
   $$("[data-modal]").forEach((btn) => {
@@ -778,32 +732,98 @@ if (rsvpForm) {
     dragResetTimer = window.setTimeout(() => { recentlyDragged = false; }, 220);
   }
 
-  function openImageFromEl(el) {
-    const full = (el.getAttribute("data-full") || "").trim();
-    const src = full || el.getAttribute("src") || el.getAttribute("data-src");
-    const alt = el.getAttribute("alt") || el.getAttribute("aria-label") || "Imagen";
-    if (!src) return;
-
-    const safeAlt = alt.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    const safeSrc = String(src).replace(/"/g, "%22");
-
-    const html = `
-      <h2>Galería</h2>
-      <p style="margin-top:6px; color: rgba(22,22,22,.62);">${safeAlt}</p>
-      <img class="modalImage" src="${safeSrc}" alt="${safeAlt}">
-    `;
-    openModalHTML(html, el);
+  function collectGalleryItems(fromEl) {
+    const gallery = fromEl.closest(".gallery");
+    if (gallery) return $$('img[data-gallery="true"]', gallery);
+    return $$('img[data-gallery="true"]', document);
   }
 
-  // Delegación: vale para galería + cubo + dibujo grande
+  function getImgSrc(imgEl) {
+    const full = (imgEl.getAttribute("data-full") || "").trim();
+    return full || imgEl.getAttribute("src") || imgEl.getAttribute("data-src") || "";
+  }
+
+  function getImgAlt(imgEl) {
+    return imgEl.getAttribute("alt") || imgEl.getAttribute("aria-label") || "Imagen";
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function openImageFromEl(el) {
+    const src = getImgSrc(el);
+    if (!src) return;
+
+    // lista + índice
+    modalGalleryItems = collectGalleryItems(el).filter((img) => !!getImgSrc(img));
+    modalGalleryIndex = modalGalleryItems.indexOf(el);
+
+    if (modalGalleryIndex < 0) {
+      modalGalleryItems = [el];
+      modalGalleryIndex = 0;
+    }
+
+    const render = () => {
+      const current = modalGalleryItems[modalGalleryIndex];
+      const currentSrc = getImgSrc(current);
+      const currentAlt = escapeHtml(getImgAlt(current));
+      const showArrows = modalGalleryItems.length > 1;
+
+      const html = `
+        <h2>Galería</h2>
+        <p style="margin-top:6px; color: rgba(22,22,22,.62);">${currentAlt}</p>
+
+        <div class="modalGalleryMedia">
+          ${showArrows ? `
+            <button class="modalGalleryNav modalGalleryNav--prev" type="button" aria-label="Anterior">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </button>
+
+            <button class="modalGalleryNav modalGalleryNav--next" type="button" aria-label="Siguiente">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </button>
+          ` : ""}
+
+          <img class="modalImage" src="${String(currentSrc).replace(/"/g, "%22")}" alt="${currentAlt}">
+        </div>
+      `;
+
+      openModalHTML(html, current);
+
+      // binds flechas
+      const prevBtn = $(".modalGalleryNav--prev", modalContent);
+      const nextBtn = $(".modalGalleryNav--next", modalContent);
+
+      const go = (dir) => {
+        if (modalGalleryItems.length <= 1) return;
+        modalGalleryIndex = (modalGalleryIndex + dir + modalGalleryItems.length) % modalGalleryItems.length;
+        render();
+      };
+
+      if (prevBtn) prevBtn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); go(-1); });
+      if (nextBtn) nextBtn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); go(1); });
+
+      // IMPORTANTÍSIMO: que las flechas no disparen el "click global"
+      if (prevBtn) prevBtn.addEventListener("pointerdown", (e) => { e.stopPropagation(); }, { passive: true });
+      if (nextBtn) nextBtn.addEventListener("pointerdown", (e) => { e.stopPropagation(); }, { passive: true });
+    };
+
+    render();
+  }
+
+  // Delegación: galería + cubo + dibujo grande
   document.addEventListener("click", (e) => {
     const img =
-  (e.target && e.target.closest && e.target.closest('img[data-gallery="true"]')) ||
-  (e.target && e.target.closest && e.target.closest('.cubeFace') && e.target.closest('.cubeFace').querySelector('img[data-gallery="true"]'));
+      (e.target && e.target.closest && e.target.closest('img[data-gallery="true"]')) ||
+      (e.target && e.target.closest && e.target.closest(".cubeFace") && e.target.closest(".cubeFace").querySelector('img[data-gallery="true"]'));
 
-if (!img) return;
+    if (!img) return;
 
-    // si venimos de drag, no abrimos
     if (recentlyDragged) return;
 
     e.preventDefault();
@@ -823,393 +843,325 @@ if (!img) return;
   if (closeBtn) closeBtn.addEventListener("click", closeModal);
 
   // =========================================================
-  // 9) Galería: drag-to-scroll PRO + flechas por “paso”
+  // 9) Galería: drag-to-scroll PRO + flechas carrusel
   // =========================================================
   function enableDragScroll(track, { dragThresholdPx = 10 } = {}) {
-  if (!track) return;
+    if (!track) return;
 
-  let isDown = false;
-  let startX = 0;
-  let startScrollLeft = 0;
-  let moved = false;
-  let pointerId = null;
+    let isDown = false;
+    let startX = 0;
+    let startScrollLeft = 0;
+    let moved = false;
 
-  const isInteractiveTarget = (target) => {
-    if (!target) return false;
-    return !!target.closest('img[data-gallery="true"], .galleryNav, button, a, input, textarea, select, label');
-  };
+    const isInteractiveTarget = (target) => {
+      if (!target) return false;
+      return !!target.closest('img[data-gallery="true"], .galleryNav, button, a, input, textarea, select, label');
+    };
 
-  const onDown = (e) => {
-    if (e.pointerType === "mouse" && e.button !== 0) return;
+    const onDown = (e) => {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      if (isInteractiveTarget(e.target)) return;
 
-    // ✅ Si pinchas una foto o una flecha, NO activamos drag
-    if (isInteractiveTarget(e.target)) return;
+      isDown = true;
+      moved = false;
 
-    isDown = true;
-    moved = false;
-    pointerId = e.pointerId;
+      startX = e.clientX;
+      startScrollLeft = track.scrollLeft;
 
-    try { track.setPointerCapture(pointerId); } catch {}
+      track.classList.add("is-dragging");
+    };
 
-    startX = e.clientX;
-    startScrollLeft = track.scrollLeft;
+    const onMove = (e) => {
+      if (!isDown) return;
 
-    track.classList.add("is-dragging");
-  };
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > dragThresholdPx) moved = true;
 
-  const onMove = (e) => {
-    if (!isDown) return;
+      track.scrollLeft = startScrollLeft - dx;
 
-    const dx = e.clientX - startX;
-    if (Math.abs(dx) > dragThresholdPx) moved = true;
+      if (moved) markDragged();
+    };
 
-    track.scrollLeft = startScrollLeft - dx;
+    const onUp = () => {
+      if (!isDown) return;
+      isDown = false;
+      track.classList.remove("is-dragging");
+    };
 
-    if (moved) markDragged(); // tu función global (recentlyDragged)
-  };
-
-  const onUp = () => {
-    if (!isDown) return;
-    isDown = false;
-    pointerId = null;
-    track.classList.remove("is-dragging");
-  };
-
-  track.addEventListener("pointerdown", onDown);
-  track.addEventListener("pointermove", onMove);
-  track.addEventListener("pointerup", onUp);
-  track.addEventListener("pointercancel", onUp);
-  track.addEventListener("mouseleave", onUp);
-}
+    track.addEventListener("pointerdown", onDown);
+    track.addEventListener("pointermove", onMove);
+    track.addEventListener("pointerup", onUp);
+    track.addEventListener("pointercancel", onUp);
+    track.addEventListener("mouseleave", onUp);
+  }
 
   $$(".galleryTrack").forEach((t) => enableDragScroll(t));
 
-function bindGalleryArrows() {
-  // Soporta múltiples galerías en la página
-  $$(".gallery").forEach((gallery) => {
-    const track = gallery.querySelector(".galleryTrack");
-    if (!track) return;
+  function bindGalleryArrows() {
+    $$(".gallery").forEach((gallery) => {
+      const track = gallery.querySelector(".galleryTrack");
+      if (!track) return;
 
-    const prevBtn = gallery.querySelector(".galleryNav--prev");
-    const nextBtn = gallery.querySelector(".galleryNav--next");
+      const prevBtn = gallery.querySelector(".galleryNav--prev");
+      const nextBtn = gallery.querySelector(".galleryNav--next");
 
-    const getStep = () => {
-      const firstItem = track.querySelector(".galleryItem");
-      if (!firstItem) return 320;
+      const getStep = () => {
+        const firstItem = track.querySelector(".galleryItem");
+        if (!firstItem) return 320;
+        const itemWidth = firstItem.getBoundingClientRect().width;
+        const gap = 14;
+        return itemWidth + gap;
+      };
 
-      const itemWidth = firstItem.getBoundingClientRect().width;
-      const gap = 14; // coincide con tu CSS
-      return itemWidth + gap;
-    };
+      const isAtStart = () => track.scrollLeft <= 2;
+      const isAtEnd = () => {
+        const max = track.scrollWidth - track.clientWidth;
+        return track.scrollLeft >= (max - 2);
+      };
 
-    const isAtStart = () => track.scrollLeft <= 2;
+      const scrollToPos = (left) => {
+        track.scrollTo({ left, behavior: prefersReducedMotion ? "auto" : "smooth" });
+      };
 
-    const isAtEnd = () => {
-      const max = track.scrollWidth - track.clientWidth;
-      return track.scrollLeft >= (max - 2);
-    };
+      const scrollByOneCard = (dir) => {
+        const step = getStep();
 
-    const scrollToPos = (left) => {
-      track.scrollTo({
-        left,
-        behavior: prefersReducedMotion ? "auto" : "smooth",
-      });
-    };
+        if (dir > 0 && isAtEnd()) { scrollToPos(0); return; }
+        if (dir < 0 && isAtStart()) { scrollToPos(track.scrollWidth); return; }
 
-    const scrollByOneCard = (dir) => {
-      const step = getStep();
+        track.scrollBy({ left: dir * step, behavior: prefersReducedMotion ? "auto" : "smooth" });
+      };
 
-      // ✅ Wrap infinito
-      if (dir > 0 && isAtEnd()) {
-        scrollToPos(0); // vuelve al inicio
-        return;
-      }
-      if (dir < 0 && isAtStart()) {
-        scrollToPos(track.scrollWidth); // salta al final
-        return;
-      }
+      const onArrowDown = (dir) => (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (typeof e.stopImmediatePropagation === "function") e.stopImmediatePropagation();
+        scrollByOneCard(dir);
+      };
 
-      // normal
-      track.scrollBy({
-        left: dir * step,
-        behavior: prefersReducedMotion ? "auto" : "smooth",
-      });
-    };
-
-    const onArrowClick = (dir) => (e) => {
-      // evita que el drag-to-scroll capture el pointer/click
-      e.preventDefault();
-      e.stopPropagation();
-      if (typeof e.stopImmediatePropagation === "function") e.stopImmediatePropagation();
-
-      scrollByOneCard(dir);
-    };
-
-    // pointerdown para respuesta rápida y evitar pelea con drag
-    if (prevBtn) {
-      prevBtn.addEventListener("pointerdown", onArrowClick(-1), { passive: false });
-      prevBtn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); }, true);
-    }
-    if (nextBtn) {
-      nextBtn.addEventListener("pointerdown", onArrowClick(1), { passive: false });
-      nextBtn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); }, true);
-    }
-  });
-}
-
-bindGalleryArrows();
-
-
-  // =========================================================
-  // 10) CUBO: drag rotate + inercia + auto-rotate
-  // =========================================================
-function enableCube(cubeEl, { thresholdMouse = 10, thresholdTouch = 16 } = {}) {
-  if (!cubeEl) return;
-
-  cubeEl.setAttribute("data-cube", "true");
-
-  let isPointerDown = false;
-  let isDragging = false;
-
-  let startX = 0;
-  let startY = 0;
-
-  let lastX = 0;
-  let lastY = 0;
-
-  let rotX = -14;
-  let rotY = 28;
-
-  let vx = 0;
-  let vy = 0;
-  let lastTs = 0;
-
-  let inertiaRaf = 0;
-  let autoRaf = 0;
-  let auto = true;
-
-  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
-
-  function apply() {
-    cubeEl.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+      if (prevBtn) prevBtn.addEventListener("pointerdown", onArrowDown(-1), { passive: false });
+      if (nextBtn) nextBtn.addEventListener("pointerdown", onArrowDown(1), { passive: false });
+    });
   }
 
-  function stopAuto() {
-    auto = false;
-    cancelAnimationFrame(autoRaf);
-    autoRaf = 0;
-  }
+  bindGalleryArrows();
 
-  function startAuto() {
-    if (prefersReducedMotion) return;
-    stopAuto();
-    auto = true;
+  // =========================================================
+  // 10) CUBO: drag rotate + inercia + auto
+  // =========================================================
+  function enableCube(cubeEl, { thresholdMouse = 10, thresholdTouch = 16 } = {}) {
+    if (!cubeEl) return;
 
-    const loop = () => {
-      if (!auto || isPointerDown || isDragging) return;
-      rotY += 0.12;
-      rotX = clamp(rotX, -70, 70);
-      apply();
+    cubeEl.setAttribute("data-cube", "true");
+
+    let isPointerDown = false;
+    let isDragging = false;
+
+    let startX = 0;
+    let startY = 0;
+
+    let lastX = 0;
+    let lastY = 0;
+
+    let rotX = -14;
+    let rotY = 28;
+
+    let vx = 0;
+    let vy = 0;
+    let lastTs = 0;
+
+    let inertiaRaf = 0;
+    let autoRaf = 0;
+    let auto = true;
+
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+    function apply() {
+      cubeEl.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+    }
+
+    function stopAuto() {
+      auto = false;
+      cancelAnimationFrame(autoRaf);
+      autoRaf = 0;
+    }
+
+    function startAuto() {
+      if (prefersReducedMotion) return;
+      stopAuto();
+      auto = true;
+
+      const loop = () => {
+        if (!auto || isPointerDown || isDragging) return;
+        rotY += 0.12;
+        rotX = clamp(rotX, -70, 70);
+        apply();
+        autoRaf = requestAnimationFrame(loop);
+      };
       autoRaf = requestAnimationFrame(loop);
-    };
-    autoRaf = requestAnimationFrame(loop);
-  }
+    }
 
-  function stopInertia() {
-    cancelAnimationFrame(inertiaRaf);
-    inertiaRaf = 0;
-  }
+    function stopInertia() {
+      cancelAnimationFrame(inertiaRaf);
+      inertiaRaf = 0;
+    }
 
-  function startInertia() {
-    stopInertia();
-    if (prefersReducedMotion) return;
+    function startInertia() {
+      stopInertia();
+      if (prefersReducedMotion) return;
 
-    const friction = 0.92;
+      const friction = 0.92;
 
-    const step = () => {
-      vx *= friction;
-      vy *= friction;
+      const step = () => {
+        vx *= friction;
+        vy *= friction;
 
-      if (Math.abs(vx) < 0.01 && Math.abs(vy) < 0.01) {
-        stopInertia();
-        cubeEl.style.animation = "";
-        startAuto();
-        return;
-      }
+        if (Math.abs(vx) < 0.01 && Math.abs(vy) < 0.01) {
+          stopInertia();
+          cubeEl.style.animation = "";
+          startAuto();
+          return;
+        }
 
-      rotY += vx;
-      rotX -= vy;
-      rotX = clamp(rotX, -70, 70);
-      apply();
+        rotY += vx;
+        rotX -= vy;
+        rotX = clamp(rotX, -70, 70);
+        apply();
+
+        inertiaRaf = requestAnimationFrame(step);
+      };
 
       inertiaRaf = requestAnimationFrame(step);
-    };
-
-    inertiaRaf = requestAnimationFrame(step);
-  }
-
-  function getThreshold(e) {
-    return e.pointerType === "touch" ? thresholdTouch : thresholdMouse;
-  }
-
-  function onDown(e) {
-    if (e.pointerType === "mouse" && e.button !== 0) return;
-
-    isPointerDown = true;
-    isDragging = false;
-
-    startX = lastX = e.clientX;
-    startY = lastY = e.clientY;
-
-    vx = 0;
-    vy = 0;
-    lastTs = performance.now();
-
-    stopAuto();
-    stopInertia();
-
-    // IMPORTANTE: NO ponemos is-dragging todavía.
-    // Primero decidimos si es TAP (click) o DRAG (arrastre).
-  }
-
-  function onMove(e) {
-    if (!isPointerDown) return;
-
-    const x = e.clientX;
-    const y = e.clientY;
-
-    const dxFromStart = x - startX;
-    const dyFromStart = y - startY;
-
-    const dist = Math.hypot(dxFromStart, dyFromStart);
-    const threshold = getThreshold(e);
-
-    // hasta que no supere umbral, no se considera drag
-    if (!isDragging) {
-      if (dist < threshold) return;
-
-      isDragging = true;
-      cubeEl.classList.add("is-dragging");
-
-      // ya sí capturamos pointer
-      try { cubeEl.setPointerCapture(e.pointerId); } catch {}
-
-      // Pausa animación CSS mientras arrastras
-      cubeEl.style.animation = "none";
     }
 
-    // si arrastramos, bloqueamos scroll y rotamos
-    e.preventDefault();
-
-    const dx = x - lastX;
-    const dy = y - lastY;
-
-    const sens = e.pointerType === "touch" ? 0.22 : 0.12;
-
-    rotY += dx * sens;
-    rotX -= dy * sens;
-    rotX = clamp(rotX, -70, 70);
-
-    // velocidad para inercia
-    const now = performance.now();
-    const dt = Math.max(16, now - lastTs);
-    vx = (dx * sens) / (dt / 16);
-    vy = (dy * sens) / (dt / 16);
-    lastTs = now;
-
-    apply();
-
-    lastX = x;
-    lastY = y;
-
-    // solo marcamos "drag" si de verdad se arrastró
-    markDragged();
-  }
-
-function onUp(e) {
-  if (!isPointerDown) return;
-
-  isPointerDown = false;
-
-  if (isDragging) {
-    isDragging = false;
-    cubeEl.classList.remove("is-dragging");
-    startInertia();
-  } else {
-    // ===============================
-    // TAP real (no drag)
-    // ===============================
-
-    cubeEl.style.animation = "";
-    startAuto();
-
-    // ✅ Si existe bandera global de drag reciente, la limpiamos
-    if (typeof recentlyDragged !== "undefined") {
-      recentlyDragged = false;
+    function getThreshold(e) {
+      return e.pointerType === "touch" ? thresholdTouch : thresholdMouse;
     }
 
-    // ✅ Reenviamos el click a la imagen activa del cubo
-    if (e && e.target) {
-      const face = e.target.closest(".cubeFace");
-      if (face) {
-        const img = face.querySelector('img[data-gallery="true"]');
-        if (img) {
-          img.dispatchEvent(
-            new MouseEvent("click", {
-              bubbles: true,
-              cancelable: true
-            })
-          );
+    function onDown(e) {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+
+      isPointerDown = true;
+      isDragging = false;
+
+      startX = lastX = e.clientX;
+      startY = lastY = e.clientY;
+
+      vx = 0;
+      vy = 0;
+      lastTs = performance.now();
+
+      stopAuto();
+      stopInertia();
+    }
+
+    function onMove(e) {
+      if (!isPointerDown) return;
+
+      const x = e.clientX;
+      const y = e.clientY;
+
+      const dxFromStart = x - startX;
+      const dyFromStart = y - startY;
+
+      const dist = Math.hypot(dxFromStart, dyFromStart);
+      const threshold = getThreshold(e);
+
+      if (!isDragging) {
+        if (dist < threshold) return;
+
+        isDragging = true;
+        cubeEl.classList.add("is-dragging");
+
+        try { cubeEl.setPointerCapture(e.pointerId); } catch {}
+        cubeEl.style.animation = "none";
+      }
+
+      e.preventDefault();
+
+      const dx = x - lastX;
+      const dy = y - lastY;
+
+      const sens = e.pointerType === "touch" ? 0.22 : 0.12;
+
+      rotY += dx * sens;
+      rotX -= dy * sens;
+      rotX = clamp(rotX, -70, 70);
+
+      const now = performance.now();
+      const dt = Math.max(16, now - lastTs);
+      vx = (dx * sens) / (dt / 16);
+      vy = (dy * sens) / (dt / 16);
+      lastTs = now;
+
+      apply();
+
+      lastX = x;
+      lastY = y;
+
+      markDragged();
+    }
+
+    function onUp(e) {
+      if (!isPointerDown) return;
+
+      isPointerDown = false;
+
+      if (isDragging) {
+        isDragging = false;
+        cubeEl.classList.remove("is-dragging");
+        startInertia();
+      } else {
+        cubeEl.style.animation = "";
+        startAuto();
+
+        // tap real: reenviamos click a la imagen de la cara
+        if (e && e.target) {
+          const face = e.target.closest(".cubeFace");
+          if (face) {
+            const img = face.querySelector('img[data-gallery="true"]');
+            if (img) {
+              img.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+            }
+          }
         }
       }
     }
+
+    cubeEl.addEventListener("pointerdown", onDown);
+    cubeEl.addEventListener("pointermove", onMove, { passive: false });
+    cubeEl.addEventListener("pointerup", onUp);
+    cubeEl.addEventListener("pointercancel", onUp);
+    cubeEl.addEventListener("mouseleave", onUp);
+
+    apply();
+    startAuto();
   }
-}
-
-  cubeEl.addEventListener("pointerdown", onDown);
-  cubeEl.addEventListener("pointermove", onMove, { passive: false });
-  cubeEl.addEventListener("pointerup", onUp);
-  cubeEl.addEventListener("pointercancel", onUp);
-  cubeEl.addEventListener("mouseleave", onUp);
-
-  apply();
-  startAuto();
-}
 
   const cubeEl = $("#kidsCube") || $("[data-cube]");
   if (cubeEl) enableCube(cubeEl);
 
   // =========================================================
-// 10.1) Cubo: TAP robusto (reenvía click a la imagen)
-// =========================================================
-(function bindCubeTapToImage(){
-  const cubeRoot = $("#kidsCube") || $("[data-cube]");
-  if (!cubeRoot) return;
-
-  cubeRoot.addEventListener("click", (e) => {
-    // Si vienes de un drag reciente, no hacemos nada
-    // (usa tu bandera global si existe; si no, no bloquea)
-    if (typeof recentlyDragged !== "undefined" && recentlyDragged) return;
-
-    const face = e.target.closest(".cubeFace");
-    if (!face) return;
-
-    const img = face.querySelector('img[data-gallery="true"]');
-    if (!img) return;
-
-    // Re-disparamos un click sobre la imagen para reutilizar tu handler global
-    img.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
-  }, true);
-})();
-
-  // =========================================================
-  // 11) Accesibilidad: ESC + trap focus modal
+  // 11) Accesibilidad: ESC + trap focus modal + ← →
   // =========================================================
   document.addEventListener("keydown", (e) => {
-    // Modal abierto
     if (modal && modal.classList.contains("is-open")) {
       if (e.key === "Escape") {
         closeModal();
+        return;
+      }
+
+      // ← →
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        if (modalGalleryItems && modalGalleryItems.length > 1) {
+          e.preventDefault();
+          modalGalleryIndex =
+            (modalGalleryIndex + (e.key === "ArrowRight" ? 1 : -1) + modalGalleryItems.length) %
+            modalGalleryItems.length;
+
+          const current = modalGalleryItems[modalGalleryIndex];
+          openImageFromEl(current);
+        }
         return;
       }
 

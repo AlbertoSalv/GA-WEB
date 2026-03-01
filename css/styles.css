@@ -1001,6 +1001,98 @@ html, body{ -webkit-text-size-adjust: 100%; }
   border: 1px solid rgba(22,22,22,.10);
 }
 
+/* =========================================================
+   UBICACIÓN — MEJORA PRO (difuminado imagen + centrado texto)
+   Pegar AL FINAL del CSS (después de UBICACIÓN)
+   ========================================================= */
+
+/* 1) Imagen con borde difuminado (feather) */
+.placeCard--withMedia .placeMedia{
+  border-top-left-radius: var(--radius-xl);
+  border-bottom-left-radius: var(--radius-xl);
+  overflow: hidden;
+  position: relative;
+}
+
+/* “Feather” real con máscara (Chrome/Edge/Safari modernos) */
+.placeCard--withMedia .placeMedia img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+
+  /* máscara suave en los bordes */
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, #000 10%, #000 90%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 10%, #000 90%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0%, #000 10%, #000 90%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 10%, #000 90%, transparent 100%);
+  mask-composite: intersect;
+}
+
+/* Refuerzo visual (por si algún navegador “pasa” un poco del mask) */
+.placeCard--withMedia .placeMedia::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  /* viñeta interior MUY suave */
+  box-shadow: inset 0 0 40px rgba(245,241,231,.75);
+}
+
+/* En móvil, la imagen va arriba: redondeamos arriba, no a la izquierda */
+@media (max-width: 979px){
+  .placeCard--withMedia .placeMedia{
+    border-top-left-radius: var(--radius-xl);
+    border-top-right-radius: var(--radius-xl);
+    border-bottom-left-radius: 0;
+  }
+}
+
+/* 2) Texto derecha “bien centrado” (vertical + composición centrada) */
+@media (min-width: 980px){
+  .placeCard--withMedia .placeBody{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;    /* ✅ centrado vertical real */
+    align-items: center;        /* ✅ centrado horizontal del bloque */
+    text-align: center;         /* ✅ tipografía centrada */
+    padding: 26px 26px;
+  }
+
+  /* Reorganizamos el head para que no quede “raro” */
+  .placeCard--withMedia .placeHead{
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* Pin arriba centrado */
+  .placeCard--withMedia .placePin{
+    margin-top: 0;
+  }
+
+  /* Tag centrado */
+  .placeCard--withMedia .placeTag{
+    justify-content: center;
+  }
+
+  /* Botón centrado */
+  .placeCard--withMedia .placeBtns{
+    justify-content: center;
+    margin-top: 18px;
+  }
+}
+
+/* Ajuste fino: separación de texto */
+.placeCard--withMedia .placeMeta{
+  max-width: 52ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* -------------------------
    NUEVO: tarjeta con foto (izquierda en desktop)
    ------------------------- */
@@ -1791,6 +1883,35 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 }
 
 /* =========================
+   GALERÍA PRO + POLAROID (mimetizado premium)
+   ========================= */
+.gallery{ margin-top: 22px; position: relative; }
+
+.galleryTrack{
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: clamp(240px, 72vw, 360px);
+  gap: 14px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 10px 2px 14px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.galleryTrack::-webkit-scrollbar{ height: 0; }
+
+.galleryItem{ margin: 0; scroll-snap-align: center; }
+
+.gallery--polaroid .galleryItem--polaroid{
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+
+/* =========================
    POLAROID (borde ajustado a la FOTO + 2 bordes detrás)
    ========================= */
 
@@ -1893,7 +2014,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   -webkit-user-drag: none;
 }
 
-/* ✅ Flechas galería “bonitas” (desktop) + SVG */
+/* ✅ Flechas galería “bonitas” (desktop) + SVG (solo carrusel de la sección) */
 .galleryNav{
   display: none;
   position: absolute;
@@ -1932,6 +2053,79 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 
 @media (max-width: 979px){
   .galleryNav{ display: none !important; }
+}
+
+/* =========================
+   ✅ MODAL GALERÍA — flechas dentro de la imagen grande
+   (CLASES NUEVAS para NO chocar con .galleryNav del carrusel)
+   ========================= */
+
+/* Wrapper que envuelve la imagen grande dentro del modal */
+.modalGalleryMedia{
+  position: relative;
+}
+
+/* Botones prev/next dentro del modal */
+.modalGalleryNav{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  border: 1px solid rgba(22,22,22,.10);
+  background: rgba(255,255,255,.80);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 16px 40px rgba(0,0,0,.18);
+  cursor: pointer;
+  z-index: 5;
+
+  display: grid;
+  place-items: center;
+  -webkit-tap-highlight-color: transparent;
+
+  transition: transform .18s ease, background .18s ease, opacity .18s ease;
+}
+
+/* Icono (si usas SVG) */
+.modalGalleryNav svg{
+  width: 22px;
+  height: 22px;
+  opacity: .92;
+}
+
+/* Si usas texto ‹ › en lugar de SVG */
+.modalGalleryNav{
+  font-size: 0;
+  line-height: 0;
+}
+.modalGalleryNav::before{
+  content: "";
+}
+
+/* Posición */
+.modalGalleryNav--prev{ left: 14px; }
+.modalGalleryNav--next{ right: 14px; }
+
+/* Hover desktop */
+@media (hover:hover){
+  .modalGalleryNav:hover{
+    transform: translateY(-50%) scale(1.06);
+    background: rgba(255,255,255,.92);
+  }
+}
+
+/* Móvil: un poco más pequeñas y discretas */
+@media (max-width: 768px){
+  .modalGalleryNav{
+    width: 40px;
+    height: 40px;
+  }
+  .modalGalleryNav svg{
+    width: 20px;
+    height: 20px;
+  }
 }
 
 /* =========================
