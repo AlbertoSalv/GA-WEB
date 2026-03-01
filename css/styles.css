@@ -982,32 +982,150 @@ html, body{ -webkit-text-size-adjust: 100%; }
 /* =========================
    UBICACIÓN
    ========================= */
-.placeGrid{ margin-top: 18px; display:grid; grid-template-columns: 1fr; gap: 14px; }
+.placeGrid{
+  margin-top: 18px;
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
 .placeCard{
   border-radius: var(--radius-xl);
   box-shadow: 0 18px 52px rgba(0,0,0,.10);
   padding: 18px 18px 20px;
   position: relative;
   overflow: hidden;
+
+  /* look “card premium” como el resto */
+  background: var(--card-white);
+  border: 1px solid rgba(22,22,22,.10);
 }
-.placeHead{ display:flex; gap: 14px; align-items: flex-start; position: relative; z-index: 1; }
+
+/* -------------------------
+   NUEVO: tarjeta con foto (izquierda en desktop)
+   ------------------------- */
+.placeCard--withMedia{
+  padding: 0; /* la imagen manda; el body ya lleva padding */
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+/* Imagen */
+.placeMedia{
+  position: relative;
+  overflow: hidden;
+  min-height: 220px;
+  background: rgba(0,0,0,.03);
+}
+
+/* Imagen integrada */
+.placeMedia img{
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transform: scale(1.02);
+  filter: saturate(1.03) contrast(1.02);
+}
+
+/* Overlay suave para que se integre con tu paleta */
+.placeMedia::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(520px 240px at 30% 20%, rgba(200,162,74,.14), rgba(0,0,0,0) 60%),
+    linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,0) 55%);
+  pointer-events:none;
+}
+
+/* Cuerpo derecha */
+.placeBody{
+  padding: 18px 18px 20px;
+  position: relative;
+}
+
+/* En desktop: dos columnas y foto a la izquierda */
+@media (min-width: 980px){
+  .placeCard--withMedia{
+    grid-template-columns: 42% 58%;
+    align-items: stretch;
+  }
+
+  .placeMedia{
+    min-height: 100%;
+  }
+
+  /* Separación visual sutil entre foto y texto */
+  .placeBody{
+    padding: 22px 22px 22px;
+  }
+}
+
+/* -------------------------
+   Contenido existente (se mantiene)
+   ------------------------- */
+.placeHead{
+  display:flex;
+  gap: 14px;
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
+}
+
 .placeHead__text{ flex: 1; min-width: 0; }
+
 .placeTag{
-  font-weight:900; letter-spacing:1.4px; text-transform:uppercase;
-  font-size:11px; color: rgba(22,22,22,.75);
-  margin-bottom:6px; display:inline-flex; gap:8px; align-items:center;
+  font-weight:900;
+  letter-spacing:1.4px;
+  text-transform:uppercase;
+  font-size:11px;
+  color: rgba(22,22,22,.75);
+  margin-bottom:6px;
+  display:inline-flex;
+  gap:8px;
+  align-items:center;
 }
+
 .placeTag::before{
-  content:""; width:10px; height:10px; border-radius:999px;
+  content:"";
+  width:10px;
+  height:10px;
+  border-radius:999px;
   background: rgba(200,162,74,.95);
   box-shadow: 0 10px 18px rgba(200,162,74,.18);
 }
-.placeTitle{ font-family: var(--font-display); font-weight:700; font-size: clamp(22px, 1.6vw, 30px); margin:0; }
-.placeMeta{ margin-top:10px; color: var(--muted); line-height:1.65; font-size:14px; }
-.placeBtns{ margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; position: relative; z-index: 1; }
 
+.placeTitle{
+  font-family: var(--font-display);
+  font-weight:700;
+  font-size: clamp(22px, 1.6vw, 30px);
+  margin:0;
+}
+
+.placeMeta{
+  margin-top:10px;
+  color: var(--muted);
+  line-height:1.65;
+  font-size:14px;
+}
+
+.placeBtns{
+  margin-top:14px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  position: relative;
+  z-index: 1;
+}
+
+/* Pin */
 .placePin{
-  width: 46px; height: 46px; border-radius: 16px; display:grid; place-items:center;
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  display:grid;
+  place-items:center;
   background: rgba(255,255,255,.92);
   border: 1px solid rgba(200,162,74,.28);
   box-shadow: 0 16px 36px rgba(0,0,0,.08);
@@ -1015,6 +1133,7 @@ html, body{ -webkit-text-size-adjust: 100%; }
   flex: 0 0 auto;
   margin-top: 2px;
 }
+
 .placePin--icon .pinDot,
 .placePin--icon .pinPulse{ display: none !important; }
 
@@ -1029,6 +1148,7 @@ html, body{ -webkit-text-size-adjust: 100%; }
   filter: drop-shadow(0 10px 16px rgba(0,0,0,.08));
 }
 
+/* Móvil: botones centrados */
 @media (max-width: 520px){
   .placeBtns{ justify-content: center; }
   .placeBtns .btn{
@@ -1036,6 +1156,8 @@ html, body{ -webkit-text-size-adjust: 100%; }
     justify-content: center;
   }
 }
+
+/* ✅ Mantener el antiguo layout “centrado” si alguna tarjeta lo sigue usando */
 @media (min-width: 980px){
   .placeCard--centerDesktop .placeHead{
     flex-direction: column;
@@ -1840,7 +1962,13 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 /* -------------------------
    Dibujo elegido (izquierda)
    ------------------------- */
-.kidsFeatured{ margin: 0; }
+
+.kidsFeatured{
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* centra imagen + caption respecto al dibujo */
+}
 
 .kidsFeaturedFrame{
   border-radius: 22px;
@@ -1848,9 +1976,10 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   border: 0;
   box-shadow: none;
   padding: 0;
+  display: inline-block; /* hace que el ancho sea el real del dibujo */
 }
 
-.kidsFeaturedImg{
+.opvChosenImg{
   width: 100%;
   height: auto;
   display: block;
@@ -1858,25 +1987,33 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 }
 
 .kidsCaption{
-  margin-top: 10px;
+  margin-top: 12px;
   font-size: 12px;
   letter-spacing: 1.2px;
   text-transform: uppercase;
   color: rgba(22,22,22,.58);
   font-weight: 900;
+  text-align: center;
+  width: fit-content; /* mismo ancho visual que el dibujo */
 }
 
+/* Ajustes móvil */
 @media (max-width: 768px){
   .opvChosenImg{
     width: min(520px, 92vw);
     margin: 0 auto;
   }
-  .kidsCaption{ text-align: center; }
+
+  .kidsCaption{
+    text-align: center;
+  }
 }
+
 
 /* -------------------------
    Wrapper del cubo (derecha)
    ------------------------- */
+
 .kidsCubeWrap{
   display: grid;
   place-items: center;
