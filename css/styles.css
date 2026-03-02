@@ -2055,30 +2055,25 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   .galleryNav{ display: none !important; }
 }
 
-/* =========================
-   ✅ MODAL GALERÍA — flechas dentro de la imagen grande
-   (CLASES NUEVAS para NO chocar con .galleryNav del carrusel)
-   ========================= */
-
-/* Wrapper que envuelve la imagen grande dentro del modal */
 .modalGalleryMedia{
   position: relative;
 }
 
-/* Botones prev/next dentro del modal */
 .modalGalleryNav{
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0;
+  bottom: 0;
+  margin: auto 0;            /* ✅ CENTRADO PERFECTO */
   width: 46px;
   height: 46px;
   border-radius: 999px;
+
   border: 1px solid rgba(255,255,255,.22);
-background: rgba(255,255,255,.14);         /* ✅ MUCHO más transparente */
-box-shadow: 0 12px 32px rgba(0,0,0,.22);   /* un pelín más “premium” */
+  background: rgba(255,255,255,.14);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  box-shadow: 0 16px 40px rgba(0,0,0,.18);
+
+  box-shadow: 0 12px 32px rgba(0,0,0,.22); /* ✅ deja SOLO uno */
   cursor: pointer;
   z-index: 5;
 
@@ -2089,35 +2084,22 @@ box-shadow: 0 12px 32px rgba(0,0,0,.22);   /* un pelín más “premium” */
   transition: transform .18s ease, background .18s ease, opacity .18s ease;
 }
 
-/* Icono (si usas SVG) */
+.modalGalleryNav--prev{ left: 14px; }
+.modalGalleryNav--next{ right: 14px; }
+
 .modalGalleryNav svg{
   width: 22px;
   height: 22px;
   opacity: .92;
 }
 
-/* Si usas texto ‹ › en lugar de SVG */
-.modalGalleryNav{
-  font-size: 0;
-  line-height: 0;
-}
-.modalGalleryNav::before{
-  content: "";
-}
-
-/* Posición */
-.modalGalleryNav--prev{ left: 14px; }
-.modalGalleryNav--next{ right: 14px; }
-
-/* Hover desktop */
 @media (hover:hover){
   .modalGalleryNav:hover{
-    transform: translateY(-50%) scale(1.06);
+    transform: scale(1.06);     /* ✅ ya no tocamos translateY */
     background: rgba(255,255,255,.22);
   }
 }
 
-/* Móvil: un poco más pequeñas y discretas */
 @media (max-width: 768px){
   .modalGalleryNav{
     width: 40px;
