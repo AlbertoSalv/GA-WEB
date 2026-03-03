@@ -225,87 +225,116 @@
     timeline.classList.add("is-drawn");
   }
 
-  function initTimelineLottieAndReveal() {
-    if (!timeline) return;
+function initTimelineLottieAndReveal() {
+  if (!timeline) return;
 
-    const items = $$("[data-tl-item]", timeline);
-    const lottieHolders = $$("[data-lottie]", timeline);
-    if (!items.length) return;
+  const items = $$("[data-tl-item]", timeline);
+  const lottieHolders = $$("[data-lottie]", timeline);
+  if (!items.length) return;
 
-    if (prefersReducedMotion || !("IntersectionObserver" in window)) {
-      timeline.classList.remove("is-ready");
-      items.forEach((it) => it.classList.add("is-in"));
-      return;
-    }
+  // Si no hay IO o reduce motion, al menos revela los items y sal
+  if (prefersReducedMotion || !("IntersectionObserver" in window)) {
+    timeline.classList.remove("is-ready");
+    items.forEach((it) => it.classList.add("is-in"));
+    return;
+  }
 
-    timeline.classList.add("is-ready");
+  timeline.classList.add("is-ready");
 
-    const hasLottieLib =
-      typeof window.lottie !== "undefined" &&
-      window.lottie &&
-      typeof window.lottie.loadAnimation === "function";
+  const hasLottieLib =
+    typeof window.lottie !== "undefined" &&
+    window.lottie &&
+    typeof window.lottie.loadAnimation === "function";
 
-    const instances = new Map();
+  const instances = new Map();
 
-    if (hasLottieLib && lottieHolders.length) {
-      lottieHolders.forEach((holder) => {
+  // 1) Cargar Lotties (quietos al inicio)
+  if (hasLottieLib && lottieHolders.length) {
+    lottieHolders.forEach((holder) => {
+      try {
         const path = (holder.getAttribute("data-lottie") || "").trim();
         if (!path) return;
 
         const loop = holder.getAttribute("data-loop") === "true";
-        const autoplay = holder.getAttribute("data-autoplay") === "true";
 
-        try {
-          const anim = window.lottie.loadAnimation({
-            container: holder,
-            renderer: "svg",
-            loop,
-            autoplay,
-            path,
-            rendererSettings: {
-              progressiveLoad: true,
-              preserveAspectRatio: "xMidYMid meet"
-            }
-          });
-
-          anim.goToAndStop(0, true);
-          instances.set(holder, anim);
-
-          const dot = holder.closest(".tDot");
-          if (dot) dot.classList.add("has-lottie");
-        } catch {
-          // fallback emoji
-        }
-      });
-    }
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const item = entry.target;
-
-          item.classList.add("is-in");
-
-          const holder = $("[data-lottie]", item);
-          const anim = holder ? instances.get(holder) : null;
-
-          if (anim && !item.dataset.played) {
-            item.dataset.played = "1";
-            anim.stop();
-            anim.play();
+        const anim = window.lottie.loadAnimation({
+          container: holder,
+          renderer: "svg",
+          loop,
+          autoplay: false, // ✅ forzado
+          path,
+          rendererSettings: {
+            progressiveLoad: true,
+            preserveAspectRatio: "xMidYMid meet"
           }
-
-          io.unobserve(item);
         });
-      },
-      { threshold: 0.45, rootMargin: "0px 0px -10% 0px" }
-    );
 
-    items.forEach((it) => io.observe(it));
+        // ✅ frame 0, parado
+        if (anim && typeof anim.goToAndStop === "function") {
+          anim.goToAndStop(0, true);
+        }
+
+        instances.set(holder, anim);
+
+        const dot = holder.closest(".tDot");
+        if (dot) dot.classList.add("has-lottie");
+      } catch (err) {
+        // fallback emoji (no rompemos nada)
+        // console.warn("Lottie load failed:", err);
+      }
+    });
   }
 
-  initTimelineLottieAndReveal();
+  // 2) Reveal items
+  const ioReveal = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-in");
+        ioReveal.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.45, rootMargin: "0px 0px -10% 0px" }
+  );
+
+  items.forEach((it) => ioReveal.observe(it));
+
+  // 3) Play/Pause SOLO cuando el timeline es visible
+  //    (si no hay lotties, no montamos este observer)
+  if (!instances.size) return;
+
+  const playAll = () => {
+    instances.forEach((anim) => {
+      try {
+        if (anim && typeof anim.play === "function") anim.play();
+      } catch {}
+    });
+  };
+
+  const pauseAll = () => {
+    instances.forEach((anim) => {
+      try {
+        if (anim && typeof anim.pause === "function") anim.pause();
+      } catch {}
+    });
+  };
+
+  const ioTimelinePlay = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        try {
+          if (entry.isIntersecting) playAll();
+          else pauseAll();
+        } catch {}
+      });
+    },
+    { threshold: 0.12 }
+  );
+
+  ioTimelinePlay.observe(timeline);
+}
+
+initTimelineLottieAndReveal();
 
   // =========================================================
   // 4) RSVP (con honeypot)

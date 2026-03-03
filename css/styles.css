@@ -2055,15 +2055,25 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   .galleryNav{ display: none !important; }
 }
 
+
+/* =========================================================
+   ✅ MODAL GALERÍA — flechas dentro de la imagen grande
+   (NO choca con .galleryNav del carrusel)
+   ========================================================= */
+
 .modalGalleryMedia{
   position: relative;
 }
 
+/* Botones prev/next dentro del modal */
 .modalGalleryNav{
   position: absolute;
+
+  /* ✅ centrado vertical perfecto (sin top 50%) */
   top: 0;
   bottom: 0;
-  margin: auto 0;            /* ✅ CENTRADO PERFECTO */
+  margin: auto 0;
+
   width: 46px;
   height: 46px;
   border-radius: 999px;
@@ -2073,7 +2083,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 
-  box-shadow: 0 12px 32px rgba(0,0,0,.22); /* ✅ deja SOLO uno */
+  box-shadow: 0 12px 32px rgba(0,0,0,.22);
   cursor: pointer;
   z-index: 5;
 
@@ -2084,8 +2094,9 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   transition: transform .18s ease, background .18s ease, opacity .18s ease;
 }
 
-.modalGalleryNav--prev{ left: 14px; }
-.modalGalleryNav--next{ right: 14px; }
+/* ✅ POSICIÓN DESKTOP (esto te faltaba) */
+.modalGalleryNav--prev{ left: 14px; right: auto; }
+.modalGalleryNav--next{ right: 14px; left: auto; }
 
 .modalGalleryNav svg{
   width: 22px;
@@ -2093,13 +2104,15 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   opacity: .92;
 }
 
+/* Hover desktop */
 @media (hover:hover){
   .modalGalleryNav:hover{
-    transform: scale(1.06);     /* ✅ ya no tocamos translateY */
+    transform: scale(1.06);
     background: rgba(255,255,255,.22);
   }
 }
 
+/* ✅ MÓVIL: las sacamos un poco hacia fuera para no tapar caras */
 @media (max-width: 768px){
   .modalGalleryNav{
     width: 40px;
@@ -2109,6 +2122,9 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
     width: 20px;
     height: 20px;
   }
+
+  .modalGalleryNav--prev{ left: -18px; }
+  .modalGalleryNav--next{ right: -18px; }
 }
 
 /* =========================
