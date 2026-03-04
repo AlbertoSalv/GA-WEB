@@ -2471,16 +2471,24 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 
 /* Logo lacre */
 .footerLogo{
-  width:56px;          /* tamaño web */
-  height:56px;
+  width:78px;          /* tamaño web */
+  height:78px;
   object-fit:contain;
 
-  opacity:.45;         /* sutil */
+  opacity:.63;         /* sutil */
   filter: grayscale(10%) drop-shadow(0 10px 20px rgba(0,0,0,.10));
 
   transform: translateY(2px);
   pointer-events:none;
   user-select:none;
+  transition: transform .35s ease, opacity .35s ease;
+}
+
+@media (hover:hover){
+  .footerLogo:hover{
+    transform: translateY(0px) scale(1.08);
+    opacity:.45;
+  }
 }
 
 /* ---------- LINKS ---------- */
