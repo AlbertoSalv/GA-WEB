@@ -513,81 +513,103 @@ initAsistenciaLottie();
     });
   }
 
-  // =========================================================
-  // 5) Música (toggle)
-  // =========================================================
-  const musicBtn = $("#musicToggle");
-  const bgMusic = $("#bgMusic");
-  const MUSIC_KEY = "gaweb_music_on";
+// =========================================================
+// 5) Música (toggle) — SIEMPRE OFF al iniciar + UI sincronizada
+// =========================================================
+const musicBtn = $("#musicToggle");
+const bgMusic = $("#bgMusic");
+const MUSIC_KEY = "gaweb_music_on"; // lo seguimos usando por si luego quieres recordar preferencia
 
-  function hasAudioSource(audioEl) {
-    if (!audioEl) return false;
-    const srcAttr = (audioEl.getAttribute("src") || "").trim();
-    if (srcAttr) return true;
-    const source = audioEl.querySelector("source");
-    return !!(source && (source.getAttribute("src") || "").trim());
+function hasAudioSource(audioEl) {
+  if (!audioEl) return false;
+  const srcAttr = (audioEl.getAttribute("src") || "").trim();
+  if (srcAttr) return true;
+  const source = audioEl.querySelector("source");
+  return !!(source && (source.getAttribute("src") || "").trim());
+}
+
+function setMusicUI(on) {
+  if (!musicBtn) return;
+  musicBtn.classList.toggle("is-on", on);
+  musicBtn.setAttribute("aria-pressed", on ? "true" : "false");
+  musicBtn.setAttribute("aria-label", on ? "Pausar música" : "Activar música");
+  musicBtn.textContent = on ? "♫" : "♪";
+}
+
+function saveMusicPref(on) {
+  try { localStorage.setItem(MUSIC_KEY, on ? "1" : "0"); } catch {}
+}
+
+// Estado real → UI (para evitar “botón ON pero audio parado”)
+function syncMusicUIFromAudio() {
+  if (!bgMusic) return;
+  setMusicUI(!bgMusic.paused && !bgMusic.ended);
+}
+
+async function safePlay() {
+  if (!bgMusic) return false;
+  if (!hasAudioSource(bgMusic)) return false;
+  try {
+    await bgMusic.play();
+    return true;
+  } catch {
+    return false;
   }
+}
 
-  function setMusicUI(on) {
-    if (!musicBtn) return;
-    musicBtn.classList.toggle("is-on", on);
-    musicBtn.setAttribute("aria-pressed", on ? "true" : "false");
-    musicBtn.setAttribute("aria-label", on ? "Pausar música" : "Activar música");
-    musicBtn.textContent = on ? "♫" : "♪";
-  }
+if (musicBtn && bgMusic) {
+  // ✅ SIEMPRE OFF al iniciar, sin importar localStorage
+  try { bgMusic.pause(); } catch {}
+  try { bgMusic.currentTime = 0; } catch {}
+  setMusicUI(false);
+  saveMusicPref(false);
 
-  function saveMusicPref(on) {
-    try { localStorage.setItem(MUSIC_KEY, on ? "1" : "0"); } catch {}
-  }
-  function loadMusicPref() {
-    try { return localStorage.getItem(MUSIC_KEY) === "1"; } catch { return false; }
-  }
-
-  if (musicBtn && bgMusic) {
-    setMusicUI(false);
-
-    musicBtn.addEventListener("click", async () => {
-      const canPlayNow = hasAudioSource(bgMusic);
-      if (!canPlayNow) {
-        setMusicUI(false);
-        saveMusicPref(false);
-        return;
-      }
-
-      try {
-        if (bgMusic.paused) {
-          await bgMusic.play();
-          setMusicUI(true);
-          saveMusicPref(true);
-        } else {
-          bgMusic.pause();
-          setMusicUI(false);
-          saveMusicPref(false);
-        }
-      } catch {
-        setMusicUI(false);
-        saveMusicPref(false);
-      }
-    });
-
-    bgMusic.addEventListener("pause", () => setMusicUI(false));
-    bgMusic.addEventListener("play", () => setMusicUI(true));
-
-    const wantsOn = loadMusicPref();
-    if (wantsOn && hasAudioSource(bgMusic)) {
-      const once = async () => {
-        document.removeEventListener("pointerdown", once);
-        try {
-          await bgMusic.play();
-          setMusicUI(true);
-        } catch {
-          setMusicUI(false);
-          saveMusicPref(false);
-        }
-      };
-      document.addEventListener("pointerdown", once, { once: true });
+  // Click del usuario: toggle real
+  musicBtn.addEventListener("click", async () => {
+    if (!hasAudioSource(bgMusic)) {
+      setMusicUI(false);
+      saveMusicPref(false);
+      return;
     }
-  }
+
+    if (bgMusic.paused || bgMusic.ended) {
+      const ok = await safePlay();
+      setMusicUI(ok);
+      saveMusicPref(ok);
+    } else {
+      try { bgMusic.pause(); } catch {}
+      setMusicUI(false);
+      saveMusicPref(false);
+    }
+  });
+
+  // Eventos reales del audio
+  bgMusic.addEventListener("play", () => {
+    setMusicUI(true);
+    saveMusicPref(true);
+  });
+  bgMusic.addEventListener("pause", () => {
+    setMusicUI(false);
+    saveMusicPref(false);
+  });
+  bgMusic.addEventListener("ended", () => {
+    setMusicUI(false);
+    saveMusicPref(false);
+  });
+
+  // ✅ Móvil: al volver de background, se puede pausar solo → re-sincroniza UI
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+      // al volver, el audio muchas veces queda pausado: reflejarlo
+      syncMusicUIFromAudio();
+    }
+  });
+
+  // ✅ Safari/iOS: pageshow (bfcache) puede restaurar estado raro
+  window.addEventListener("pageshow", () => {
+    syncMusicUIFromAudio();
+  });
+}
 
   // =========================================================
   // 6) Microparallax (desktop)
