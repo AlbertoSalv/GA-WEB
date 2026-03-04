@@ -54,61 +54,91 @@
     window.scrollTo(0, y || 0);
   }
 
-  // =========================================================
-  // 1) INTRO (SOBRE)
-  // =========================================================
-  const intro = $("#intro");
-  const openBtn = $("#openEnvelope");
-  const site = $("#site");
+// =========================================================
+// 1) INTRO (SOBRE)
+// =========================================================
+const intro = $("#intro");
+const openBtn = $("#openEnvelope");
+const site = $("#site");
 
-  let isOpening = false;
+let isOpening = false;
 
-  if (intro) lockScroll();
+// ✅ Evita que el navegador restaure scroll al reabrir (A2HS / historial)
+if ("scrollRestoration" in history) {
+  history.scrollRestoration = "manual";
+}
 
-  function applyFadeInToHero() {
-    if (prefersReducedMotion) return;
+// ✅ Forzar arriba (robusto)
+function forceTop() {
+  window.scrollTo(0, 0);
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+}
 
-    const heroText = $(".heroText");
-    const heroPhoto = $(".heroPhoto--full");
+// ✅ Al cargar / volver desde caché, si el sobre existe queremos empezar arriba
+function forceTopSoon() {
+  requestAnimationFrame(() => requestAnimationFrame(forceTop));
+}
 
-    const apply = (el) => {
-      if (!el) return;
-      el.classList.remove("animate__animated", "animate__fadeIn", "animate__faster");
-      // eslint-disable-next-line no-unused-expressions
-      el.offsetHeight; // reflow
-      el.classList.add("animate__animated", "animate__fadeIn", "animate__faster");
-    };
+window.addEventListener("load", forceTopSoon);
+window.addEventListener("pageshow", forceTopSoon);
 
-    apply(heroPhoto);
-    apply(heroText);
-  }
+if (intro) {
+  lockScroll();
+  // Por si el navegador intenta restaurar scroll incluso con el sobre visible
+  forceTopSoon();
+}
 
-  if (openBtn && intro && site) {
-    openBtn.addEventListener("click", () => {
-      if (isOpening) return;
-      isOpening = true;
+function applyFadeInToHero() {
+  if (prefersReducedMotion) return;
 
-      intro.classList.add("intro--open");
-      site.style.opacity = "0";
-      site.classList.remove("site--hidden");
+  const heroText = $(".heroText");
+  const heroPhoto = $(".heroPhoto--full");
+
+  const apply = (el) => {
+    if (!el) return;
+    el.classList.remove("animate__animated", "animate__fadeIn", "animate__faster");
+    // eslint-disable-next-line no-unused-expressions
+    el.offsetHeight; // reflow
+    el.classList.add("animate__animated", "animate__fadeIn", "animate__faster");
+  };
+
+  apply(heroPhoto);
+  apply(heroText);
+}
+
+if (openBtn && intro && site) {
+  openBtn.addEventListener("click", () => {
+    if (isOpening) return;
+    isOpening = true;
+
+    // ✅ Antes de abrir, arriba (evita que "arranque" a mitad)
+    forceTop();
+
+    intro.classList.add("intro--open");
+    site.style.opacity = "0";
+    site.classList.remove("site--hidden");
+
+    window.setTimeout(() => {
+      intro.classList.add("intro--closing");
 
       window.setTimeout(() => {
-        intro.classList.add("intro--closing");
+        intro.style.display = "none";
 
-        window.setTimeout(() => {
-          intro.style.display = "none";
-          unlockScroll();
+        // ✅ Tras desbloquear, algunos móviles “reaplican” scroll guardado:
+        // hacemos arriba antes y justo después.
+        forceTop();
+        unlockScroll();
+        forceTopSoon();
 
-          requestAnimationFrame(() => {
-            site.style.opacity = "1";
-            applyFadeInToHero();
-          });
-
-          window.scrollTo(0, 0);
-        }, 520);
-      }, 750);
-    });
-  }
+        requestAnimationFrame(() => {
+          site.style.opacity = "1";
+          applyFadeInToHero();
+        });
+      }, 520);
+    }, 750);
+  });
+}
 
   // =========================================================
   // 2) COUNTDOWN Europe/Madrid (DST correcto)
@@ -723,9 +753,9 @@ initAsistenciaLottie();
     save: `
       <h2>Guardar la web</h2>
       <p>Así la tendrás como si fuera una app:</p>
-      <p><strong>iPhone (Safari):</strong> Compartir → “Añadir a pantalla de inicio”.</p>
-      <p><strong>Android (Chrome):</strong> Menú (⋮) → “Añadir a pantalla de inicio”.</p>
-      <p><strong>PC:</strong> añade a marcadores (⭐) para tenerla a mano.</p>
+      <p><strong>iPhone (Safari):</strong> Compartir → <em>Añadir a pantalla de inicio</em>.</p>
+      <p><strong>Android (Chrome):</strong> Menú (⋮) → <em>Añadir a pantalla de inicio</em>.</p>
+      <p><strong>PC:</strong> guárdala en marcadores (⭐) para tenerla a mano.</p>
     `
   };
 

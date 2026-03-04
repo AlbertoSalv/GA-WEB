@@ -2422,33 +2422,330 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 /* =========================
    FOOTER
    ========================= */
+
 .footer{ padding: 42px 0 70px; }
+
 .footer__inner{
   border-radius: var(--radius-xl);
   box-shadow: 0 18px 52px rgba(0,0,0,.10);
   padding: 18px;
 }
-.footerTop{ display:flex; gap:14px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; }
-.footerBrand{ display:grid; gap:4px; }
-.footerNames{ font-family: var(--font-display); font-weight:700; font-size: 28px; }
-.footerDate{ font-weight:900; letter-spacing:1.6px; text-transform:uppercase; font-size:12px; color: rgba(22,22,22,.70); }
 
-.footerLinks{ display:flex; gap:14px; flex-wrap:wrap; align-items:center; justify-content:flex-end; margin-top:6px; }
+/* ---------- TOP ---------- */
+
+.footerTop{
+  display:flex;
+  gap:18px;
+  align-items:flex-start;
+  justify-content:space-between;
+  flex-wrap:wrap;
+}
+
+/* Marca */
+.footerBrand{
+  display:grid;
+  gap:6px;
+}
+
+.footerNames{
+  font-family: var(--font-display);
+  font-weight:700;
+  font-size:28px;
+  line-height:1.05;
+}
+
+/* Fecha + logo */
+.footerMeta{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.footerDate{
+  font-weight:900;
+  letter-spacing:1.6px;
+  text-transform:uppercase;
+  font-size:12px;
+  color: rgba(22,22,22,.70);
+}
+
+/* Logo lacre */
+.footerLogo{
+  width:56px;          /* tamaño web */
+  height:56px;
+  object-fit:contain;
+
+  opacity:.45;         /* sutil */
+  filter: grayscale(10%) drop-shadow(0 10px 20px rgba(0,0,0,.10));
+
+  transform: translateY(2px);
+  pointer-events:none;
+  user-select:none;
+}
+
+/* ---------- LINKS ---------- */
+
+.footerLinks{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:flex-end;
+  margin-top:6px;
+}
+
 .footerLink{
-  font-weight: 900;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  font-size: 11px;
+  font-weight:900;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  font-size:11px;
+
   color: rgba(22,22,22,.72);
-  padding: 10px 12px;
-  border-radius: 999px;
+
+  padding:10px 12px;
+  border-radius:999px;
+
   background: rgba(255,255,255,.78);
-  border: 1px solid rgba(22,22,22,.08);
+  border:1px solid rgba(22,22,22,.08);
+
   transition: transform 150ms ease, background 150ms ease, border-color 150ms ease;
 }
-.footerLink:hover{ transform: translateY(-1px); background: rgba(255,255,255,.92); border-color: rgba(200,162,74,.22); }
-.footerBottom{ margin-top: 14px; display:flex; justify-content:center; }
-.footerNote{ font-size: 12px; color: rgba(22,22,22,.60); }
+
+.footerLink:hover{
+  transform: translateY(-1px);
+  background: rgba(255,255,255,.92);
+  border-color: rgba(200,162,74,.22);
+}
+
+/* ---------- BOTTOM ---------- */
+
+.footerBottom{
+  margin-top:14px;
+  display:flex;
+  justify-content:center;
+}
+
+.footerNote{
+  font-size:12px;
+  color: rgba(22,22,22,.60);
+  text-align:center;
+}
+
+
+/* =====================================================
+   MÓVIL (<=768px) — FOOTER PREMIUM (sin "..." en nombre)
+   Layout:
+   fila 1 → nombre (ancho completo)
+   fila 2 → izquierda (fecha + logo) | derecha (botones)
+   ===================================================== */
+@media (max-width:768px){
+
+  .footer__inner{ overflow:hidden; }
+
+  .footerTop{
+    display:grid;
+    grid-template-columns: 1fr minmax(190px, 48vw); /* un poco más de columna derecha */
+    grid-template-rows: auto auto;
+    column-gap: 14px;
+    row-gap: 10px;
+    align-items:start;
+    padding-right: 12px; /* aire al borde derecho */
+  }
+
+  /* permite colocar hijos directamente en el grid */
+  .footerBrand{ display: contents; }
+
+  /* ===== NOMBRE (1 línea SIEMPRE, sin ellipsis) ===== */
+  .footerNames{
+    grid-column: 1 / -1;
+    grid-row: 1;
+    font-size: clamp(22px, 6.6vw, 30px);
+    line-height: 1.02;
+    white-space: nowrap;
+    overflow: visible;      /* no recortes */
+    text-overflow: clip;    /* nunca "..." */
+    color: #111;
+  }
+
+  /* ===== FECHA + LOGO ===== */
+  .footerMeta{
+    grid-column: 1;
+    grid-row: 2;
+    display:flex;
+    flex-direction: column;
+    align-items:flex-start;
+    gap: 8px;
+    margin-top: 2px;
+    min-width: 0;
+  }
+
+  .footerDate{
+    font-size: 12px;
+    line-height: 1.1;
+    letter-spacing: 2.0px;
+    font-weight: 800;
+    color: #111;
+  }
+
+  .footerLogo{
+    width: 66px;
+    height: 66px;
+    opacity: .30;          /* más sutil */
+    transform: none;
+    flex: 0 0 auto;
+  }
+
+  /* ===== BOTONES (a la derecha, arrancan a la altura del logo) ===== */
+  .footerLinks{
+    grid-column: 2;
+    grid-row: 2;
+
+    display:flex;
+    flex-direction: column;
+    align-items: flex-end;     /* ← los empuja a la derecha */
+    justify-content: flex-start;
+    gap: 10px;
+
+    margin-top: 22px;          /* altura aprox de la fecha + gap */
+      /* 👇 NUEVO */
+  justify-self: end;      /* empuja el bloque al borde derecho */
+  padding-right: 0px;     /* quita el margen que lo separaba */
+  }
+
+  .footerLink{
+    width: 100%;
+    max-width: 220px;          /* un poco más anchos, quedan más “premium” */
+    text-align: center;
+
+    padding: 12px 12px;
+
+    font-size: clamp(9px, 2.45vw, 10px);
+    letter-spacing: clamp(.95px, .22vw, 1.15px);
+
+    white-space: nowrap;       /* 1 línea */
+    line-height: 1;
+
+    overflow: hidden;
+    text-overflow: clip;       /* nunca "..." */
+
+    color:#111;                /* negro */
+  }
+
+  /* ===== FRASE FINAL (única en gris) ===== */
+  .footerBottom{
+    margin-top: 14px;
+    display:flex;
+    justify-content:center;
+  }
+
+  .footerNote{
+    text-align:center;
+    max-width: 28ch;
+    color: rgba(0,0,0,.55);
+  }
+}
+
+/* Ultra-estrechos */
+@media (max-width:360px){
+  .footerTop{
+    grid-template-columns: 1fr minmax(200px, 50vw);
+    padding-right: 12px;
+  }
+  .footerLink{
+    max-width: 210px;
+    font-size: 9px;
+    letter-spacing: 1.0px;
+  }
+}
+
+/* =========================
+   FOOTER — PREMIUM POLISH
+   (overrides seguros)
+   ========================= */
+
+/* Tarjeta más “premium” */
+.footer__inner{
+  background: rgba(255,255,255,.78);
+  border: 1px solid rgba(22,22,22,.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow:
+    0 18px 52px rgba(0,0,0,.10),
+    inset 0 1px 0 rgba(255,255,255,.55);
+}
+
+/* Nombre un pelín más fino/lujoso */
+.footerNames{
+  letter-spacing: .2px;
+}
+
+/* Fecha con “tracking” más elegante */
+.footerDate{
+  letter-spacing: 2.2px;
+  font-weight: 800;
+  color: rgba(22,22,22,.62);
+}
+
+/* Logo más sutil (menos “pegote”) */
+.footerLogo{
+  opacity: .28;
+  filter: grayscale(20%) drop-shadow(0 10px 20px rgba(0,0,0,.08));
+}
+
+/* Botones premium */
+.footerLink{
+  position: relative;
+  background: rgba(255,255,255,.66);
+  border: 1px solid rgba(22,22,22,.10);
+  box-shadow:
+    0 10px 26px rgba(0,0,0,.08),
+    inset 0 1px 0 rgba(255,255,255,.65);
+
+  letter-spacing: 1.35px;
+  color: rgba(22,22,22,.70);
+}
+
+/* “sheen” (brillito) muy sutil */
+.footerLink::before{
+  content:"";
+  position:absolute;
+  inset: 1px;
+  border-radius: 999px;
+  pointer-events:none;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,.55),
+    rgba(255,255,255,0)
+  );
+  opacity: .55;
+}
+
+/* Hover más “pro” (solo desktop) */
+@media (hover:hover){
+  .footerLink:hover{
+    transform: translateY(-1px);
+    background: rgba(255,255,255,.86);
+    border-color: rgba(200,162,74,.28);
+    box-shadow:
+      0 16px 36px rgba(0,0,0,.10),
+      inset 0 1px 0 rgba(255,255,255,.75);
+  }
+}
+
+/* Texto final un pelín más fino */
+.footerNote{
+  letter-spacing: .2px;
+  color: rgba(22,22,22,.58);
+}
+
+/* Móvil: botones con altura más “app” */
+@media (max-width:768px){
+  .footerLink{
+    padding: 12px 12px;
+    font-size: 10px;
+    border-radius: 999px;
+  }
+}
 
 /* =========================
    MODAL (scale-in premium)
