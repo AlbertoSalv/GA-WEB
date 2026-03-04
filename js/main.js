@@ -203,12 +203,117 @@
     window.setInterval(tickCountdown, 1000);
   }, startDelay);
 
-  // =========================================================
-  // 3) Timeline (line draw + item reveal + Lottie icons)
-  // =========================================================
-  const timeline = $("#timeline");
+// =========================================================
+// 3) Timeline + Asistencia — Lottie controlado por visibilidad
+//    - Timeline: line draw + reveal items + lottie play/pause por sección visible
+//    - Asistencia: lottie play/pause por sección visible
+// =========================================================
+const timeline = $("#timeline");
+const asistencia = $("#asistencia");
 
-  if (timeline && "IntersectionObserver" in window && !prefersReducedMotion) {
+/**
+ * Carga lotties dentro de un root y devuelve un Map(holderEl -> animInstance).
+ * Deja todos en frame 0 y pausados (autoplay false).
+ */
+function loadLottieInstances(rootEl) {
+  const instances = new Map();
+  if (!rootEl) return instances;
+
+  const hasLottieLib =
+    typeof window.lottie !== "undefined" &&
+    window.lottie &&
+    typeof window.lottie.loadAnimation === "function";
+
+  if (!hasLottieLib) return instances;
+
+  const holders = $$("[data-lottie]", rootEl);
+  if (!holders.length) return instances;
+
+  holders.forEach((holder) => {
+    const path = (holder.getAttribute("data-lottie") || "").trim();
+    if (!path) return;
+
+    const loop = holder.getAttribute("data-loop") === "true";
+
+    try {
+      const anim = window.lottie.loadAnimation({
+        container: holder,
+        renderer: "svg",
+        loop,
+        autoplay: false, // ✅ siempre controlado por nosotros
+        path,
+        rendererSettings: {
+          progressiveLoad: true,
+          preserveAspectRatio: "xMidYMid meet"
+        }
+      });
+
+      if (anim && typeof anim.goToAndStop === "function") {
+        anim.goToAndStop(0, true);
+      }
+
+      instances.set(holder, anim);
+
+      // Marcar dot si aplica (timeline)
+      const dot = holder.closest(".tDot");
+      if (dot) dot.classList.add("has-lottie");
+    } catch {
+      // fallback: no rompemos nada
+    }
+  });
+
+  return instances;
+}
+
+/**
+ * Play/pause de un Map de instancias.
+ */
+function playAll(instances) {
+  instances.forEach((anim) => {
+    try { if (anim && typeof anim.play === "function") anim.play(); } catch {}
+  });
+}
+function pauseAll(instances) {
+  instances.forEach((anim) => {
+    try { if (anim && typeof anim.pause === "function") anim.pause(); } catch {}
+  });
+}
+
+/**
+ * Observa una sección y hace play/pause de sus lotties según visibilidad.
+ */
+function bindSectionLottieVisibility(sectionEl, instances, { threshold = 0.2 } = {}) {
+  if (!sectionEl) return;
+  if (!instances || !instances.size) return;
+
+  // Sin IO: mejor reproducir (fallback)
+  if (!("IntersectionObserver" in window) || prefersReducedMotion) {
+    if (!prefersReducedMotion) playAll(instances);
+    return;
+  }
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+
+      if (entry.isIntersecting) playAll(instances);
+      else pauseAll(instances);
+    },
+    { threshold }
+  );
+
+  io.observe(sectionEl);
+}
+
+/**
+ * Timeline: dibuja línea al entrar, revela items, y controla lotties por visibilidad del timeline.
+ */
+function initTimelinePro() {
+  if (!timeline) return;
+
+  // ---- Line draw ----
+  if ("IntersectionObserver" in window && !prefersReducedMotion) {
     const ioLine = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -221,18 +326,14 @@
       { threshold: 0.25 }
     );
     ioLine.observe(timeline);
-  } else if (timeline) {
+  } else {
     timeline.classList.add("is-drawn");
   }
 
-function initTimelineLottieAndReveal() {
-  if (!timeline) return;
-
   const items = $$("[data-tl-item]", timeline);
-  const lottieHolders = $$("[data-lottie]", timeline);
   if (!items.length) return;
 
-  // Si no hay IO o reduce motion, al menos revela los items y sal
+  // Si reduce motion o no hay IO: revela y listo (sin animaciones)
   if (prefersReducedMotion || !("IntersectionObserver" in window)) {
     timeline.classList.remove("is-ready");
     items.forEach((it) => it.classList.add("is-in"));
@@ -241,51 +342,7 @@ function initTimelineLottieAndReveal() {
 
   timeline.classList.add("is-ready");
 
-  const hasLottieLib =
-    typeof window.lottie !== "undefined" &&
-    window.lottie &&
-    typeof window.lottie.loadAnimation === "function";
-
-  const instances = new Map();
-
-  // 1) Cargar Lotties (quietos al inicio)
-  if (hasLottieLib && lottieHolders.length) {
-    lottieHolders.forEach((holder) => {
-      try {
-        const path = (holder.getAttribute("data-lottie") || "").trim();
-        if (!path) return;
-
-        const loop = holder.getAttribute("data-loop") === "true";
-
-        const anim = window.lottie.loadAnimation({
-          container: holder,
-          renderer: "svg",
-          loop,
-          autoplay: false, // ✅ forzado
-          path,
-          rendererSettings: {
-            progressiveLoad: true,
-            preserveAspectRatio: "xMidYMid meet"
-          }
-        });
-
-        // ✅ frame 0, parado
-        if (anim && typeof anim.goToAndStop === "function") {
-          anim.goToAndStop(0, true);
-        }
-
-        instances.set(holder, anim);
-
-        const dot = holder.closest(".tDot");
-        if (dot) dot.classList.add("has-lottie");
-      } catch (err) {
-        // fallback emoji (no rompemos nada)
-        // console.warn("Lottie load failed:", err);
-      }
-    });
-  }
-
-  // 2) Reveal items
+  // ---- Reveal items ----
   const ioReveal = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -299,42 +356,27 @@ function initTimelineLottieAndReveal() {
 
   items.forEach((it) => ioReveal.observe(it));
 
-  // 3) Play/Pause SOLO cuando el timeline es visible
-  //    (si no hay lotties, no montamos este observer)
-  if (!instances.size) return;
-
-  const playAll = () => {
-    instances.forEach((anim) => {
-      try {
-        if (anim && typeof anim.play === "function") anim.play();
-      } catch {}
-    });
-  };
-
-  const pauseAll = () => {
-    instances.forEach((anim) => {
-      try {
-        if (anim && typeof anim.pause === "function") anim.pause();
-      } catch {}
-    });
-  };
-
-  const ioTimelinePlay = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        try {
-          if (entry.isIntersecting) playAll();
-          else pauseAll();
-        } catch {}
-      });
-    },
-    { threshold: 0.12 }
-  );
-
-  ioTimelinePlay.observe(timeline);
+  // ---- Lottie: load + play/pause por sección visible ----
+  const instances = loadLottieInstances(timeline);
+  bindSectionLottieVisibility(timeline, instances, { threshold: 0.12 });
 }
 
-initTimelineLottieAndReveal();
+/**
+ * Asistencia: carga lotties dentro de #asistencia y play/pause cuando se vea la sección.
+ */
+function initAsistenciaLottie() {
+  if (!asistencia) return;
+
+  // Si reduce motion, no animamos (pero no hacemos nada más)
+  if (prefersReducedMotion) return;
+
+  const instances = loadLottieInstances(asistencia);
+  bindSectionLottieVisibility(asistencia, instances, { threshold: 0.25 });
+}
+
+// Inicializar ambos
+initTimelinePro();
+initAsistenciaLottie();
 
   // =========================================================
   // 4) RSVP (con honeypot)
@@ -675,7 +717,8 @@ initTimelineLottieAndReveal();
     tips: `
       <h2>Tips y notas</h2>
       <p>- El cóctel será en el jardín, tenlo en cuenta para el calzado.</p>
-      <p>- Si tienes cualquier duda, contáctanos. ALBERTO 620 57 91 01 - GEMA 680 96 21 64</p>
+      <p>- Si tienes cualquier duda, contáctanos:</p>
+      <p>📱ALBERTO 620 57 91 01 - GEMA 680 96 21 64</p>
     `,
     save: `
       <h2>Guardar la web</h2>

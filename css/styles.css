@@ -329,18 +329,35 @@ a{ color: inherit; text-decoration: none; }
   pointer-events:none;
 }
 
+/* =========================================
+   Nombres sobre invitación
+   ========================================= */
+
 .envelopeNamesTop{
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(20px, 3.6vw, 36px);
-  letter-spacing: .2px;
-  color: rgba(22,22,22,.72);
-  text-shadow: 0 10px 22px rgba(0,0,0,.06);
+  font-family: "VintageGoods", serif;
+  font-weight: normal;
+
+  /* tamaño optimizado web + móvil */
+  font-size: clamp(26px, 4.6vw, 58px);
+
+  /* ✅ tracking = espacio entre letras (más “premium”) */
+  letter-spacing: .8px;  /* antes .4px */
+
+  color: rgba(255,255,255,0.96);
+
+  text-shadow:
+    0 2px 4px rgba(0,0,0,.35),
+    0 8px 18px rgba(0,0,0,.18);
 }
+
+/* variante opcional (si la usas en otros sitios) */
+
 .envelopeNamesTop--baskerville{
   font-family: var(--font-title);
   color: var(--garnet);
+
   letter-spacing: .15px;
+
   text-shadow: 0 12px 26px rgba(0,0,0,.08);
 }
 
@@ -384,17 +401,25 @@ a{ color: inherit; text-decoration: none; }
   position:absolute;
   left: 0;
   right: 0;
-  bottom: 4%;
+
+  bottom: 3.5%;
 
   font-size: 12px;
-  letter-spacing: 2.4px;          /* más aire, más lujo */
-  font-weight: 600;               /* menos agresivo que 900 */
+  letter-spacing: 2.4px;
+  font-weight: 600;
   text-transform: uppercase;
 
-  color: rgba(255,255,255,0.9);   /* blanco elegante */
+  color: rgba(255,255,255,0.9);
   text-shadow: 0 1px 2px rgba(0,0,0,0.35);
 
   pointer-events:none;
+}
+
+@media (min-width: 900px){
+  /* Textos de abajo un pelín más grandes en web */
+  .envelopeTextBottom{ font-size: clamp(17px, 2.25vw, 27px); }
+  .envelopeHint{ font-size: 23px; }
+  .envelopeDate{ font-size: 17px; }
 }
 
 @media (hover:hover){
@@ -437,7 +462,7 @@ a{ color: inherit; text-decoration: none; }
   }
 
   .envelopeDate{
-    bottom: 3%;
+    bottom: 2.2%;
     font-size: 11px;
   }
 }
@@ -1858,6 +1883,37 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   .actionTitle{ font-size: 13px; }
   .actionSub{ font-size: 15px; }
 }
+
+/* =========================
+   ACTION ICON LOTTIE (badge 48/54px)
+   ========================= */
+.actionIcon{
+  position: relative; /* para asegurar centrado perfecto */
+  overflow: hidden;   /* por si el svg se sale 1px */
+}
+
+.actionIcon .actionLottie{
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.actionIcon .actionLottie svg{
+  width: 78%;
+  height: 78%;
+  display: block;
+}
+
+/* fallback emoji si no hay lottie */
+.actionIcon .actionEmojiFallback{
+  display: none;
+  font-size: inherit;
+  line-height: 1;
+}
+
+.no-lottie .actionIcon .actionEmojiFallback{ display: inline; }
+.no-lottie .actionIcon .actionLottie{ display: none; }
 
 /* =========================
    GALERÍA PRO + POLAROID (mimetizado premium)

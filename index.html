@@ -30,6 +30,14 @@
       --break-h-mobile: 34px;
     }
 
+    @font-face {
+  font-family: "VintageGoods";
+  src: url("assets/fonts/Vintage Goods.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
     /* ✅ Alternancia de fondo por sección */
     .section--a{ background: var(--bgA); }
     .section--b{ background: var(--bgB); }
@@ -126,7 +134,7 @@
 
         <div class="envelopeOverlay">
           <div class="envelopeTop">
-            <div class="envelopeNamesTop envelopeNamesTop--baskerville">Gema &amp; Alberto</div>
+            <div class="envelopeNamesTop">Gema &amp; Alberto</div>
           </div>
 
           <div class="envelopeBottom" aria-hidden="true">
@@ -568,39 +576,63 @@
       </svg>
     </div>
 
-    <!-- ASISTENCIA — color A -->
-    <section class="section section--a" id="asistencia">
-      <div class="frame section__inner">
-        <div class="sectionHead">
-          <span class="sectionHead__line" aria-hidden="true"></span>
-          <h2 class="sectionHead__title">Todo lo que necesitas</h2>
+<!-- ASISTENCIA — color A -->
+<section class="section section--a" id="asistencia">
+  <div class="frame section__inner">
+    <div class="sectionHead">
+      <span class="sectionHead__line" aria-hidden="true"></span>
+      <h2 class="sectionHead__title">Todo lo que necesitas</h2>
+    </div>
+    <p class="sectionHead__sub">Dress code, autobús y notas útiles.</p>
+
+    <div class="actionGrid actionGrid--centerMobile">
+      <button class="actionCard" data-modal="dress" type="button">
+        <div class="actionIcon" aria-hidden="true">
+          <span class="actionLottie"
+                data-lottie="assets/lottie/dress.json"
+                data-loop="true"
+                data-autoplay="false"
+                aria-hidden="true">
+            <span class="actionEmojiFallback" aria-hidden="true">👗</span>
+          </span>
         </div>
-        <p class="sectionHead__sub">Dress code, autobús y notas útiles.</p>
+        <div class="actionTitle">Dress code</div>
+        <div class="actionSub">Una orientación para tu vestuario</div>
+        <div class="actionBtn">Ver más</div>
+      </button>
 
-        <div class="actionGrid actionGrid--centerMobile">
-          <button class="actionCard" data-modal="dress" type="button">
-            <div class="actionIcon" aria-hidden="true">👗</div>
-            <div class="actionTitle">Dress code</div>
-            <div class="actionSub">Una orientación para tu vestuario</div>
-            <div class="actionBtn">Ver más</div>
-          </button>
-
-          <button class="actionCard" data-modal="bus" type="button">
-            <div class="actionIcon" aria-hidden="true">🚌</div>
-            <div class="actionTitle">Autobús</div>
-            <div class="actionSub">Horarios y paradas</div>
-            <div class="actionBtn">Ver más</div>
-          </button>
-
-          <button class="actionCard" data-modal="tips" type="button">
-            <div class="actionIcon" aria-hidden="true">✨</div>
-            <div class="actionTitle">Tips</div>
-            <div class="actionSub">Información adicional</div>
-            <div class="actionBtn">+ Info</div>
-          </button>
+      <button class="actionCard" data-modal="bus" type="button">
+        <div class="actionIcon" aria-hidden="true">
+          <span class="actionLottie"
+                data-lottie="assets/lottie/bus.json"
+                data-loop="true"
+                data-autoplay="false"
+                aria-hidden="true">
+            <span class="actionEmojiFallback" aria-hidden="true">🚌</span>
+          </span>
         </div>
-      </div>
-    </section>
+        <div class="actionTitle">Autobús</div>
+        <div class="actionSub">Horarios y paradas</div>
+        <div class="actionBtn">Ver más</div>
+      </button>
+
+      <button class="actionCard" data-modal="tips" type="button">
+        <div class="actionIcon" aria-hidden="true">
+          <span class="actionLottie"
+                data-lottie="assets/lottie/tips.json"
+                data-loop="true"
+                data-autoplay="false"
+                aria-hidden="true">
+            <span class="actionEmojiFallback" aria-hidden="true">✨</span>
+          </span>
+        </div>
+        <div class="actionTitle">Tips</div>
+        <div class="actionSub">Información adicional</div>
+        <div class="actionBtn">+ Info</div>
+      </button>
+    </div>
+  </div>
+</section>
 
     <!-- ✅ CORTE “QUEBRADO” (asistencia A -> galería B) -->
     <div class="sectionBreak sectionBreak--a-to-b" aria-hidden="true">
