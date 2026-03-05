@@ -1,13 +1,10 @@
 /* =========================
    GA WEB — styles.css (PRO) — 2026
-   FIXED + OPTIMIZADO (V2)
-   Cambios clave (de lo último que hablamos):
-   - ✅ Alternancia de fondos por secciones (A/B) + soporte .footer--b
-   - ✅ Separadores “quebrados” .sectionBreak (para el efecto de corte entre apartados)
-   - ✅ Eliminadas las líneas/separadores dorados entre apartados (.sectionSepMinimal oculto)
-   - ✅ Timeline: iconos + textos más grandes en móvil (y más legibles)
-   - ✅ Flechas galería “bonitas” (botón circular + SVG), sin depender del carácter ‹ ›
-   - ✅ Limpieza: eliminado duplicado de .musicBtn y pequeños ajustes de consistencia
+   FIXED + OPTIMIZADO (V3)
+   ✅ Misma estética / diseño
+   ✅ Limpieza: duplicados (galería), overrides redundantes, variables repetidas
+   ✅ Rendimiento: contain, will-change solo donde toca, menos repaints
+   ✅ Accesible: reduce motion coherente
    ========================= */
 
 /* =========================
@@ -32,8 +29,8 @@
   --font-elegant: "Playfair Display", Georgia, "Times New Roman", serif;
 
   /* ✅ Subtítulos (Allura) — control centralizado */
-  --sub-size: clamp(21px, 2.25vw, 33px);  /* base (desktop+mobile) */
-  --sub-size-m: 24px;                     /* móvil (sube/baja aquí) */
+  --sub-size: clamp(21px, 2.25vw, 33px);
+  --sub-size-m: 24px; /* móvil */
 
   /* granate */
   --garnet: #6b1f2b;
@@ -61,10 +58,7 @@
 
   --ease-out: cubic-bezier(.16, 1, .3, 1);
 
-  /* Cubo */
-  --cube-z: 150px;
-
-  /* ✅ Alternancia fondos A/B (puedes ajustar si quieres) */
+  /* ✅ Alternancia fondos A/B */
   --bgA: #f6f1ea;
   --bgB: #efe5d9;
 
@@ -72,8 +66,22 @@
   --break-h: 44px;
   --break-h-mobile: 34px;
 
-  /* Separadores (por si algún día vuelves a activarlos) */
+  /* Separadores legacy */
   --garnet-ink: #C8A24A;
+
+  /* Evitar que móviles alteren colores en modo oscuro */
+  color-scheme: light;
+}
+
+/* =========================
+   FUENTE LOCAL
+   ========================= */
+@font-face {
+  font-family: "VintageGoods";
+  src: url("assets/fonts/Vintage Goods.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
 
 /* =========================
@@ -86,14 +94,14 @@ html, body{
   margin: 0;
   padding: 0;
   width: 100%;
-  overflow-x: hidden; /* ✅ añade esto aquí */
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
 }
 
 body{
   font-family: var(--font);
   color: var(--ink);
 
-  /* Fondo global (sigue dando ese look “portada”) */
   background:
     radial-gradient(1100px 640px at 18% 0%, rgba(200,162,74,.12), rgba(200,162,74,0) 62%),
     radial-gradient(980px 600px at 82% 6%, rgba(22,22,22,.07), rgba(22,22,22,0) 62%),
@@ -123,20 +131,17 @@ a{ color: inherit; text-decoration: none; }
 }
 
 /* =========================
-   ✅ Fondos alternos por sección
-   (usados con .section--a / .section--b en el HTML)
+   Fondos alternos por sección
    ========================= */
 .section--a{ background: var(--bgA); }
 .section--b{ background: var(--bgB); }
 .footer--b{ background: var(--bgB); }
 
-/* Evita raros con sombras/clip */
 .section.section--a,
 .section.section--b{ background-clip: padding-box; }
 
 /* =========================
-   ✅ Corte “quebrado” entre apartados
-   (usado con .sectionBreak en el HTML)
+   Corte “quebrado”
    ========================= */
 .sectionBreak{
   height: var(--break-h);
@@ -160,7 +165,7 @@ a{ color: inherit; text-decoration: none; }
   .sectionBreak{ height: var(--break-h-mobile); }
 }
 
-/* Helpers legacy */
+/* Helpers */
 .kicker{
   font-size: 12px;
   letter-spacing: 2px;
@@ -257,7 +262,6 @@ a{ color: inherit; text-decoration: none; }
   color: rgba(22,22,22,.52);
   line-height: 1.25;
 }
-
 @media (max-width: 768px){
   .sectionHead__sub{ font-size: var(--sub-size-m); }
 }
@@ -329,35 +333,22 @@ a{ color: inherit; text-decoration: none; }
   pointer-events:none;
 }
 
-/* =========================================
-   Nombres sobre invitación
-   ========================================= */
-
+/* Nombres sobre invitación */
 .envelopeNamesTop{
   font-family: "VintageGoods", serif;
   font-weight: normal;
-
-  /* tamaño optimizado web + móvil */
   font-size: clamp(26px, 4.6vw, 58px);
-
-  /* ✅ tracking = espacio entre letras (más “premium”) */
-  letter-spacing: .8px;  /* antes .4px */
-
+  letter-spacing: .8px;
   color: rgba(255,255,255,0.96);
-
   text-shadow:
     0 2px 4px rgba(0,0,0,.35),
     0 8px 18px rgba(0,0,0,.18);
 }
 
-/* variante opcional (si la usas en otros sitios) */
-
 .envelopeNamesTop--baskerville{
   font-family: var(--font-title);
   color: var(--garnet);
-
   letter-spacing: .15px;
-
   text-shadow: 0 12px 26px rgba(0,0,0,.08);
 }
 
@@ -401,22 +392,17 @@ a{ color: inherit; text-decoration: none; }
   position:absolute;
   left: 0;
   right: 0;
-
   bottom: 3.5%;
-
   font-size: 12px;
   letter-spacing: 2.4px;
   font-weight: 600;
   text-transform: uppercase;
-
   color: rgba(255,255,255,0.9);
   text-shadow: 0 1px 2px rgba(0,0,0,0.35);
-
   pointer-events:none;
 }
 
 @media (min-width: 900px){
-  /* Textos de abajo un pelín más grandes en web */
   .envelopeTextBottom{ font-size: clamp(17px, 2.25vw, 27px); }
   .envelopeHint{ font-size: 23px; }
   .envelopeDate{ font-size: 17px; }
@@ -438,7 +424,6 @@ a{ color: inherit; text-decoration: none; }
     width: auto;
     display: contents;
   }
-
   .envelopeTextBottom{
     position: absolute;
     left: 50%;
@@ -450,7 +435,6 @@ a{ color: inherit; text-decoration: none; }
     text-align: center;
     line-height: 1.10;
   }
-
   .envelopeHint{
     position: absolute;
     left: 50%;
@@ -460,7 +444,6 @@ a{ color: inherit; text-decoration: none; }
     margin: 0;
     text-align: center;
   }
-
   .envelopeDate{
     bottom: 2.2%;
     font-size: 11px;
@@ -468,7 +451,7 @@ a{ color: inherit; text-decoration: none; }
 }
 
 /* =========================
-   MUSIC BUTTON (✅ sin duplicados)
+   MUSIC BUTTON
    ========================= */
 .musicBtn{
   position: fixed;
@@ -537,7 +520,6 @@ a{ color: inherit; text-decoration: none; }
   85%{ opacity: 0; }
   100%{ transform: translate(-6px,-26px) scale(.92); opacity: 0; }
 }
-
 @media (prefers-reduced-motion: reduce){
   .fh{ animation: none !important; opacity: 0 !important; }
 }
@@ -545,11 +527,6 @@ a{ color: inherit; text-decoration: none; }
 /* =========================
    HERO
    ========================= */
-
-/* Evitar que móviles alteren colores en modo oscuro */
-:root{ color-scheme: light; }
-html, body{ -webkit-text-size-adjust: 100%; }
-
 .hero{ padding: 0 !important; margin: 0 !important; }
 
 .heroStage{
@@ -574,10 +551,7 @@ html, body{ -webkit-text-size-adjust: 100%; }
   }
 }
 
-/* =========================
-   FOTO
-   ========================= */
-
+/* FOTO */
 .heroPhoto--full{
   position: relative;
   overflow: hidden;
@@ -586,6 +560,9 @@ html, body{ -webkit-text-size-adjust: 100%; }
   margin: 0;
   padding: 0;
   background: var(--ivory);
+
+  /* ✅ aislar repaints */
+  contain: paint;
 }
 
 .heroPhoto--full .heroPhoto__bg{
@@ -618,10 +595,7 @@ html, body{ -webkit-text-size-adjust: 100%; }
   object-position: center bottom;
 }
 
-/* =========================
-   DEGRADADOS FOTO
-   ========================= */
-
+/* DEGRADADOS FOTO */
 @media (max-width: 979px){
   .heroPhoto--full::after{
     content:"";
@@ -638,7 +612,6 @@ html, body{ -webkit-text-size-adjust: 100%; }
     );
   }
 }
-
 @media (min-width: 980px){
   .heroPhoto--full::after{
     content:"";
@@ -654,7 +627,6 @@ html, body{ -webkit-text-size-adjust: 100%; }
         rgba(245,241,231,.96) 100%
       );
   }
-
   .heroPhoto--full .heroPhoto__bg{
     filter: blur(12px) saturate(1.03) brightness(.88);
     opacity: .62;
@@ -662,10 +634,7 @@ html, body{ -webkit-text-size-adjust: 100%; }
   }
 }
 
-/* =========================
-   TEXTO
-   ========================= */
-
+/* TEXTO */
 .heroText{
   display:flex;
   flex-direction: column;
@@ -677,6 +646,9 @@ html, body{ -webkit-text-size-adjust: 100%; }
   isolation: isolate;
   position: relative;
   z-index: 2;
+
+  /* ✅ aislar repaints */
+  contain: content;
 }
 
 @media (min-width: 980px){
@@ -690,13 +662,8 @@ html, body{ -webkit-text-size-adjust: 100%; }
   opacity: .85;
   background: linear-gradient(90deg, rgba(200,162,74,.55), rgba(22,22,22,.10), rgba(200,162,74,0));
 }
-
 .heroBand--top{ margin-bottom: 10px; }
 .heroBand--bottom{ margin-top: 10px; width: 140px; opacity:.65; }
-
-/* =========================
-   NOMBRE (+1 punto)
-   ========================= */
 
 .heroNames{
   font-family: var(--font-display);
@@ -704,28 +671,21 @@ html, body{ -webkit-text-size-adjust: 100%; }
   line-height: 1.08;
   font-weight: 700;
   letter-spacing: .15px;
-
   background: linear-gradient(90deg, rgba(22,22,22,.92), rgba(200,162,74,.98), rgba(22,22,22,.92));
   background-size: 220% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-
   animation: shine 3.6s ease-in-out infinite;
   padding: 2px 0 6px;
 }
-
-/* =========================
-   FRASE (+2 desktop, +3 móvil)
-   ========================= */
 
 .heroLead{
   margin-top: 8px;
   line-height: 1.6;
   max-width: 60ch;
 }
-
 .heroLead--allura{
   font-family: var(--font-script);
   font-size: clamp(20px, 2.2vw, 28px);
@@ -734,10 +694,6 @@ html, body{ -webkit-text-size-adjust: 100%; }
   max-width: 54ch;
   margin-bottom: 32px;
 }
-
-/* =========================
-   TE ESPERAMOS (+1 punto + más aire)
-   ========================= */
 
 .heroDateLabel{
   margin-top: 8px;
@@ -748,10 +704,6 @@ html, body{ -webkit-text-size-adjust: 100%; }
   text-transform: uppercase;
   margin-bottom: 18px;
 }
-
-/* =========================
-   FECHA (+1 punto + separación)
-   ========================= */
 
 .heroDateWrap{
   display:flex;
@@ -778,19 +730,11 @@ html, body{ -webkit-text-size-adjust: 100%; }
   animation: shine 3.6s ease-in-out infinite;
 }
 
-/* =========================
-   ANIMACIÓN DORADO
-   ========================= */
-
 @keyframes shine{
   0%{ background-position: 0% 50%; }
   50%{ background-position: 100% 50%; }
   100%{ background-position: 0% 50%; }
 }
-
-/* =========================
-   FADE INFERIOR
-   ========================= */
 
 .heroFade{
   position: absolute;
@@ -800,30 +744,12 @@ html, body{ -webkit-text-size-adjust: 100%; }
   background: linear-gradient(180deg, rgba(245,241,231,0) 0%, rgba(245,241,231,.90) 55%, rgba(245,241,231,1) 100%);
 }
 
-/* =========================
-   MÓVIL AJUSTES
-   ========================= */
-
 @media (max-width: 768px){
+  .heroNames{ font-size: 40px; }
+  .heroLead--allura{ font-size: 21px; line-height: 1.5; }
+  .heroDateLabel{ font-size: 15px; }
+  .heroDate--fancy .heroDate__text{ font-size: 44px; }
 
-  .heroNames{
-    font-size: 40px;
-  }
-
-  .heroLead--allura{
-    font-size: 21px;
-    line-height: 1.5;
-  }
-
-  .heroDateLabel{
-    font-size: 15px;
-  }
-
-  .heroDate--fancy .heroDate__text{
-    font-size: 44px;
-  }
-
-  /* ✅ Refuerzo de contraste en “modo oscuro” (móvil) */
   .heroNames,
   .heroDate--fancy .heroDate__text{
     filter: drop-shadow(0 2px 10px rgba(0,0,0,.35));
@@ -831,8 +757,12 @@ html, body{ -webkit-text-size-adjust: 100%; }
 }
 
 /* =========================
-   BANDA1 (móvil perfecto: sin recortes)
+   BANDA1 + BLOQUE FALTAN
    ========================= */
+.sectionBlock--faltan{
+  background: var(--bgB);
+}
+
 .sepImage.sepImage--bg{
   width: 100%;
   margin: 0;
@@ -841,61 +771,38 @@ html, body{ -webkit-text-size-adjust: 100%; }
   overflow: hidden;
 
   background-image: url("../assets/img/banda1.png");
-  background-repeat: no-repeat;          /* 👈 clave */
+  background-repeat: no-repeat;
   background-position: center bottom;
-  background-size: contain;              /* 👈 clave: nunca recorta */
-  background-color: var(--bgB);          /* para que no se note “vacío” */
+  background-size: contain;
+  background-color: var(--bgB);
 
   filter: drop-shadow(0 10px 18px rgba(0,0,0,.10));
 }
 
-/* =========================
-   COMPACTAR BLOQUE FALTAN (solo móvil)
-   ========================= */
+/* Compactar “Faltan” (móvil) */
 @media (max-width: 979px){
-
-  /* 🔹 Reducimos aire general de la sección */
   #faltan.section{
     padding-top: 10px;
     padding-bottom: 26px;
   }
-
-  /* 🔹 Banda un poco más fina */
   .sepImage.sepImage--bg{
     height: 110px;
     background-position: center 65%;
   }
-
-  /* 🔹 Título más pegado */
-  #faltan .sectionHead{
-    margin-bottom: 4px;
-  }
-
-  /* 🔹 Countdown más compacto */
-  .countdownWrap{
-    margin-top: 10px;
-    padding: 6px 0;
-  }
-
-  /* 🔹 Frase inferior más cercana */
-  #faltan .sectionHead__sub{
-    margin-top: 10px;
-  }
-
+  #faltan .sectionHead{ margin-bottom: 4px; }
+  .countdownWrap{ margin-top: 10px; padding: 6px 0; }
+  #faltan .sectionHead__sub{ margin-top: 10px; }
 }
 @media (min-width: 980px){
   .sepImage.sepImage--bg{
     height: 70px;
-    background-size: auto 100%;          /* en desktop queda fina */
-    background-repeat: repeat-x;         /* si quieres repetir en grande */
+    background-size: auto 100%;
+    background-repeat: repeat-x;
   }
 }
 
-/* =========================
-   ✅ Separadores “minimal” (ANTES)
-   Ahora los ocultamos porque ya usamos .sectionBreak
-   ========================= */
-.sectionSepMinimal{ display:none !important; }
+/* Legacy separadores (apagados) */
+.sectionSepMinimal,
 .sectionSep{ display:none !important; }
 
 /* =========================
@@ -1026,33 +933,34 @@ html, body{ -webkit-text-size-adjust: 100%; }
   padding: 18px 18px 20px;
   position: relative;
   overflow: hidden;
-
-  /* look “card premium” como el resto */
   background: var(--card-white);
   border: 1px solid rgba(22,22,22,.10);
 }
 
-/* =========================================================
-   UBICACIÓN — MEJORA PRO (difuminado imagen + centrado texto)
-   Pegar AL FINAL del CSS (después de UBICACIÓN)
-   ========================================================= */
-
-/* 1) Imagen con borde difuminado (feather) */
-.placeCard--withMedia .placeMedia{
-  border-top-left-radius: var(--radius-xl);
-  border-bottom-left-radius: var(--radius-xl);
-  overflow: hidden;
-  position: relative;
+/* Tarjeta con foto */
+.placeCard--withMedia{
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
 }
 
-/* “Feather” real con máscara (Chrome/Edge/Safari modernos) */
-.placeCard--withMedia .placeMedia img{
+.placeMedia{
+  position: relative;
+  overflow: hidden;
+  min-height: 220px;
+  background: rgba(0,0,0,.03);
+}
+
+/* Imagen base */
+.placeMedia img{
   width: 100%;
   height: 100%;
-  object-fit: cover;
   display: block;
+  object-fit: cover;
+  transform: scale(1.02);
+  filter: saturate(1.03) contrast(1.02);
 
-  /* máscara suave en los bordes */
+  /* máscara suave */
   -webkit-mask-image:
     linear-gradient(to right, transparent 0%, #000 10%, #000 90%, transparent 100%),
     linear-gradient(to bottom, transparent 0%, #000 10%, #000 90%, transparent 100%);
@@ -1063,95 +971,16 @@ html, body{ -webkit-text-size-adjust: 100%; }
   mask-composite: intersect;
 }
 
-/* Refuerzo visual (por si algún navegador “pasa” un poco del mask) */
-.placeCard--withMedia .placeMedia::before{
+/* Viñeta suave */
+.placeMedia::before{
   content:"";
   position:absolute;
   inset:0;
   pointer-events:none;
-  /* viñeta interior MUY suave */
   box-shadow: inset 0 0 40px rgba(245,241,231,.75);
 }
 
-/* En móvil, la imagen va arriba: redondeamos arriba, no a la izquierda */
-@media (max-width: 979px){
-  .placeCard--withMedia .placeMedia{
-    border-top-left-radius: var(--radius-xl);
-    border-top-right-radius: var(--radius-xl);
-    border-bottom-left-radius: 0;
-  }
-}
-
-/* 2) Texto derecha “bien centrado” (vertical + composición centrada) */
-@media (min-width: 980px){
-  .placeCard--withMedia .placeBody{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;    /* ✅ centrado vertical real */
-    align-items: center;        /* ✅ centrado horizontal del bloque */
-    text-align: center;         /* ✅ tipografía centrada */
-    padding: 26px 26px;
-  }
-
-  /* Reorganizamos el head para que no quede “raro” */
-  .placeCard--withMedia .placeHead{
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-  }
-
-  /* Pin arriba centrado */
-  .placeCard--withMedia .placePin{
-    margin-top: 0;
-  }
-
-  /* Tag centrado */
-  .placeCard--withMedia .placeTag{
-    justify-content: center;
-  }
-
-  /* Botón centrado */
-  .placeCard--withMedia .placeBtns{
-    justify-content: center;
-    margin-top: 18px;
-  }
-}
-
-/* Ajuste fino: separación de texto */
-.placeCard--withMedia .placeMeta{
-  max-width: 52ch;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* -------------------------
-   NUEVO: tarjeta con foto (izquierda en desktop)
-   ------------------------- */
-.placeCard--withMedia{
-  padding: 0; /* la imagen manda; el body ya lleva padding */
-  display: grid;
-  grid-template-columns: 1fr;
-}
-
-/* Imagen */
-.placeMedia{
-  position: relative;
-  overflow: hidden;
-  min-height: 220px;
-  background: rgba(0,0,0,.03);
-}
-
-/* Imagen integrada */
-.placeMedia img{
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-  transform: scale(1.02);
-  filter: saturate(1.03) contrast(1.02);
-}
-
-/* Overlay suave para que se integre con tu paleta */
+/* Overlay integración paleta */
 .placeMedia::after{
   content:"";
   position:absolute;
@@ -1162,32 +991,52 @@ html, body{ -webkit-text-size-adjust: 100%; }
   pointer-events:none;
 }
 
-/* Cuerpo derecha */
+/* Body */
 .placeBody{
   padding: 18px 18px 20px;
   position: relative;
 }
 
-/* En desktop: dos columnas y foto a la izquierda */
 @media (min-width: 980px){
   .placeCard--withMedia{
     grid-template-columns: 42% 58%;
     align-items: stretch;
   }
+  .placeMedia{ min-height: 100%; }
+  .placeBody{ padding: 22px 22px 22px; }
+}
 
-  .placeMedia{
-    min-height: 100%;
-  }
-
-  /* Separación visual sutil entre foto y texto */
-  .placeBody{
-    padding: 22px 22px 22px;
+/* En móvil, redondeo arriba */
+@media (max-width: 979px){
+  .placeCard--withMedia .placeMedia{
+    border-top-left-radius: var(--radius-xl);
+    border-top-right-radius: var(--radius-xl);
+    border-bottom-left-radius: 0;
   }
 }
 
-/* -------------------------
-   Contenido existente (se mantiene)
-   ------------------------- */
+/* Centrado pro desktop (mantiene tu look) */
+@media (min-width: 980px){
+  .placeCard--withMedia .placeBody{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 26px 26px;
+  }
+  .placeCard--withMedia .placeHead{
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .placeCard--withMedia .placeTag{ justify-content: center; }
+  .placeCard--withMedia .placeBtns{
+    justify-content: center;
+    margin-top: 18px;
+  }
+}
+
 .placeHead{
   display:flex;
   gap: 14px;
@@ -1195,7 +1044,6 @@ html, body{ -webkit-text-size-adjust: 100%; }
   position: relative;
   z-index: 1;
 }
-
 .placeHead__text{ flex: 1; min-width: 0; }
 
 .placeTag{
@@ -1209,7 +1057,6 @@ html, body{ -webkit-text-size-adjust: 100%; }
   gap:8px;
   align-items:center;
 }
-
 .placeTag::before{
   content:"";
   width:10px;
@@ -1231,6 +1078,9 @@ html, body{ -webkit-text-size-adjust: 100%; }
   color: var(--muted);
   line-height:1.65;
   font-size:14px;
+  max-width: 52ch;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .placeBtns{
@@ -1256,7 +1106,6 @@ html, body{ -webkit-text-size-adjust: 100%; }
   flex: 0 0 auto;
   margin-top: 2px;
 }
-
 .placePin--icon .pinDot,
 .placePin--icon .pinPulse{ display: none !important; }
 
@@ -1271,7 +1120,6 @@ html, body{ -webkit-text-size-adjust: 100%; }
   filter: drop-shadow(0 10px 16px rgba(0,0,0,.08));
 }
 
-/* Móvil: botones centrados */
 @media (max-width: 520px){
   .placeBtns{ justify-content: center; }
   .placeBtns .btn{
@@ -1280,7 +1128,7 @@ html, body{ -webkit-text-size-adjust: 100%; }
   }
 }
 
-/* ✅ Mantener el antiguo layout “centrado” si alguna tarjeta lo sigue usando */
+/* Layout legacy centrado si lo usas */
 @media (min-width: 980px){
   .placeCard--centerDesktop .placeHead{
     flex-direction: column;
@@ -1341,29 +1189,26 @@ html, body{ -webkit-text-size-adjust: 100%; }
 
 @media (min-width: 860px){
   .tItem{
-    grid-template-columns: 1fr 86px 1fr; /* ✅ antes 96px */
+    grid-template-columns: 1fr 86px 1fr;
     align-items: center;
     gap: 12px;
   }
-
   .tSide--left{
     grid-column: 1;
     display: flex;
     justify-content: flex-end;
-    justify-self: end;       /* ✅ pega la card al centro */
+    justify-self: end;
   }
-
   .tDot{
     grid-column: 2;
     justify-self: center;
     align-self: center;
   }
-
   .tSide--right{
     grid-column: 3;
     display: flex;
     justify-content: flex-start;
-    justify-self: start;     /* ✅ pega la card al centro */
+    justify-self: start;
   }
 }
 
@@ -1377,7 +1222,7 @@ html, body{ -webkit-text-size-adjust: 100%; }
   transition: opacity 520ms var(--ease-out), transform 520ms var(--ease-out);
 }
 
-/* Dot (desktop) */
+/* Dot */
 .tDot{
   width: 86px; height: 86px;
   border-radius: 999px;
@@ -1389,7 +1234,7 @@ html, body{ -webkit-text-size-adjust: 100%; }
   position: relative;
 }
 
-/* ✅ Lottie “pop” cuando está activo */
+/* Lottie pop */
 .tDot.has-lottie{
   transform: scale(1);
   will-change: transform;
@@ -1420,7 +1265,7 @@ html, body{ -webkit-text-size-adjust: 100%; }
 }
 
 .tIcon{
-  font-size: 20px; /* desktop */
+  font-size: 20px;
   line-height: 1;
   position: absolute;
   inset: 0;
@@ -1448,33 +1293,14 @@ html, body{ -webkit-text-size-adjust: 100%; }
   box-shadow: 0 14px 38px rgba(0,0,0,.08);
   max-width: 520px;
   position: relative;
-  outline: none;
-  outline-offset: -1px;
-  border: 1.5px solid rgba(200,162,74,.55);     /* ✅ doradito */
-
-  /* ✅ “Card premium” */
+  border: 1.5px solid rgba(200,162,74,.55);
   background: rgba(255,255,255,.94);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
 
-/* =========================
-   ✅ Punta del cuadro hacia el círculo (WEB + MÓVIL)
-   ========================= */
-
-/* punta interior (blanca) */
-.tCard::after{
-  content:"";
-  position:absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 0;
-  height: 0;
-  border: 10px solid transparent; /* tamaño punta */
-  pointer-events: none;
-}
-
-/* punta exterior (borde dorado) */
+/* Punta hacia el círculo */
+.tCard::after,
 .tCard::before{
   content:"";
   position:absolute;
@@ -1482,59 +1308,53 @@ html, body{ -webkit-text-size-adjust: 100%; }
   transform: translateY(-50%);
   width: 0;
   height: 0;
-  border: 11px solid transparent; /* 1px más => borde */
-  pointer-events:none;
+  pointer-events: none;
 }
+.tCard::after{ border: 10px solid transparent; }
+.tCard::before{ border: 11px solid transparent; }
 
-/* IZQUIERDA (items impares): punta hacia el círculo (derecha) */
+/* Izquierda */
 .tItem:nth-child(odd) .tCard::after{
   left: -18px;
   border-right-color: rgba(255,255,255,.94);
 }
 .tItem:nth-child(odd) .tCard::before{
   left: -20px;
-  border-right-color: rgba(200,162,74,.55); /* más marcado */
+  border-right-color: rgba(200,162,74,.55);
 }
-
-/* DERECHA (items pares): punta hacia el círculo (izquierda) */
+/* Derecha */
 .tItem:nth-child(even) .tCard::after{
   right: -18px;
   border-left-color: rgba(255,255,255,.94);
 }
 .tItem:nth-child(even) .tCard::before{
   right: -20px;
-  border-left-color: rgba(200,162,74,.55); /* más marcado */
+  border-left-color: rgba(200,162,74,.55);
 }
 
 @media (min-width: 860px){
-  /* Reducimos ligeramente el ancho para que no “floten” */
   .tCard{ max-width: 440px; }
-
-  /* IZQUIERDA */
   .tItem:nth-child(odd) .tCard{
     margin-left: auto;
-    margin-right: 7px;   /* 👈 acercamos al círculo */
-    text-align: center;  /* ✅ antes right */
+    margin-right: 7px;
+    text-align: center;
   }
-
-  /* DERECHA */
   .tItem:nth-child(even) .tCard{
     margin-right: auto;
-    margin-left: 7px;    /* 👈 acercamos al círculo */
-    text-align: center;  /* ✅ antes left */
+    margin-left: 7px;
+    text-align: center;
   }
 }
 
-/* ✅ Tipografía timeline en Playfair Display */
+/* Tipografía timeline */
 .tTime{
   font-family: var(--font-elegant);
   font-weight: 900;
   letter-spacing: 1px;
   font-size: 12.5px;
   color: rgba(107,31,43,.88);
-  text-transform: none;   /* 🔥 antes estaba uppercase */
+  text-transform: none;
 }
-
 .tLabel{
   font-family: var(--font-elegant);
   margin-top: 6px;
@@ -1543,22 +1363,19 @@ html, body{ -webkit-text-size-adjust: 100%; }
   line-height: 1.32;
 }
 
-/* ✅ Móvil: iconos + texto más grandes (lo que pediste) */
 @media (max-width: 859px){
   .timelineLine__path{
     stroke: var(--timeline-line-strong);
     stroke-width: 2.0;
   }
-
   .tItem{
-    grid-template-columns: 1fr 72px 1fr; /* más aire que antes */
+    grid-template-columns: 1fr 72px 1fr;
     align-items: center;
     gap: 12px;
     padding: 16px 0;
   }
-
-  .tDot{ width: 60px; height: 60px; }      /* ✅ MÁS GRANDE */
-  .tIcon{ font-size: 22px; }               /* ✅ MÁS GRANDE */
+  .tDot{ width: 60px; height: 60px; }
+  .tIcon{ font-size: 22px; }
   .tLottie > svg{ width: 78%; height: 78%; }
 
   .tCard{
@@ -1566,11 +1383,8 @@ html, body{ -webkit-text-size-adjust: 100%; }
     max-width: none;
     padding: 12px 12px;
     border-radius: 22px;
-
-    text-align: center;   /* ✅ centrado también en móvil */
+    text-align: center;
   }
-
-  /* ✅ texto más grande y legible */
   .tTime{ font-size: 13px; }
   .tLabel{ font-size: 15px; line-height: 1.32; }
 
@@ -1587,18 +1401,14 @@ html, body{ -webkit-text-size-adjust: 100%; }
   width: min(920px, 100%);
   border-radius: var(--radius-xl);
   padding: 18px;
-
-  /* ✅ más llamativo */
   border: 1.6px solid rgba(200,162,74,.55);
   background: rgba(255,255,255,.92);
   box-shadow:
     0 18px 52px rgba(0,0,0,.10),
     0 0 0 6px rgba(200,162,74,.10);
-
   position: relative;
   overflow: hidden;
 }
-/* ✅ Ribbon superior */
 .rsvpCallout::before{
   content:"CONFIRMA TU ASISTENCIA";
   position:absolute;
@@ -1711,30 +1521,24 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 .hoverCardInner{
   position: relative;
   width: 100%;
-  height: 98px; /* un pelín más alto */
+  height: 98px;
   display: block;
   transform-style: preserve-3d;
   transition: transform 420ms ease;
   border-radius: 18px;
-
-  /* ✅ más premium */
   border: 1.6px solid rgba(200,162,74,.55);
   box-shadow:
     0 18px 52px rgba(0,0,0,.12),
     0 0 0 6px rgba(200,162,74,.10);
-
-  outline: none;
   background: transparent;
 }
 @media (hover:hover){
   .hoverCardBtn:hover .hoverCardInner{ transform: rotateY(180deg); }
 }
 .hoverCardBtn:focus-visible .hoverCardInner{ transform: rotateY(180deg); }
-/* ✅ Pulso sutil en escritorio para llamar la atención */
+
 @media (hover:hover) and (prefers-reduced-motion: no-preference){
-  .hoverCardBtn{
-    animation: rsvpPulse 2.4s ease-in-out infinite;
-  }
+  .hoverCardBtn{ animation: rsvpPulse 2.4s ease-in-out infinite; }
   @keyframes rsvpPulse{
     0%,100%{ transform: translateY(0); }
     50%{ transform: translateY(-2px); }
@@ -1781,19 +1585,17 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   color: rgba(22,22,22,.92);
   text-transform: uppercase;
 }
-
 .hoverCardHint{
   font-size: 12.5px;
   color: rgba(22,22,22,.62);
 }
-
 @media (max-width: 720px){
   .hoverCardInner{ transform: none !important; }
   .hoverCardHint{ display: none; }
 }
 
 /* =========================
-   ASISTENCIA CARDS (centradas)
+   ASISTENCIA CARDS
    ========================= */
 .actionGrid{
   margin-top: 22px;
@@ -1831,6 +1633,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   .actionGrid--centerMobile .actionCard{ width: min(520px, 100%); }
 }
 
+/* Badge icon */
 .actionIcon{
   width: 48px; height: 48px;
   border-radius: 16px;
@@ -1840,17 +1643,18 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   box-shadow: 0 14px 34px rgba(0,0,0,.08);
   font-size: 18px;
   margin-bottom: 2px;
+  position: relative;
+  overflow: hidden;
 }
-/* ✅ Todo lo que necesitas — tipografía en Playfair Display */
+
 .actionTitle{
   font-family: var(--font-elegant);
   font-weight: 700;
-  letter-spacing: .9px;        /* más fino que 1.4px */
-  text-transform: uppercase;   /* se mantiene el look elegante */
+  letter-spacing: .9px;
+  text-transform: uppercase;
   color: rgba(22,22,22,.82);
   font-size: 12px;
 }
-
 .actionSub{
   font-family: var(--font-elegant);
   margin-top: 2px;
@@ -1872,51 +1676,40 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   background: rgba(200,162,74,.14);
   border: 1px solid rgba(200,162,74,.30);
   color: rgba(22,22,22,.86);
-  font-weight: 700;          /* antes 900, en Playfair queda más fino */
+  font-weight: 700;
   font-size: 13px;
   letter-spacing: .4px;
 }
 
-/* ✅ Móvil: iconos y textos un pelín más grandes */
 @media (max-width: 768px){
   .actionIcon{ width: 54px; height: 54px; font-size: 22px; }
   .actionTitle{ font-size: 13px; }
   .actionSub{ font-size: 15px; }
 }
 
-/* =========================
-   ACTION ICON LOTTIE (badge 48/54px)
-   ========================= */
-.actionIcon{
-  position: relative; /* para asegurar centrado perfecto */
-  overflow: hidden;   /* por si el svg se sale 1px */
-}
-
+/* Lottie en actionIcon */
 .actionIcon .actionLottie{
   width: 100%;
   height: 100%;
   display: grid;
   place-items: center;
 }
-
 .actionIcon .actionLottie svg{
   width: 78%;
   height: 78%;
   display: block;
 }
-
-/* fallback emoji si no hay lottie */
 .actionIcon .actionEmojiFallback{
   display: none;
   font-size: inherit;
   line-height: 1;
 }
-
 .no-lottie .actionIcon .actionEmojiFallback{ display: inline; }
 .no-lottie .actionIcon .actionLottie{ display: none; }
 
 /* =========================
-   GALERÍA PRO + POLAROID (mimetizado premium)
+   GALERÍA PRO + POLAROID
+   (✅ deduplicada)
    ========================= */
 .gallery{ margin-top: 22px; position: relative; }
 
@@ -1944,113 +1737,65 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   overflow: visible;
 }
 
-/* =========================
-   GALERÍA PRO + POLAROID (mimetizado premium)
-   ========================= */
-.gallery{ margin-top: 22px; position: relative; }
-
-.galleryTrack{
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: clamp(240px, 72vw, 360px);
-  gap: 14px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 10px 2px 14px;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.galleryTrack::-webkit-scrollbar{ height: 0; }
-
-.galleryItem{ margin: 0; scroll-snap-align: center; }
-
-.gallery--polaroid .galleryItem--polaroid{
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-  overflow: visible;
-}
-
-/* =========================
-   POLAROID (borde ajustado a la FOTO + 2 bordes detrás)
-   ========================= */
-
+/* Polaroid frame */
 .gallery--polaroid .galleryFrame{
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: 18px;
 
-  /* Polaroid base */
-  padding: 12px; /* marco blanco */
+  padding: 12px;
   background: rgba(255,255,255,.94);
   box-shadow: 0 20px 60px rgba(0,0,0,.16);
   cursor: zoom-in;
   transform: translateZ(0);
   transition: transform 180ms ease;
-
-  /* dejamos ver los bordes detrás */
   overflow: visible;
 }
 
-/* La foto es el “cuadradito” */
 .gallery--polaroid .galleryImg{
   width: 100%;
   height: 100%;
   display: block;
-  border-radius: 14px; /* cuadrado redondeado */
+  border-radius: 14px;
   object-fit: cover;
   object-position: center;
 
-  /* ✅ BORDE PRINCIPAL ajustado a la foto */
   outline: 4px solid rgba(22,22,22,.88);
   outline-offset: 0;
   background: rgba(255,255,255,.20);
 }
 
-/* ✅ 2 bordes detrás (del tamaño de la foto, no del marco blanco) */
+/* 2 bordes detrás (tamaño foto) */
 .gallery--polaroid .galleryFrame::before,
 .gallery--polaroid .galleryFrame::after{
   content:"";
   position: absolute;
-
-  /* 👇 ESTA ES LA CLAVE:
-     colocamos el borde justo donde empieza la foto:
-     padding 12px => el cuadrado empieza a 12px */
   left: 12px;
   right: 12px;
   top: 12px;
   bottom: 12px;
-
   border-radius: 14px;
   border: 4px solid rgba(22,22,22,.88);
   background: transparent;
   pointer-events: none;
   z-index: -1;
 }
-
-/* borde detrás 1 */
 .gallery--polaroid .galleryFrame::before{
   transform: translate(-10px, 8px) rotate(-2.2deg);
   opacity: .70;
 }
-
-/* borde detrás 2 */
 .gallery--polaroid .galleryFrame::after{
   transform: translate(10px, 12px) rotate(2.0deg);
   opacity: .55;
 }
 
-/* Hover */
 @media (hover:hover){
   .gallery--polaroid .galleryFrame:hover{
     transform: translateY(-2px) rotate(0.6deg);
   }
 }
 
-/* ✅ Hint “premium” con fade suave */
 .galleryHint{
   margin-top: 10px;
   font-size: 12px;
@@ -2058,15 +1803,12 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   text-transform: uppercase;
   color: rgba(22,22,22,.55);
   font-weight: 900;
-
   opacity: .72;
   transition: opacity .35s ease;
 }
-
 @media (hover:hover){
   .gallery:hover .galleryHint{ opacity: 1; }
 }
-
 @media (prefers-reduced-motion: reduce){
   .galleryHint{ transition: none; }
 }
@@ -2076,7 +1818,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   -webkit-user-drag: none;
 }
 
-/* ✅ Flechas galería “bonitas” (desktop) + SVG (solo carrusel de la sección) */
+/* Flechas carrusel */
 .galleryNav{
   display: none;
   position: absolute;
@@ -2098,13 +1840,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   place-items: center;
   -webkit-tap-highlight-color: transparent;
 }
-
-.galleryNav svg{
-  width: 20px;
-  height: 20px;
-  opacity: .92;
-}
-
+.galleryNav svg{ width: 20px; height: 20px; opacity: .92; }
 .galleryNav--prev{ left: -10px; }
 .galleryNav--next{ right: -10px; }
 
@@ -2112,26 +1848,15 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   .galleryNav{ display: grid; }
   .galleryNav:hover{ transform: translateY(-50%) scale(1.04); }
 }
-
 @media (max-width: 979px){
   .galleryNav{ display: none !important; }
 }
 
+/* Modal gallery nav */
+.modalGalleryMedia{ position: relative; }
 
-/* =========================================================
-   ✅ MODAL GALERÍA — flechas dentro de la imagen grande
-   (NO choca con .galleryNav del carrusel)
-   ========================================================= */
-
-.modalGalleryMedia{
-  position: relative;
-}
-
-/* Botones prev/next dentro del modal */
 .modalGalleryNav{
   position: absolute;
-
-  /* ✅ centrado vertical perfecto (sin top 50%) */
   top: 0;
   bottom: 0;
   margin: auto 0;
@@ -2139,12 +1864,10 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   width: 46px;
   height: 46px;
   border-radius: 999px;
-
   border: 1px solid rgba(255,255,255,.22);
   background: rgba(255,255,255,.14);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-
   box-shadow: 0 12px 32px rgba(0,0,0,.22);
   cursor: pointer;
   z-index: 5;
@@ -2152,52 +1875,33 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   display: grid;
   place-items: center;
   -webkit-tap-highlight-color: transparent;
-
   transition: transform .18s ease, background .18s ease, opacity .18s ease;
 }
-
-/* ✅ POSICIÓN DESKTOP (esto te faltaba) */
 .modalGalleryNav--prev{ left: 14px; right: auto; }
 .modalGalleryNav--next{ right: 14px; left: auto; }
+.modalGalleryNav svg{ width: 22px; height: 22px; opacity: .92; }
 
-.modalGalleryNav svg{
-  width: 22px;
-  height: 22px;
-  opacity: .92;
-}
-
-/* Hover desktop */
 @media (hover:hover){
   .modalGalleryNav:hover{
     transform: scale(1.06);
     background: rgba(255,255,255,.22);
   }
 }
-
-/* ✅ MÓVIL: las sacamos un poco hacia fuera para no tapar caras */
 @media (max-width: 768px){
-  .modalGalleryNav{
-    width: 40px;
-    height: 40px;
-  }
-  .modalGalleryNav svg{
-    width: 20px;
-    height: 20px;
-  }
-
+  .modalGalleryNav{ width: 40px; height: 40px; }
+  .modalGalleryNav svg{ width: 20px; height: 20px; }
   .modalGalleryNav--prev{ left: -18px; }
   .modalGalleryNav--next{ right: -18px; }
 }
 
 /* =========================
-   Ring3D (por ahora oculto)
+   Ring3D (oculto)
    ========================= */
 .ring3dWrap{ display:none; }
 
 /* =========================
-   OTROS PUNTOS DE VISTA (dibujo + cubo) — PRO (tap vs drag + size auto)
+   OTROS PUNTOS DE VISTA
    ========================= */
-
 .kidsGrid{
   margin-top: 22px;
   display: grid;
@@ -2205,7 +1909,6 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   gap: 18px;
   align-items: center;
 }
-
 @media (min-width: 980px){
   .kidsGrid{
     grid-template-columns: 1.1fr .9fr;
@@ -2214,33 +1917,31 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   }
 }
 
-/* -------------------------
-   Dibujo elegido (izquierda)
-   ------------------------- */
-
 .kidsFeatured{
   margin: 0;
   display: flex;
   flex-direction: column;
-  align-items: center; /* centra imagen + caption respecto al dibujo */
+  align-items: center;
 }
-
 .kidsFeaturedFrame{
   border-radius: 22px;
   background: transparent;
   border: 0;
   box-shadow: none;
   padding: 0;
-  display: inline-block; /* hace que el ancho sea el real del dibujo */
+  display: inline-block;
 }
-
 .opvChosenImg{
   width: 100%;
   height: auto;
   display: block;
   border-radius: 0;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  object-fit: contain;
+  cursor: zoom-in;
 }
-
 .kidsCaption{
   margin-top: 12px;
   font-size: 12px;
@@ -2249,31 +1950,21 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   color: rgba(22,22,22,.58);
   font-weight: 900;
   text-align: center;
-  width: fit-content; /* mismo ancho visual que el dibujo */
+  width: fit-content;
 }
-
-/* Ajustes móvil */
 @media (max-width: 768px){
   .opvChosenImg{
     width: min(520px, 92vw);
     margin: 0 auto;
   }
-
-  .kidsCaption{
-    text-align: center;
-  }
+  .kidsCaption{ text-align: center; }
 }
 
-
-/* -------------------------
-   Wrapper del cubo (derecha)
-   ------------------------- */
-
+/* Cubo wrap */
 .kidsCubeWrap{
   display: grid;
   place-items: center;
   gap: 10px;
-
   padding: 16px 16px 14px;
   border-radius: 26px;
   background: rgba(255,255,255,.72);
@@ -2282,8 +1973,6 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   position: relative;
   overflow: visible;
 }
-
-/* brillo suave */
 .kidsCubeWrap::before{
   content:"";
   position:absolute;
@@ -2293,7 +1982,6 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   pointer-events:none;
   opacity: .9;
 }
-
 .kidsCubeHint{
   font-size: 11px;
   letter-spacing: 1.4px;
@@ -2302,7 +1990,6 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   font-weight: 900;
   margin-top: 10px;
 }
-
 @media (max-width: 768px){
   .kidsCubeWrap{
     padding: 14px 14px 12px;
@@ -2310,26 +1997,17 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   }
 }
 
-/* -------------------------
-   Cubo 3D (scene + cube)
-   - tamaño controlado
-   - profundidad (Z) automática según tamaño del cubo
-   ------------------------- */
+/* Cubo 3D */
 .cubeScene{
   --cube-size: clamp(250px, 30vw, 330px);
   width: var(--cube-size);
   aspect-ratio: 1 / 1;
-
-  /* profundidad proporcional al tamaño (evita “tocho” en móvil) */
   --cube-z: calc((var(--cube-size) / 2) - 14px);
-
   perspective: 900px;
   display: grid;
   place-items: center;
   overflow: visible;
 }
-
-/* móvil: más pequeño + menos perspectiva */
 @media (max-width: 768px){
   .cubeScene{
     --cube-size: clamp(210px, 62vw, 260px);
@@ -2346,18 +2024,15 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   will-change: auto;
 }
 
-/* interacción */
 [data-cube]{
   cursor: grab;
-  /* IMPORTANTE: dejamos que el scroll vertical del móvil funcione
-     y solo bloqueamos cuando realmente arrastramos (lo hace el JS). */
   touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;
 }
 [data-cube].is-dragging{
   cursor: grabbing;
-  touch-action: none; /* al arrastrar de verdad, bloqueamos scroll */
+  touch-action: none;
 }
 
 .cubeFace{
@@ -2369,15 +2044,11 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   border: 0;
   background: rgba(255,255,255,.94);
   cursor: pointer;
-
   border-radius: 22px;
   overflow: hidden;
-
   border: 1px solid rgba(22,22,22,.10);
   box-shadow: 0 18px 52px rgba(0,0,0,.12);
 }
-
-/* un pelín más fino en móvil */
 @media (max-width: 768px){
   .cubeFace{
     border-radius: 20px;
@@ -2392,11 +2063,9 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   display: block;
   cursor: zoom-in;
 }
-/* Deja pasar el drag al cubo, pero sigue permitiendo click */
-.cubeFace { touch-action: none; }
-.cubeFace img { pointer-events: none; } /* el click lo capturamos desde la cara */
+.cubeFace{ touch-action: none; }
+.cubeFace img{ pointer-events: none; }
 
-/* posiciones 3D */
 .cubeFace--front{  transform: rotateY(0deg) translateZ(var(--cube-z)); }
 .cubeFace--back{   transform: rotateY(180deg) translateZ(var(--cube-z)); }
 .cubeFace--right{  transform: rotateY(90deg) translateZ(var(--cube-z)); }
@@ -2404,34 +2073,25 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 .cubeFace--top{    transform: rotateX(90deg) translateZ(var(--cube-z)); }
 .cubeFace--bottom{ transform: rotateX(-90deg) translateZ(var(--cube-z)); }
 
-
-
-/* Dibujo izquierda (PNG sin fondo) */
-.opvChosenImg{
-  display:block;
-  width:100%;
-  height:auto;
-  background: transparent !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  object-fit: contain;
-  cursor: zoom-in;
-}
-
 /* =========================
    FOOTER
    ========================= */
-
 .footer{ padding: 42px 0 70px; }
 
 .footer__inner{
   border-radius: var(--radius-xl);
   box-shadow: 0 18px 52px rgba(0,0,0,.10);
   padding: 18px;
-}
 
-/* ---------- TOP ---------- */
+  /* premium polish (conserva tu look) */
+  background: rgba(255,255,255,.78);
+  border: 1px solid rgba(22,22,22,.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow:
+    0 18px 52px rgba(0,0,0,.10),
+    inset 0 1px 0 rgba(255,255,255,.55);
+}
 
 .footerTop{
   display:flex;
@@ -2441,20 +2101,16 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   flex-wrap:wrap;
 }
 
-/* Marca */
-.footerBrand{
-  display:grid;
-  gap:6px;
-}
+.footerBrand{ display:grid; gap:6px; }
 
 .footerNames{
   font-family: var(--font-display);
   font-weight:700;
   font-size:28px;
   line-height:1.05;
+  letter-spacing: .2px;
 }
 
-/* Fecha + logo */
 .footerMeta{
   display:flex;
   align-items:center;
@@ -2462,36 +2118,30 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 }
 
 .footerDate{
-  font-weight:900;
-  letter-spacing:1.6px;
+  font-weight: 800;
+  letter-spacing: 2.2px;
   text-transform:uppercase;
   font-size:12px;
-  color: rgba(22,22,22,.70);
+  color: rgba(22,22,22,.62);
 }
 
-/* Logo lacre */
 .footerLogo{
-  width:78px;          /* tamaño web */
+  width:78px;
   height:78px;
   object-fit:contain;
-
-  opacity:.63;         /* sutil */
-  filter: grayscale(10%) drop-shadow(0 10px 20px rgba(0,0,0,.10));
-
+  opacity:.28;
+  filter: grayscale(20%) drop-shadow(0 10px 20px rgba(0,0,0,.08));
   transform: translateY(2px);
   pointer-events:none;
   user-select:none;
   transition: transform .35s ease, opacity .35s ease;
 }
-
 @media (hover:hover){
   .footerLogo:hover{
     transform: translateY(0px) scale(1.08);
     opacity:.45;
   }
 }
-
-/* ---------- LINKS ---------- */
 
 .footerLinks{
   display:flex;
@@ -2503,79 +2153,83 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 }
 
 .footerLink{
+  position: relative;
   font-weight:900;
-  letter-spacing:1.2px;
+  letter-spacing:1.35px;
   text-transform:uppercase;
   font-size:11px;
-
-  color: rgba(22,22,22,.72);
-
+  color: rgba(22,22,22,.70);
   padding:10px 12px;
   border-radius:999px;
-
-  background: rgba(255,255,255,.78);
-  border:1px solid rgba(22,22,22,.08);
-
+  background: rgba(255,255,255,.66);
+  border:1px solid rgba(22,22,22,.10);
+  box-shadow:
+    0 10px 26px rgba(0,0,0,.08),
+    inset 0 1px 0 rgba(255,255,255,.65);
   transition: transform 150ms ease, background 150ms ease, border-color 150ms ease;
 }
-
+.footerLink::before{
+  content:"";
+  position:absolute;
+  inset: 1px;
+  border-radius: 999px;
+  pointer-events:none;
+  background: linear-gradient(to bottom, rgba(255,255,255,.55), rgba(255,255,255,0));
+  opacity: .55;
+}
 .footerLink:hover{
   transform: translateY(-1px);
   background: rgba(255,255,255,.92);
   border-color: rgba(200,162,74,.22);
 }
-
-/* ---------- BOTTOM ---------- */
+@media (hover:hover){
+  .footerLink:hover{
+    border-color: rgba(200,162,74,.28);
+    box-shadow:
+      0 16px 36px rgba(0,0,0,.10),
+      inset 0 1px 0 rgba(255,255,255,.75);
+  }
+}
 
 .footerBottom{
   margin-top:14px;
   display:flex;
   justify-content:center;
 }
-
 .footerNote{
   font-size:12px;
-  color: rgba(22,22,22,.60);
+  color: rgba(22,22,22,.58);
   text-align:center;
+  letter-spacing: .2px;
 }
 
-
-/* =====================================================
-   MÓVIL (<=768px) — FOOTER PREMIUM (sin "..." en nombre)
-   Layout:
-   fila 1 → nombre (ancho completo)
-   fila 2 → izquierda (fecha + logo) | derecha (botones)
-   ===================================================== */
+/* MÓVIL footer (sin ellipsis) */
 @media (max-width:768px){
-
   .footer__inner{ overflow:hidden; }
 
   .footerTop{
     display:grid;
-    grid-template-columns: 1fr minmax(190px, 48vw); /* un poco más de columna derecha */
+    grid-template-columns: 1fr minmax(190px, 48vw);
     grid-template-rows: auto auto;
     column-gap: 14px;
     row-gap: 10px;
     align-items:start;
-    padding-right: 12px; /* aire al borde derecho */
+    padding-right: 12px;
   }
 
-  /* permite colocar hijos directamente en el grid */
   .footerBrand{ display: contents; }
 
-  /* ===== NOMBRE (1 línea SIEMPRE, sin ellipsis) ===== */
   .footerNames{
     grid-column: 1 / -1;
     grid-row: 1;
     font-size: clamp(22px, 6.6vw, 30px);
     line-height: 1.02;
     white-space: nowrap;
-    overflow: visible;      /* no recortes */
-    text-overflow: clip;    /* nunca "..." */
+    overflow: visible;
+    text-overflow: clip;
     color: #111;
   }
 
-  /* ===== FECHA + LOGO ===== */
   .footerMeta{
     grid-column: 1;
     grid-row: 2;
@@ -2591,69 +2245,51 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
     font-size: 12px;
     line-height: 1.1;
     letter-spacing: 2.0px;
-    font-weight: 800;
     color: #111;
   }
 
   .footerLogo{
     width: 66px;
     height: 66px;
-    opacity: .30;          /* más sutil */
+    opacity: .30;
     transform: none;
     flex: 0 0 auto;
   }
 
-  /* ===== BOTONES (a la derecha, arrancan a la altura del logo) ===== */
   .footerLinks{
     grid-column: 2;
     grid-row: 2;
-
     display:flex;
     flex-direction: column;
-    align-items: flex-end;     /* ← los empuja a la derecha */
+    align-items: flex-end;
     justify-content: flex-start;
     gap: 10px;
-
-    margin-top: 22px;          /* altura aprox de la fecha + gap */
-      /* 👇 NUEVO */
-  justify-self: end;      /* empuja el bloque al borde derecho */
-  padding-right: 0px;     /* quita el margen que lo separaba */
+    margin-top: 22px;
+    justify-self: end;
+    padding-right: 0px;
   }
 
   .footerLink{
     width: 100%;
-    max-width: 220px;          /* un poco más anchos, quedan más “premium” */
+    max-width: 220px;
     text-align: center;
-
     padding: 12px 12px;
-
     font-size: clamp(9px, 2.45vw, 10px);
     letter-spacing: clamp(.95px, .22vw, 1.15px);
-
-    white-space: nowrap;       /* 1 línea */
+    white-space: nowrap;
     line-height: 1;
-
     overflow: hidden;
-    text-overflow: clip;       /* nunca "..." */
-
-    color:#111;                /* negro */
+    text-overflow: clip;
+    color:#111;
   }
 
-  /* ===== FRASE FINAL (única en gris) ===== */
-  .footerBottom{
-    margin-top: 14px;
-    display:flex;
-    justify-content:center;
-  }
-
+  .footerBottom{ margin-top: 14px; }
   .footerNote{
     text-align:center;
     max-width: 28ch;
     color: rgba(0,0,0,.55);
   }
 }
-
-/* Ultra-estrechos */
 @media (max-width:360px){
   .footerTop{
     grid-template-columns: 1fr minmax(200px, 50vw);
@@ -2667,96 +2303,7 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
 }
 
 /* =========================
-   FOOTER — PREMIUM POLISH
-   (overrides seguros)
-   ========================= */
-
-/* Tarjeta más “premium” */
-.footer__inner{
-  background: rgba(255,255,255,.78);
-  border: 1px solid rgba(22,22,22,.08);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow:
-    0 18px 52px rgba(0,0,0,.10),
-    inset 0 1px 0 rgba(255,255,255,.55);
-}
-
-/* Nombre un pelín más fino/lujoso */
-.footerNames{
-  letter-spacing: .2px;
-}
-
-/* Fecha con “tracking” más elegante */
-.footerDate{
-  letter-spacing: 2.2px;
-  font-weight: 800;
-  color: rgba(22,22,22,.62);
-}
-
-/* Logo más sutil (menos “pegote”) */
-.footerLogo{
-  opacity: .28;
-  filter: grayscale(20%) drop-shadow(0 10px 20px rgba(0,0,0,.08));
-}
-
-/* Botones premium */
-.footerLink{
-  position: relative;
-  background: rgba(255,255,255,.66);
-  border: 1px solid rgba(22,22,22,.10);
-  box-shadow:
-    0 10px 26px rgba(0,0,0,.08),
-    inset 0 1px 0 rgba(255,255,255,.65);
-
-  letter-spacing: 1.35px;
-  color: rgba(22,22,22,.70);
-}
-
-/* “sheen” (brillito) muy sutil */
-.footerLink::before{
-  content:"";
-  position:absolute;
-  inset: 1px;
-  border-radius: 999px;
-  pointer-events:none;
-  background: linear-gradient(
-    to bottom,
-    rgba(255,255,255,.55),
-    rgba(255,255,255,0)
-  );
-  opacity: .55;
-}
-
-/* Hover más “pro” (solo desktop) */
-@media (hover:hover){
-  .footerLink:hover{
-    transform: translateY(-1px);
-    background: rgba(255,255,255,.86);
-    border-color: rgba(200,162,74,.28);
-    box-shadow:
-      0 16px 36px rgba(0,0,0,.10),
-      inset 0 1px 0 rgba(255,255,255,.75);
-  }
-}
-
-/* Texto final un pelín más fino */
-.footerNote{
-  letter-spacing: .2px;
-  color: rgba(22,22,22,.58);
-}
-
-/* Móvil: botones con altura más “app” */
-@media (max-width:768px){
-  .footerLink{
-    padding: 12px 12px;
-    font-size: 10px;
-    border-radius: 999px;
-  }
-}
-
-/* =========================
-   MODAL (scale-in premium)
+   MODAL
    ========================= */
 .modal{
   position: fixed;
@@ -2764,28 +2311,19 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   display: none;
   z-index: 99999;
 }
+.modal.is-open{ display: block; }
 
-.modal.is-open{
-  display: block;
-}
-
-/* Backdrop con fade suave */
 .modal__backdrop{
   position:absolute;
   inset:0;
   background: rgba(0,0,0,.58);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-
   opacity: 0;
   transition: opacity .35s ease;
 }
+.modal.is-open .modal__backdrop{ opacity: 1; }
 
-.modal.is-open .modal__backdrop{
-  opacity: 1;
-}
-
-/* Panel con scale-in */
 .modal__panel{
   position: relative;
   width: min(820px, calc(100vw - 32px));
@@ -2797,21 +2335,17 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   border: 1px solid rgba(200,162,74,.22);
   box-shadow: 0 30px 100px rgba(0,0,0,.34);
   padding: 18px 18px 20px;
-
-  /* animación inicial */
   transform: scale(.94) translateY(10px);
   opacity: 0;
   transition:
     transform .42s cubic-bezier(.16, 1, .3, 1),
     opacity .32s ease;
 }
-
 .modal.is-open .modal__panel{
   transform: scale(1) translateY(0);
   opacity: 1;
 }
 
-/* Botón cerrar */
 .modal__close{
   position:absolute;
   right: 12px;
@@ -2825,24 +2359,18 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   font-size: 18px;
   transition: background .2s ease, transform .2s ease;
 }
-
 .modal__close:hover{
   background: rgba(22,22,22,.14);
   transform: scale(1.05);
 }
 
-/* Contenido */
 .modal__content{
   padding-top: 18px;
   color: rgba(22,22,22,.84);
   line-height: 1.65;
   font-size: 14px;
-
-  /* ✅ TODO el texto del modal en Playfair */
   font-family: var(--font-elegant);
 }
-
-/* ✅ Título del modal en Playfair */
 .modal__content h2{
   font-family: var(--font-elegant);
   margin: 0 0 10px;
@@ -2850,8 +2378,6 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   line-height: 1.1;
   font-weight: 700;
 }
-
-/* (Opcional) Afinar párrafos */
 .modal__content p{
   margin: 10px 0;
   font-family: var(--font-elegant);
@@ -2871,36 +2397,6 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   background: rgba(255,255,255,.20);
 }
 
-/* Accesibilidad */
-@media (prefers-reduced-motion: reduce){
-  .modal__backdrop,
-  .modal__panel{
-    transition: none !important;
-  }
-}
-
-/* =========================
-   REDUCE MOTION
-   ========================= */
-@media (prefers-reduced-motion: reduce){
-  .timeline.is-drawn .timelineLine__path{ animation: none !important; stroke-dashoffset: 0 !important; }
-  .heroNames, .heroDate--fancy .heroDate__text{ animation: none !important; }
-  .fh{ animation: none !important; opacity: 0 !important; }
-  .hoverCardInner{ transition: none !important; }
-  .cube{ animation: none !important; }
-  .tPulse{ animation: none !important; opacity: .15 !important; }
-}
-
-/* ✅ SOLO este tramo (banda + Faltan) va con el color “oscuro” */
-.sectionBlock--faltan{
-  background: var(--bgB); /* <-- aquí va TU color oscuro */
-}
-
-/* ✅ evita que el body claro se cuele detrás de la banda */
-.sectionBlock--faltan .sepImage.sepImage--bg{
-  background-color: var(--bgB);
-}
-
 /* Honeypot invisible */
 .hp-field{
   position:absolute !important;
@@ -2908,4 +2404,17 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   width:1px !important;
   height:1px !important;
   overflow:hidden !important;
+}
+
+/* =========================
+   REDUCE MOTION (global)
+   ========================= */
+@media (prefers-reduced-motion: reduce){
+  .timeline.is-drawn .timelineLine__path{ animation: none !important; stroke-dashoffset: 0 !important; }
+  .heroNames, .heroDate--fancy .heroDate__text{ animation: none !important; }
+  .hoverCardInner{ transition: none !important; }
+  .cube{ animation: none !important; }
+  .tPulse{ animation: none !important; opacity: .15 !important; }
+  .modal__backdrop,
+  .modal__panel{ transition: none !important; }
 }

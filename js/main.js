@@ -1,6 +1,15 @@
 /* =========================================================
-   GA WEB — main.js (PRO) — FIX + OPTIMIZADO (2026) — V3
-   ✅ Todo lo hablado + modal galería con flechas dentro + teclado ← →
+   GA WEB — main.js (PRO) — FIX + OPTIMIZADO (2026) — V4
+   ✅ Todo lo hablado:
+   - Intro sobre + fadeIn hero
+   - Countdown Europe/Madrid (DST OK)
+   - Timeline: línea + reveal + Lottie play/pause por visibilidad
+   - Asistencia: Lottie play/pause por visibilidad
+   - Lottie global: pausa al salir de pantalla + al ocultar pestaña
+   - Modal galería: flechas dentro + teclado ← → + focus trap + scroll lock
+   - Galería carrusel: drag + flechas
+   - Cubo: drag + inercia + auto
+   - Música: toggle (siempre OFF al iniciar) + UI sincronizada
    ========================================================= */
 
 (() => {
@@ -44,6 +53,7 @@
     if (scrollLockCount !== 0) return;
 
     const top = document.body.style.top;
+
     document.body.style.position = "";
     document.body.style.top = "";
     document.body.style.left = "";
@@ -54,91 +64,87 @@
     window.scrollTo(0, y || 0);
   }
 
-// =========================================================
-// 1) INTRO (SOBRE)
-// =========================================================
-const intro = $("#intro");
-const openBtn = $("#openEnvelope");
-const site = $("#site");
+  // =========================================================
+  // 1) INTRO (SOBRE)
+  // =========================================================
+  const intro = $("#intro");
+  const openBtn = $("#openEnvelope");
+  const site = $("#site");
 
-let isOpening = false;
+  let isOpening = false;
 
-// ✅ Evita que el navegador restaure scroll al reabrir (A2HS / historial)
-if ("scrollRestoration" in history) {
-  history.scrollRestoration = "manual";
-}
+  // ✅ Evita que el navegador restaure scroll al reabrir (A2HS / historial)
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
 
-// ✅ Forzar arriba (robusto)
-function forceTop() {
-  window.scrollTo(0, 0);
-  document.documentElement.scrollTop = 0;
-  document.body.scrollTop = 0;
-}
+  // ✅ Forzar arriba (robusto)
+  function forceTop() {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }
 
-// ✅ Al cargar / volver desde caché, si el sobre existe queremos empezar arriba
-function forceTopSoon() {
-  requestAnimationFrame(() => requestAnimationFrame(forceTop));
-}
+  // ✅ Al cargar / volver desde caché, si el sobre existe queremos empezar arriba
+  function forceTopSoon() {
+    requestAnimationFrame(() => requestAnimationFrame(forceTop));
+  }
 
-window.addEventListener("load", forceTopSoon);
-window.addEventListener("pageshow", forceTopSoon);
+  window.addEventListener("load", forceTopSoon);
+  window.addEventListener("pageshow", forceTopSoon);
 
-if (intro) {
-  lockScroll();
-  // Por si el navegador intenta restaurar scroll incluso con el sobre visible
-  forceTopSoon();
-}
+  if (intro) {
+    lockScroll();
+    forceTopSoon();
+  }
 
-function applyFadeInToHero() {
-  if (prefersReducedMotion) return;
+  function applyFadeInToHero() {
+    if (prefersReducedMotion) return;
 
-  const heroText = $(".heroText");
-  const heroPhoto = $(".heroPhoto--full");
+    const heroText = $(".heroText");
+    const heroPhoto = $(".heroPhoto--full");
 
-  const apply = (el) => {
-    if (!el) return;
-    el.classList.remove("animate__animated", "animate__fadeIn", "animate__faster");
-    // eslint-disable-next-line no-unused-expressions
-    el.offsetHeight; // reflow
-    el.classList.add("animate__animated", "animate__fadeIn", "animate__faster");
-  };
+    const apply = (el) => {
+      if (!el) return;
+      el.classList.remove("animate__animated", "animate__fadeIn", "animate__faster");
+      // eslint-disable-next-line no-unused-expressions
+      el.offsetHeight; // reflow
+      el.classList.add("animate__animated", "animate__fadeIn", "animate__faster");
+    };
 
-  apply(heroPhoto);
-  apply(heroText);
-}
+    apply(heroPhoto);
+    apply(heroText);
+  }
 
-if (openBtn && intro && site) {
-  openBtn.addEventListener("click", () => {
-    if (isOpening) return;
-    isOpening = true;
+  if (openBtn && intro && site) {
+    openBtn.addEventListener("click", () => {
+      if (isOpening) return;
+      isOpening = true;
 
-    // ✅ Antes de abrir, arriba (evita que "arranque" a mitad)
-    forceTop();
+      forceTop();
 
-    intro.classList.add("intro--open");
-    site.style.opacity = "0";
-    site.classList.remove("site--hidden");
-
-    window.setTimeout(() => {
-      intro.classList.add("intro--closing");
+      intro.classList.add("intro--open");
+      site.style.opacity = "0";
+      site.classList.remove("site--hidden");
 
       window.setTimeout(() => {
-        intro.style.display = "none";
+        intro.classList.add("intro--closing");
 
-        // ✅ Tras desbloquear, algunos móviles “reaplican” scroll guardado:
-        // hacemos arriba antes y justo después.
-        forceTop();
-        unlockScroll();
-        forceTopSoon();
+        window.setTimeout(() => {
+          intro.style.display = "none";
 
-        requestAnimationFrame(() => {
-          site.style.opacity = "1";
-          applyFadeInToHero();
-        });
-      }, 520);
-    }, 750);
-  });
-}
+          forceTop();
+          unlockScroll();
+          forceTopSoon();
+
+          requestAnimationFrame(() => {
+            site.style.opacity = "1";
+            applyFadeInToHero();
+          });
+        }, 520);
+      }, 750);
+    });
+  }
 
   // =========================================================
   // 2) COUNTDOWN Europe/Madrid (DST correcto)
@@ -233,35 +239,30 @@ if (openBtn && intro && site) {
     window.setInterval(tickCountdown, 1000);
   }, startDelay);
 
-// =========================================================
-// 3) Timeline + Asistencia — Lottie controlado por visibilidad
-//    - Timeline: line draw + reveal items + lottie play/pause por sección visible
-//    - Asistencia: lottie play/pause por sección visible
-// =========================================================
-const timeline = $("#timeline");
-const asistencia = $("#asistencia");
+  // =========================================================
+  // 3) LOTTIE — Control total por visibilidad (timeline + asistencia + global)
+  // =========================================================
+  const timeline = $("#timeline");
+  const asistencia = $("#asistencia");
 
-/**
- * Carga lotties dentro de un root y devuelve un Map(holderEl -> animInstance).
- * Deja todos en frame 0 y pausados (autoplay false).
- */
-function loadLottieInstances(rootEl) {
-  const instances = new Map();
-  if (!rootEl) return instances;
+  // Registry global para poder pausar TODO en background
+  const LOTTIE_REGISTRY = new Map(); // holderEl -> anim
 
-  const hasLottieLib =
-    typeof window.lottie !== "undefined" &&
-    window.lottie &&
-    typeof window.lottie.loadAnimation === "function";
+  function hasLottieLib() {
+    return (
+      typeof window.lottie !== "undefined" &&
+      window.lottie &&
+      typeof window.lottie.loadAnimation === "function"
+    );
+  }
 
-  if (!hasLottieLib) return instances;
+  function ensureLottieLoaded(holder) {
+    if (!holder) return null;
+    if (LOTTIE_REGISTRY.has(holder)) return LOTTIE_REGISTRY.get(holder);
 
-  const holders = $$("[data-lottie]", rootEl);
-  if (!holders.length) return instances;
-
-  holders.forEach((holder) => {
     const path = (holder.getAttribute("data-lottie") || "").trim();
-    if (!path) return;
+    if (!path) return null;
+    if (!hasLottieLib()) return null;
 
     const loop = holder.getAttribute("data-loop") === "true";
 
@@ -278,135 +279,171 @@ function loadLottieInstances(rootEl) {
         }
       });
 
-      if (anim && typeof anim.goToAndStop === "function") {
-        anim.goToAndStop(0, true);
-      }
+      try { anim.goToAndStop(0, true); } catch {}
 
-      instances.set(holder, anim);
+      LOTTIE_REGISTRY.set(holder, anim);
 
       // Marcar dot si aplica (timeline)
       const dot = holder.closest(".tDot");
       if (dot) dot.classList.add("has-lottie");
+
+      return anim;
     } catch {
-      // fallback: no rompemos nada
+      return null;
     }
-  });
+  }
 
-  return instances;
-}
+  function loadLottieInstances(rootEl) {
+    const instances = new Map();
+    if (!rootEl) return instances;
+    if (!hasLottieLib()) return instances;
 
-/**
- * Play/pause de un Map de instancias.
- */
-function playAll(instances) {
-  instances.forEach((anim) => {
+    const holders = $$("[data-lottie]", rootEl);
+    if (!holders.length) return instances;
+
+    holders.forEach((holder) => {
+      const anim = ensureLottieLoaded(holder);
+      if (anim) instances.set(holder, anim);
+    });
+
+    return instances;
+  }
+
+  function playAnim(anim) {
     try { if (anim && typeof anim.play === "function") anim.play(); } catch {}
-  });
-}
-function pauseAll(instances) {
-  instances.forEach((anim) => {
+  }
+  function pauseAnim(anim) {
     try { if (anim && typeof anim.pause === "function") anim.pause(); } catch {}
-  });
-}
-
-/**
- * Observa una sección y hace play/pause de sus lotties según visibilidad.
- */
-function bindSectionLottieVisibility(sectionEl, instances, { threshold = 0.2 } = {}) {
-  if (!sectionEl) return;
-  if (!instances || !instances.size) return;
-
-  // Sin IO: mejor reproducir (fallback)
-  if (!("IntersectionObserver" in window) || prefersReducedMotion) {
-    if (!prefersReducedMotion) playAll(instances);
-    return;
   }
 
-  const io = new IntersectionObserver(
-    (entries) => {
-      const entry = entries[0];
-      if (!entry) return;
+  function playAll(instances) {
+    instances.forEach((anim) => playAnim(anim));
+  }
+  function pauseAll(instances) {
+    instances.forEach((anim) => pauseAnim(anim));
+  }
 
-      if (entry.isIntersecting) playAll(instances);
+  // Pausa global cuando la pestaña no está visible (móvil/desktop)
+  function pauseAllGlobalLotties() {
+    LOTTIE_REGISTRY.forEach((anim) => pauseAnim(anim));
+  }
+
+  // Observa una sección y hace play/pause según visibilidad
+  function bindSectionLottieVisibility(sectionEl, instances, { threshold = 0.2 } = {}) {
+    if (!sectionEl) return;
+    if (!instances || !instances.size) return;
+
+    // Si reduce motion: NO animamos
+    if (prefersReducedMotion) {
+      pauseAll(instances);
+      return;
+    }
+
+    // Sin IO: fallback (animar solo si está visible al cargar)
+    if (!("IntersectionObserver" in window)) {
+      const rect = sectionEl.getBoundingClientRect();
+      const inView = rect.top < window.innerHeight && rect.bottom > 0;
+      if (inView) playAll(instances);
       else pauseAll(instances);
-    },
-    { threshold }
-  );
+      return;
+    }
 
-  io.observe(sectionEl);
-}
-
-/**
- * Timeline: dibuja línea al entrar, revela items, y controla lotties por visibilidad del timeline.
- */
-function initTimelinePro() {
-  if (!timeline) return;
-
-  // ---- Line draw ----
-  if ("IntersectionObserver" in window && !prefersReducedMotion) {
-    const ioLine = new IntersectionObserver(
+    const io = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          timeline.classList.add("is-drawn");
-          ioLine.disconnect();
-          break;
-        }
+        const entry = entries[0];
+        if (!entry) return;
+
+        if (entry.isIntersecting && !document.hidden) playAll(instances);
+        else pauseAll(instances);
       },
-      { threshold: 0.25 }
+      { threshold }
     );
-    ioLine.observe(timeline);
-  } else {
-    timeline.classList.add("is-drawn");
+
+    io.observe(sectionEl);
+
+    // Si cambia visibilidad del documento, pausamos / reanudamos si procede
+    const onVis = () => {
+      if (document.hidden) {
+        pauseAll(instances);
+      } else {
+        // reanudar SOLO si la sección está visible
+        const rect = sectionEl.getBoundingClientRect();
+        const inView = rect.top < window.innerHeight && rect.bottom > 0;
+        if (inView) playAll(instances);
+      }
+    };
+    document.addEventListener("visibilitychange", onVis);
+
+    // Pageshow (bfcache)
+    window.addEventListener("pageshow", onVis);
   }
 
-  const items = $$("[data-tl-item]", timeline);
-  if (!items.length) return;
+  function initTimelinePro() {
+    if (!timeline) return;
 
-  // Si reduce motion o no hay IO: revela y listo (sin animaciones)
-  if (prefersReducedMotion || !("IntersectionObserver" in window)) {
-    timeline.classList.remove("is-ready");
-    items.forEach((it) => it.classList.add("is-in"));
-    return;
+    // Line draw
+    if ("IntersectionObserver" in window && !prefersReducedMotion) {
+      const ioLine = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            timeline.classList.add("is-drawn");
+            ioLine.disconnect();
+            break;
+          }
+        },
+        { threshold: 0.25 }
+      );
+      ioLine.observe(timeline);
+    } else {
+      timeline.classList.add("is-drawn");
+    }
+
+    const items = $$("[data-tl-item]", timeline);
+    if (!items.length) return;
+
+    if (prefersReducedMotion || !("IntersectionObserver" in window)) {
+      timeline.classList.remove("is-ready");
+      items.forEach((it) => it.classList.add("is-in"));
+    } else {
+      timeline.classList.add("is-ready");
+      const ioReveal = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add("is-in");
+            ioReveal.unobserve(entry.target);
+          });
+        },
+        { threshold: 0.45, rootMargin: "0px 0px -10% 0px" }
+      );
+      items.forEach((it) => ioReveal.observe(it));
+    }
+
+    // Lottie: load + play/pause por visibilidad
+    const instances = loadLottieInstances(timeline);
+    bindSectionLottieVisibility(timeline, instances, { threshold: 0.12 });
   }
 
-  timeline.classList.add("is-ready");
+  function initAsistenciaLottie() {
+    if (!asistencia) return;
+    const instances = loadLottieInstances(asistencia);
+    bindSectionLottieVisibility(asistencia, instances, { threshold: 0.25 });
+  }
 
-  // ---- Reveal items ----
-  const ioReveal = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-in");
-        ioReveal.unobserve(entry.target);
-      });
-    },
-    { threshold: 0.45, rootMargin: "0px 0px -10% 0px" }
-  );
+  // Opcional: si algún día añades lotties fuera de estas secciones,
+  // se controlarán por (a) visibilidad de su sección si lo bindeas,
+  // y (b) pausa global cuando pestaña no visible.
+  initTimelinePro();
+  initAsistenciaLottie();
 
-  items.forEach((it) => ioReveal.observe(it));
-
-  // ---- Lottie: load + play/pause por sección visible ----
-  const instances = loadLottieInstances(timeline);
-  bindSectionLottieVisibility(timeline, instances, { threshold: 0.12 });
-}
-
-/**
- * Asistencia: carga lotties dentro de #asistencia y play/pause cuando se vea la sección.
- */
-function initAsistenciaLottie() {
-  if (!asistencia) return;
-
-  // Si reduce motion, no animamos (pero no hacemos nada más)
-  if (prefersReducedMotion) return;
-
-  const instances = loadLottieInstances(asistencia);
-  bindSectionLottieVisibility(asistencia, instances, { threshold: 0.25 });
-}
-
-// Inicializar ambos
-initTimelinePro();
-initAsistenciaLottie();
+  // Global pause on background (por seguridad extra)
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) pauseAllGlobalLotties();
+  });
+  window.addEventListener("pagehide", () => {
+    pauseAllGlobalLotties();
+  });
 
   // =========================================================
   // 4) RSVP (con honeypot)
@@ -513,103 +550,95 @@ initAsistenciaLottie();
     });
   }
 
-// =========================================================
-// 5) Música (toggle) — SIEMPRE OFF al iniciar + UI sincronizada
-// =========================================================
-const musicBtn = $("#musicToggle");
-const bgMusic = $("#bgMusic");
-const MUSIC_KEY = "gaweb_music_on"; // lo seguimos usando por si luego quieres recordar preferencia
+  // =========================================================
+  // 5) Música (toggle) — SIEMPRE OFF al iniciar + UI sincronizada
+  // =========================================================
+  const musicBtn = $("#musicToggle");
+  const bgMusic = $("#bgMusic");
+  const MUSIC_KEY = "gaweb_music_on";
 
-function hasAudioSource(audioEl) {
-  if (!audioEl) return false;
-  const srcAttr = (audioEl.getAttribute("src") || "").trim();
-  if (srcAttr) return true;
-  const source = audioEl.querySelector("source");
-  return !!(source && (source.getAttribute("src") || "").trim());
-}
-
-function setMusicUI(on) {
-  if (!musicBtn) return;
-  musicBtn.classList.toggle("is-on", on);
-  musicBtn.setAttribute("aria-pressed", on ? "true" : "false");
-  musicBtn.setAttribute("aria-label", on ? "Pausar música" : "Activar música");
-  musicBtn.textContent = on ? "♫" : "♪";
-}
-
-function saveMusicPref(on) {
-  try { localStorage.setItem(MUSIC_KEY, on ? "1" : "0"); } catch {}
-}
-
-// Estado real → UI (para evitar “botón ON pero audio parado”)
-function syncMusicUIFromAudio() {
-  if (!bgMusic) return;
-  setMusicUI(!bgMusic.paused && !bgMusic.ended);
-}
-
-async function safePlay() {
-  if (!bgMusic) return false;
-  if (!hasAudioSource(bgMusic)) return false;
-  try {
-    await bgMusic.play();
-    return true;
-  } catch {
-    return false;
+  function hasAudioSource(audioEl) {
+    if (!audioEl) return false;
+    const srcAttr = (audioEl.getAttribute("src") || "").trim();
+    if (srcAttr) return true;
+    const source = audioEl.querySelector("source");
+    return !!(source && (source.getAttribute("src") || "").trim());
   }
-}
 
-if (musicBtn && bgMusic) {
-  // ✅ SIEMPRE OFF al iniciar, sin importar localStorage
-  try { bgMusic.pause(); } catch {}
-  try { bgMusic.currentTime = 0; } catch {}
-  setMusicUI(false);
-  saveMusicPref(false);
+  function setMusicUI(on) {
+    if (!musicBtn) return;
+    musicBtn.classList.toggle("is-on", on);
+    musicBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    musicBtn.setAttribute("aria-label", on ? "Pausar música" : "Activar música");
+    musicBtn.textContent = on ? "♫" : "♪";
+  }
 
-  // Click del usuario: toggle real
-  musicBtn.addEventListener("click", async () => {
-    if (!hasAudioSource(bgMusic)) {
-      setMusicUI(false);
-      saveMusicPref(false);
-      return;
+  function saveMusicPref(on) {
+    try { localStorage.setItem(MUSIC_KEY, on ? "1" : "0"); } catch {}
+  }
+
+  function syncMusicUIFromAudio() {
+    if (!bgMusic) return;
+    setMusicUI(!bgMusic.paused && !bgMusic.ended);
+  }
+
+  async function safePlay() {
+    if (!bgMusic) return false;
+    if (!hasAudioSource(bgMusic)) return false;
+    try {
+      await bgMusic.play();
+      return true;
+    } catch {
+      return false;
     }
+  }
 
-    if (bgMusic.paused || bgMusic.ended) {
-      const ok = await safePlay();
-      setMusicUI(ok);
-      saveMusicPref(ok);
-    } else {
-      try { bgMusic.pause(); } catch {}
-      setMusicUI(false);
-      saveMusicPref(false);
-    }
-  });
-
-  // Eventos reales del audio
-  bgMusic.addEventListener("play", () => {
-    setMusicUI(true);
-    saveMusicPref(true);
-  });
-  bgMusic.addEventListener("pause", () => {
+  if (musicBtn && bgMusic) {
+    // SIEMPRE OFF al iniciar
+    try { bgMusic.pause(); } catch {}
+    try { bgMusic.currentTime = 0; } catch {}
     setMusicUI(false);
     saveMusicPref(false);
-  });
-  bgMusic.addEventListener("ended", () => {
-    setMusicUI(false);
-    saveMusicPref(false);
-  });
 
-  // ✅ Móvil: al volver de background, se puede pausar solo → re-sincroniza UI
-  document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) {
-      // al volver, el audio muchas veces queda pausado: reflejarlo
+    musicBtn.addEventListener("click", async () => {
+      if (!hasAudioSource(bgMusic)) {
+        setMusicUI(false);
+        saveMusicPref(false);
+        return;
+      }
+
+      if (bgMusic.paused || bgMusic.ended) {
+        const ok = await safePlay();
+        setMusicUI(ok);
+        saveMusicPref(ok);
+      } else {
+        try { bgMusic.pause(); } catch {}
+        setMusicUI(false);
+        saveMusicPref(false);
+      }
+    });
+
+    bgMusic.addEventListener("play", () => {
+      setMusicUI(true);
+      saveMusicPref(true);
+    });
+    bgMusic.addEventListener("pause", () => {
+      setMusicUI(false);
+      saveMusicPref(false);
+    });
+    bgMusic.addEventListener("ended", () => {
+      setMusicUI(false);
+      saveMusicPref(false);
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) syncMusicUIFromAudio();
+    });
+
+    window.addEventListener("pageshow", () => {
       syncMusicUIFromAudio();
-    }
-  });
-
-  // ✅ Safari/iOS: pageshow (bfcache) puede restaurar estado raro
-  window.addEventListener("pageshow", () => {
-    syncMusicUIFromAudio();
-  });
-}
+    });
+  }
 
   // =========================================================
   // 6) Microparallax (desktop)
@@ -808,7 +837,7 @@ if (musicBtn && bgMusic) {
     openModalHTML(modalTemplates[key] || "<p>Contenido no disponible.</p>", openerEl);
   }
 
-  // ====== Estado navegación modal galería ======
+  // Estado navegación modal galería
   let modalGalleryItems = [];
   let modalGalleryIndex = -1;
 
@@ -830,7 +859,6 @@ if (musicBtn && bgMusic) {
     lastFocusedEl = null;
 
     if (modalContent) modalContent.innerHTML = "";
-
     resetModalGalleryState();
   }
 
@@ -846,7 +874,7 @@ if (musicBtn && bgMusic) {
     });
   }
 
-  // ✅ Abrir imagen: solo si fue un click real (no drag)
+  // Abrir imagen: solo si fue un click real (no drag)
   let recentlyDragged = false;
   let dragResetTimer = 0;
 
@@ -857,19 +885,14 @@ if (musicBtn && bgMusic) {
   }
 
   function collectGalleryItems(fromEl) {
-  // 1) Si la imagen tiene grupo, SOLO ese grupo (evita mezclar secciones)
-  const group = (fromEl.getAttribute("data-gallery-group") || "").trim();
-  if (group) {
-    return $$(`img[data-gallery="true"][data-gallery-group="${group}"]`, document);
+    const group = (fromEl.getAttribute("data-gallery-group") || "").trim();
+    if (group) return $$(`img[data-gallery="true"][data-gallery-group="${group}"]`, document);
+
+    const gallery = fromEl.closest(".gallery");
+    if (gallery) return $$('img[data-gallery="true"]', gallery);
+
+    return $$('img[data-gallery="true"]', document);
   }
-
-  // 2) Fallback: si está dentro de una .gallery, usa esa galería
-  const gallery = fromEl.closest(".gallery");
-  if (gallery) return $$('img[data-gallery="true"]', gallery);
-
-  // 3) Último recurso: todas (no debería pasar si ya pusiste groups)
-  return $$('img[data-gallery="true"]', document);
-}
 
   function getImgSrc(imgEl) {
     const full = (imgEl.getAttribute("data-full") || "").trim();
@@ -881,14 +904,71 @@ if (musicBtn && bgMusic) {
   }
 
   function escapeHtml(str) {
-    return String(str).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  // Render del contenido de galería dentro del modal (sin reabrir modal entero cada vez)
+  function renderModalGallery() {
+    if (!modalContent) return;
+    if (!modalGalleryItems.length || modalGalleryIndex < 0) return;
+
+    const current = modalGalleryItems[modalGalleryIndex];
+    const currentSrc = getImgSrc(current);
+    const currentAlt = escapeHtml(getImgAlt(current));
+    const showArrows = modalGalleryItems.length > 1;
+
+    const html = `
+      <h2>Galería</h2>
+      <p style="margin-top:6px; color: rgba(22,22,22,.62);">${currentAlt}</p>
+
+      <div class="modalGalleryMedia">
+        ${showArrows ? `
+          <button class="modalGalleryNav modalGalleryNav--prev" type="button" aria-label="Anterior">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+
+          <button class="modalGalleryNav modalGalleryNav--next" type="button" aria-label="Siguiente">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+        ` : ""}
+
+        <img class="modalImage" src="${String(currentSrc).replace(/"/g, "%22")}" alt="${currentAlt}">
+      </div>
+    `;
+
+    modalContent.innerHTML = html;
+
+    const prevBtn = $(".modalGalleryNav--prev", modalContent);
+    const nextBtn = $(".modalGalleryNav--next", modalContent);
+
+    const go = (dir) => {
+      if (modalGalleryItems.length <= 1) return;
+      modalGalleryIndex = (modalGalleryIndex + dir + modalGalleryItems.length) % modalGalleryItems.length;
+      renderModalGallery();
+    };
+
+    if (prevBtn) {
+      prevBtn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); go(-1); });
+      prevBtn.addEventListener("pointerdown", (e) => { e.stopPropagation(); }, { passive: true });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); go(1); });
+      nextBtn.addEventListener("pointerdown", (e) => { e.stopPropagation(); }, { passive: true });
+    }
   }
 
   function openImageFromEl(el) {
     const src = getImgSrc(el);
     if (!src) return;
 
-    // lista + índice
     modalGalleryItems = collectGalleryItems(el).filter((img) => !!getImgSrc(img));
     modalGalleryIndex = modalGalleryItems.indexOf(el);
 
@@ -897,56 +977,9 @@ if (musicBtn && bgMusic) {
       modalGalleryIndex = 0;
     }
 
-    const render = () => {
-      const current = modalGalleryItems[modalGalleryIndex];
-      const currentSrc = getImgSrc(current);
-      const currentAlt = escapeHtml(getImgAlt(current));
-      const showArrows = modalGalleryItems.length > 1;
-
-      const html = `
-        <h2>Galería</h2>
-        <p style="margin-top:6px; color: rgba(22,22,22,.62);">${currentAlt}</p>
-
-        <div class="modalGalleryMedia">
-          ${showArrows ? `
-            <button class="modalGalleryNav modalGalleryNav--prev" type="button" aria-label="Anterior">
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-              </svg>
-            </button>
-
-            <button class="modalGalleryNav modalGalleryNav--next" type="button" aria-label="Siguiente">
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-              </svg>
-            </button>
-          ` : ""}
-
-          <img class="modalImage" src="${String(currentSrc).replace(/"/g, "%22")}" alt="${currentAlt}">
-        </div>
-      `;
-
-      openModalHTML(html, current);
-
-      // binds flechas
-      const prevBtn = $(".modalGalleryNav--prev", modalContent);
-      const nextBtn = $(".modalGalleryNav--next", modalContent);
-
-      const go = (dir) => {
-        if (modalGalleryItems.length <= 1) return;
-        modalGalleryIndex = (modalGalleryIndex + dir + modalGalleryItems.length) % modalGalleryItems.length;
-        render();
-      };
-
-      if (prevBtn) prevBtn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); go(-1); });
-      if (nextBtn) nextBtn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); go(1); });
-
-      // IMPORTANTÍSIMO: que las flechas no disparen el "click global"
-      if (prevBtn) prevBtn.addEventListener("pointerdown", (e) => { e.stopPropagation(); }, { passive: true });
-      if (nextBtn) nextBtn.addEventListener("pointerdown", (e) => { e.stopPropagation(); }, { passive: true });
-    };
-
-    render();
+    // Abre modal (una vez)
+    openModalHTML("<p>Cargando…</p>", el);
+    renderModalGallery();
   }
 
   // Delegación: galería + cubo + dibujo grande
@@ -956,7 +989,6 @@ if (musicBtn && bgMusic) {
       (e.target && e.target.closest && e.target.closest(".cubeFace") && e.target.closest(".cubeFace").querySelector('img[data-gallery="true"]'));
 
     if (!img) return;
-
     if (recentlyDragged) return;
 
     e.preventDefault();
@@ -997,21 +1029,16 @@ if (musicBtn && bgMusic) {
 
       isDown = true;
       moved = false;
-
       startX = e.clientX;
       startScrollLeft = track.scrollLeft;
-
       track.classList.add("is-dragging");
     };
 
     const onMove = (e) => {
       if (!isDown) return;
-
       const dx = e.clientX - startX;
       if (Math.abs(dx) > dragThresholdPx) moved = true;
-
       track.scrollLeft = startScrollLeft - dx;
-
       if (moved) markDragged();
     };
 
@@ -1284,7 +1311,6 @@ if (musicBtn && bgMusic) {
         return;
       }
 
-      // ← →
       if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
         if (modalGalleryItems && modalGalleryItems.length > 1) {
           e.preventDefault();
@@ -1292,8 +1318,7 @@ if (musicBtn && bgMusic) {
             (modalGalleryIndex + (e.key === "ArrowRight" ? 1 : -1) + modalGalleryItems.length) %
             modalGalleryItems.length;
 
-          const current = modalGalleryItems[modalGalleryIndex];
-          openImageFromEl(current);
+          renderModalGallery();
         }
         return;
       }

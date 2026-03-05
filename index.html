@@ -7,8 +7,14 @@
   <!-- ✅ Forzar esquema claro (evita “auto dark mode” en móviles) -->
   <meta name="color-scheme" content="light">
   <meta name="supported-color-schemes" content="light">
+
   <title>Gema y Alberto — 26.06.2026</title>
   <meta name="description" content="Web de la boda de Gema y Alberto. Información, momentos clave, ubicación y asistencia." />
+
+  <!-- ✅ Preload hero (mejora LCP). Mantiene el diseño, solo acelera carga -->
+  <link rel="preload" as="image" href="assets/img/hero.jpg" fetchpriority="high">
+  <!-- (Opcional, seguro) -->
+  <link rel="preload" as="image" href="assets/img/envelope.png" fetchpriority="high">
 
   <!-- Fuentes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,13 +36,13 @@
       --break-h-mobile: 34px;
     }
 
-    @font-face {
-  font-family: "VintageGoods";
-  src: url("assets/fonts/Vintage Goods.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
+    @font-face{
+      font-family: "VintageGoods";
+      src: url("assets/fonts/Vintage Goods.ttf") format("truetype");
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
 
     /* ✅ Alternancia de fondo por sección */
     .section--a{ background: var(--bgA); }
@@ -150,12 +156,12 @@
     </button>
   </div>
 
-<!-- Música (no autoplay) -->
-<button class="musicBtn" id="musicToggle" type="button" aria-pressed="false" aria-label="Activar música">♪</button>
+  <!-- Música (no autoplay) -->
+  <button class="musicBtn" id="musicToggle" type="button" aria-pressed="false" aria-label="Activar música">♪</button>
 
-<audio id="bgMusic" preload="auto" loop>
-  <source src="assets/musica/cancion.mp3" type="audio/mpeg">
-</audio>
+  <audio id="bgMusic" preload="auto" loop>
+    <source src="assets/musica/cancion.mp3" type="audio/mpeg">
+  </audio>
 
   <!-- Corazoncitos -->
   <div class="floatHearts" aria-hidden="true">
@@ -169,12 +175,18 @@
 
   <main id="site" class="site site--hidden">
 
-    <!-- HERO (PORTADA) — color A (el que ya tenga) -->
+    <!-- HERO (PORTADA) — color A -->
     <section class="section hero js-hero-anim section--a" id="inicio">
       <div class="heroStage">
         <div class="heroPhoto heroPhoto--full" data-parallax="hero" style="--hero-image:url('assets/img/hero.jpg');">
           <div class="heroPhoto__bg" aria-hidden="true"></div>
-          <img class="heroPhoto__img" src="assets/img/hero.jpg" alt="Gema y Alberto">
+
+          <!-- ✅ Prioridad alta: es el LCP (portada). Mantiene el diseño, acelera carga -->
+          <img class="heroPhoto__img"
+               src="assets/img/hero.jpg"
+               alt="Gema y Alberto"
+               fetchpriority="high"
+               decoding="async">
         </div>
 
         <div class="heroText">
@@ -203,140 +215,135 @@
       <div class="heroFade" aria-hidden="true"></div>
     </section>
 
-<!-- ✅ SEPARADOR PREMIUM: pavo real (mismo color que Faltan) -->
-<!-- ✅ BLOQUE OSCURO: BANDA + FALTAN (mismo color) -->
-<div class="sectionBlock sectionBlock--faltan">
+    <!-- ✅ BLOQUE OSCURO: BANDA + FALTAN -->
+    <div class="sectionBlock sectionBlock--faltan">
 
-  <!-- ✅ SEPARADOR PREMIUM: pavo real -->
-  <div class="sepImage sepImage--bg" aria-hidden="true"></div>
+      <!-- ✅ SEPARADOR PREMIUM: pavo real -->
+      <div class="sepImage sepImage--bg" aria-hidden="true"></div>
 
-  <!-- ✅ CUENTA ATRÁS — color B -->
-  <section class="section section--b" id="faltan">
-    <div class="frame section__inner">
+      <!-- ✅ CUENTA ATRÁS — color B -->
+      <section class="section section--b" id="faltan">
+        <div class="frame section__inner">
 
-      <div class="sectionHead">
-        <span class="sectionHead__line" aria-hidden="true"></span>
-        <h2 class="sectionHead__title">Faltan…</h2>
-      </div>
-
-      <div class="countdownWrap" id="countdown" aria-label="Cuenta atrás" data-parallax="countdown">
-        <div class="cdChip" role="group" aria-label="Cuenta atrás hasta el 26.06.2026 a las 19:00">
-
-          <div class="cdUnit">
-            <div class="cdNum" data-cd="days">000</div>
-            <div class="cdLab">Días</div>
+          <div class="sectionHead">
+            <span class="sectionHead__line" aria-hidden="true"></span>
+            <h2 class="sectionHead__title">Faltan…</h2>
           </div>
 
-          <div class="cdDivider" aria-hidden="true"></div>
+          <div class="countdownWrap" id="countdown" aria-label="Cuenta atrás" data-parallax="countdown">
+            <div class="cdChip" role="group" aria-label="Cuenta atrás hasta el 26.06.2026 a las 19:00">
 
-          <div class="cdUnit">
-            <div class="cdNum" data-cd="hours">00</div>
-            <div class="cdLab">Horas</div>
-          </div>
+              <div class="cdUnit">
+                <div class="cdNum" data-cd="days">000</div>
+                <div class="cdLab">Días</div>
+              </div>
 
-          <div class="cdDivider" aria-hidden="true"></div>
+              <div class="cdDivider" aria-hidden="true"></div>
 
-          <div class="cdUnit">
-            <div class="cdNum" data-cd="mins">00</div>
-            <div class="cdLab">Min</div>
-          </div>
+              <div class="cdUnit">
+                <div class="cdNum" data-cd="hours">00</div>
+                <div class="cdLab">Horas</div>
+              </div>
 
-          <div class="cdDivider" aria-hidden="true"></div>
+              <div class="cdDivider" aria-hidden="true"></div>
 
-          <div class="cdUnit">
-            <div class="cdNum" data-cd="secs">00</div>
-            <div class="cdLab">Seg</div>
-          </div>
+              <div class="cdUnit">
+                <div class="cdNum" data-cd="mins">00</div>
+                <div class="cdLab">Min</div>
+              </div>
 
-        </div>
-      </div>
+              <div class="cdDivider" aria-hidden="true"></div>
 
-      <p class="sectionHead__sub">Cada día estamos un poquito más cerca.</p>
+              <div class="cdUnit">
+                <div class="cdNum" data-cd="secs">00</div>
+                <div class="cdLab">Seg</div>
+              </div>
 
-    </div>
-  </section>
-
-</div>
-
-<!-- ✅ CORTE: de B (oscuro) a A (claro) -->
-<div class="sectionBreak sectionBreak--b-to-a" aria-hidden="true">
-  <svg viewBox="0 0 1440 80" preserveAspectRatio="none" focusable="false" aria-hidden="true">
-    <path class="sbFill"
-      d="M0,0 H1440 V48
-         C1320,70 1240,18 1140,44
-         C1040,74 980,10 880,42
-         C780,78 720,12 620,46
-         C520,76 460,14 360,44
-         C260,72 170,20 0,46 Z">
-    </path>
-  </svg>
-</div>
-
-
-<!-- UBICACIÓN — color A -->
-<section class="section section--a" id="ubicacion">
-  <div class="frame section__inner">
-    
-    <div class="sectionHead">
-      <span class="sectionHead__line" aria-hidden="true"></span>
-      <h2 class="sectionHead__title">Dónde será</h2>
-    </div>
-    <p class="sectionHead__sub">Guarda la ubicación y llega con margen.</p>
-
-    <div class="placeGrid">
-
-      <div class="placeCard placeCard--withMedia">
-
-        <!-- 📷 Imagen izquierda -->
-        <div class="placeMedia">
-          <img 
-            src="assets/img/ubicacion.jpeg"
-            alt="Espacio de ceremonia en El Hueco Bodas y Banquetes"
-            loading="lazy"
-            decoding="async">
-        </div>
-
-        <!-- 📍 Contenido derecha -->
-        <div class="placeBody">
-
-          <div class="placeHead">
-            <div class="placePin placePin--icon" aria-hidden="true">
-              <svg class="pinIcon" viewBox="0 0 24 24" focusable="false">
-                <path d="M12 22s7-5.2 7-12A7 7 0 0 0 5 10c0 6.8 7 12 7 12z"></path>
-                <circle cx="12" cy="10" r="2.6"></circle>
-              </svg>
-            </div>
-
-            <div class="placeHead__text">
-              <div class="placeTag">Ceremonia y celebración</div>
-              <h3 class="placeTitle">El Hueco Bodas y Banquetes</h3>
-              <p class="placeMeta">
-                Plaza Ópera, s/n · 47009 Valladolid<br>
-                Recomendamos llegar con margen para disfrutar del día.
-              </p>
             </div>
           </div>
 
-          <div class="placeBtns">
-            <a 
-              class="btn" 
-              href="https://maps.google.com/?q=El+Hueco+Bodas+y+Banquetes" 
-              target="_blank" 
-              rel="noreferrer">
-              Cómo llegar → Google Maps
-            </a>
-          </div>
+          <p class="sectionHead__sub">Cada día estamos un poquito más cerca.</p>
 
         </div>
-
-      </div>
+      </section>
 
     </div>
 
-  </div>
-</section>
+    <!-- ✅ CORTE: de B a A -->
+    <div class="sectionBreak sectionBreak--b-to-a" aria-hidden="true">
+      <svg viewBox="0 0 1440 80" preserveAspectRatio="none" focusable="false" aria-hidden="true">
+        <path class="sbFill"
+          d="M0,0 H1440 V48
+             C1320,70 1240,18 1140,44
+             C1040,74 980,10 880,42
+             C780,78 720,12 620,46
+             C520,76 460,14 360,44
+             C260,72 170,20 0,46 Z">
+        </path>
+      </svg>
+    </div>
 
-    <!-- ✅ CORTE “QUEBRADO” (dónde A -> momentos B) -->
+    <!-- UBICACIÓN — color A -->
+    <section class="section section--a" id="ubicacion">
+      <div class="frame section__inner">
+
+        <div class="sectionHead">
+          <span class="sectionHead__line" aria-hidden="true"></span>
+          <h2 class="sectionHead__title">Dónde será</h2>
+        </div>
+        <p class="sectionHead__sub">Guarda la ubicación y llega con margen.</p>
+
+        <div class="placeGrid">
+          <div class="placeCard placeCard--withMedia">
+
+            <!-- 📷 Imagen izquierda -->
+            <div class="placeMedia">
+              <img
+                src="assets/img/ubicacion.jpeg"
+                alt="Espacio de ceremonia en El Hueco Bodas y Banquetes"
+                loading="lazy"
+                decoding="async">
+            </div>
+
+            <!-- 📍 Contenido derecha -->
+            <div class="placeBody">
+              <div class="placeHead">
+                <div class="placePin placePin--icon" aria-hidden="true">
+                  <svg class="pinIcon" viewBox="0 0 24 24" focusable="false">
+                    <path d="M12 22s7-5.2 7-12A7 7 0 0 0 5 10c0 6.8 7 12 7 12z"></path>
+                    <circle cx="12" cy="10" r="2.6"></circle>
+                  </svg>
+                </div>
+
+                <div class="placeHead__text">
+                  <div class="placeTag">Ceremonia y celebración</div>
+                  <h3 class="placeTitle">El Hueco Bodas y Banquetes</h3>
+                  <p class="placeMeta">
+                    Plaza Ópera, s/n · 47009 Valladolid<br>
+                    Recomendamos llegar con margen para disfrutar del día.
+                  </p>
+                </div>
+              </div>
+
+              <div class="placeBtns">
+                <a
+                  class="btn"
+                  href="https://maps.google.com/?q=El+Hueco+Bodas+y+Banquetes"
+                  target="_blank"
+                  rel="noreferrer">
+                  Cómo llegar → Google Maps
+                </a>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ✅ CORTE (dónde A -> momentos B) -->
     <div class="sectionBreak sectionBreak--a-to-b" aria-hidden="true">
       <svg viewBox="0 0 1440 60" preserveAspectRatio="none" focusable="false" aria-hidden="true">
         <path class="sbFill" d="M0,0 H1440 V30
@@ -347,226 +354,229 @@
       </svg>
     </div>
 
-<!-- MOMENTOS CLAVE — color B -->
-<section class="section section--b" id="momentos">
-  <div class="frame section__inner">
-    <div class="sectionHead">
-      <span class="sectionHead__line" aria-hidden="true"></span>
-      <h2 class="sectionHead__title">Momentos clave</h2>
-    </div>
-    <p class="sectionHead__sub">Horario orientativo. Si hay algún ajuste, lo actualizaremos aquí.</p>
+    <!-- MOMENTOS CLAVE — color B -->
+    <section class="section section--b" id="momentos">
+      <div class="frame section__inner">
+        <div class="sectionHead">
+          <span class="sectionHead__line" aria-hidden="true"></span>
+          <h2 class="sectionHead__title">Momentos clave</h2>
+        </div>
+        <p class="sectionHead__sub">Horario orientativo. Si hay algún ajuste, lo actualizaremos aquí.</p>
 
-    <div class="timelineWrap">
-      <div class="timeline timeline--pro" id="timeline" data-timeline>
-        <svg class="timelineLine" viewBox="0 0 10 1100" preserveAspectRatio="none" aria-hidden="true">
-          <path class="timelineLine__path" d="M5 0 L5 1100"></path>
-        </svg>
+        <div class="timelineWrap">
+          <div class="timeline timeline--pro" id="timeline" data-timeline>
+            <svg class="timelineLine" viewBox="0 0 10 1100" preserveAspectRatio="none" aria-hidden="true">
+              <path class="timelineLine__path" d="M5 0 L5 1100"></path>
+            </svg>
 
-        <!-- ITEM 1 -->
-        <div class="tItem" data-tl-item>
-          <div class="tSide tSide--left">
-            <div class="tCard">
-              <div class="tTime">18:30h</div>
-              <div class="tLabel">Autobús de ida</div>
+            <!-- ITEM 1 -->
+            <div class="tItem" data-tl-item>
+              <div class="tSide tSide--left">
+                <div class="tCard">
+                  <div class="tTime">18:30h</div>
+                  <div class="tLabel">Autobús de ida</div>
+                </div>
+              </div>
+
+              <div class="tDot" aria-hidden="true">
+                <span class="tLottie" data-lottie="assets/lottie/bus.json" data-loop="true" data-autoplay="false" aria-hidden="true">
+                  <span class="tIcon" aria-hidden="true">🚌</span>
+                </span>
+                <span class="tPulse"></span>
+              </div>
+
+              <div class="tSide tSide--right" aria-hidden="true"></div>
             </div>
-          </div>
 
-          <div class="tDot" aria-hidden="true">
-            <span class="tLottie" data-lottie="assets/lottie/bus.json" data-loop="true" data-autoplay="false" aria-hidden="true">
-              <span class="tIcon" aria-hidden="true">🚌</span>
+            <!-- ITEM 2 -->
+            <div class="tItem" data-tl-item>
+              <div class="tSide tSide--left" aria-hidden="true"></div>
+
+              <div class="tDot" aria-hidden="true">
+                <span class="tLottie" data-lottie="assets/lottie/rings.json" data-loop="true" data-autoplay="false" aria-hidden="true">
+                  <span class="tIcon" aria-hidden="true">💍</span>
+                </span>
+                <span class="tPulse"></span>
+              </div>
+
+              <div class="tSide tSide--right">
+                <div class="tCard">
+                  <div class="tTime">19:00h</div>
+                  <div class="tLabel">Ceremonia civil (El Hueco)</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ITEM 3 -->
+            <div class="tItem" data-tl-item>
+              <div class="tSide tSide--left">
+                <div class="tCard">
+                  <div class="tTime">20:00h</div>
+                  <div class="tLabel">Cena tipo cóctel (El Hueco)</div>
+                </div>
+              </div>
+
+              <div class="tDot" aria-hidden="true">
+                <span class="tLottie" data-lottie="assets/lottie/dinner.json" data-loop="true" data-autoplay="false" aria-hidden="true">
+                  <span class="tIcon" aria-hidden="true">🍽️</span>
+                </span>
+                <span class="tPulse"></span>
+              </div>
+
+              <div class="tSide tSide--right" aria-hidden="true"></div>
+            </div>
+
+            <!-- ITEM 4 -->
+            <div class="tItem" data-tl-item>
+              <div class="tSide tSide--left" aria-hidden="true"></div>
+
+              <div class="tDot" aria-hidden="true">
+                <span class="tLottie" data-lottie="assets/lottie/dj.json" data-loop="true" data-autoplay="false" aria-hidden="true">
+                  <span class="tIcon" aria-hidden="true">🎧</span>
+                </span>
+                <span class="tPulse"></span>
+              </div>
+
+              <div class="tSide tSide--right">
+                <div class="tCard">
+                  <div class="tTime">23:00h</div>
+                  <div class="tLabel">DJ y barra libre</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ITEM 5 -->
+            <div class="tItem" data-tl-item>
+              <div class="tSide tSide--left">
+                <div class="tCard">
+                  <div class="tTime">02:00h</div>
+                  <div class="tLabel">Fin de celebración + autobús de vuelta</div>
+                </div>
+              </div>
+
+              <div class="tDot" aria-hidden="true">
+                <span class="tLottie" data-lottie="assets/lottie/finish.json" data-loop="true" data-autoplay="false" aria-hidden="true">
+                  <span class="tIcon" aria-hidden="true">🏁</span>
+                </span>
+                <span class="tPulse"></span>
+              </div>
+
+              <div class="tSide tSide--right" aria-hidden="true"></div>
+            </div>
+
+          </div><!-- /#timeline -->
+        </div><!-- /.timelineWrap -->
+
+        <!-- RSVP CALLOUT -->
+        <div class="rsvpCallout" id="confirmar-asistencia" aria-label="Información importante">
+          <div class="rsvpCallout__kicker">IMPORTANTE</div>
+          <p class="rsvpCallout__text">
+            Nos haría muchísima ilusión contar contigo este día. Por favor, confirma tu asistencia para poder organizarlo todo con cariño (una confirmación por persona).
+          </p>
+
+          <button class="hoverCardBtn" id="rsvpToggle" type="button" aria-expanded="false" aria-controls="rsvpPanel">
+            <span class="hoverCardInner" aria-hidden="true">
+              <span class="hoverCardFace hoverCardFront">
+                <span class="hoverCardIcon">✉️</span>
+                <span class="hoverCardTitle">Confirmar asistencia</span>
+                <span class="hoverCardHint">Pincha aquí</span>
+              </span>
+              <span class="hoverCardFace hoverCardBack">
+                <span class="hoverCardTitle">¡Vamos allá!</span>
+                <span class="hoverCardHint">Haz clic para abrir el formulario</span>
+              </span>
             </span>
-            <span class="tPulse"></span>
-          </div>
+            <span class="srOnly">Confirmar asistencia</span>
+          </button>
 
-          <div class="tSide tSide--right" aria-hidden="true"></div>
+          <div class="rsvpStatus" id="rsvpStatus" aria-live="polite"></div>
         </div>
 
-        <!-- ITEM 2 -->
-        <div class="tItem" data-tl-item>
-          <div class="tSide tSide--left" aria-hidden="true"></div>
-
-          <div class="tDot" aria-hidden="true">
-            <span class="tLottie" data-lottie="assets/lottie/rings.json" data-loop="true" data-autoplay="false" aria-hidden="true">
-              <span class="tIcon" aria-hidden="true">💍</span>
-            </span>
-            <span class="tPulse"></span>
+        <div class="rsvpPanel" id="rsvpPanel" aria-hidden="true">
+          <div class="rsvpHead">
+            <div class="kicker">Confirmación</div>
+            <h3 class="h3">Confirmar asistencia</h3>
+            <p class="p">Nombre, asistencia, alergias, autobús y (opcional) canción sugerida.</p>
           </div>
 
-          <div class="tSide tSide--right">
-            <div class="tCard">
-              <div class="tTime">19:00h</div>
-              <div class="tLabel">Ceremonia civil (El Hueco)</div>
+          <form class="rsvpForm"
+                id="rsvpForm"
+                method="POST"
+                action="https://script.google.com/macros/s/AKfycbwL-KXOAkh25Mch4__SFcXX_zuGpsdQIvis_cg33bW-QO80cTR-icGkQZ-EgHYPCt3r/exec"
+                autocomplete="on">
+
+            <!-- Honeypot anti-bots (NO TOCAR) -->
+            <div class="hp-field" aria-hidden="true">
+              <label for="website">Website</label>
+              <input type="text"
+                     id="website"
+                     name="website"
+                     tabindex="-1"
+                     autocomplete="off">
             </div>
-          </div>
+
+            <div class="rsvpGrid">
+              <label class="field">
+                <span class="field__label">Nombre y apellidos</span>
+                <input class="field__input"
+                       type="text"
+                       name="nombre"
+                       required
+                       placeholder="Tu nombre completo" />
+              </label>
+
+              <label class="field">
+                <span class="field__label">¿Asistirás?</span>
+                <select class="field__input" name="asistencia" required>
+                  <option value="" selected disabled>Selecciona</option>
+                  <option value="Si">Sí</option>
+                  <option value="No">No</option>
+                </select>
+              </label>
+
+              <label class="field field--full">
+                <span class="field__label">
+                  Alergias / intolerancias (si no tienes, escribe “Ninguna”)
+                </span>
+                <textarea class="field__input"
+                          name="alergias"
+                          rows="3"
+                          placeholder="Ej. frutos secos, gluten, lactosa…"></textarea>
+              </label>
+
+              <label class="field">
+                <span class="field__label">¿Necesitas autobús?</span>
+                <select class="field__input" name="autobus" required>
+                  <option value="" selected disabled>Selecciona</option>
+                  <option value="Si">Sí</option>
+                  <option value="No">No</option>
+                </select>
+              </label>
+
+              <label class="field field--full">
+                <span class="field__label">Canción sugerida (opcional)</span>
+                <input class="field__input"
+                       type="text"
+                       name="cancion"
+                       placeholder="Artista — Título" />
+              </label>
+            </div>
+
+            <div class="rsvpActions">
+              <button class="btn btn--primary" type="submit">Enviar</button>
+              <button class="btn btn--ghost" type="button" id="rsvpCloseBtn">Cerrar</button>
+            </div>
+
+            <p class="rsvpFine">
+              * Espera la confirmación de envío.
+            </p>
+          </form>
         </div>
 
-        <!-- ITEM 3 -->
-        <div class="tItem" data-tl-item>
-          <div class="tSide tSide--left">
-            <div class="tCard">
-              <div class="tTime">20:00h</div>
-              <div class="tLabel">Cena tipo cóctel (El Hueco)</div>
-            </div>
-          </div>
+      </div>
+    </section>
 
-          <div class="tDot" aria-hidden="true">
-            <span class="tLottie" data-lottie="assets/lottie/dinner.json" data-loop="true" data-autoplay="false" aria-hidden="true">
-              <span class="tIcon" aria-hidden="true">🍽️</span>
-            </span>
-            <span class="tPulse"></span>
-          </div>
-
-          <div class="tSide tSide--right" aria-hidden="true"></div>
-        </div>
-
-        <!-- ITEM 4 -->
-        <div class="tItem" data-tl-item>
-          <div class="tSide tSide--left" aria-hidden="true"></div>
-
-          <div class="tDot" aria-hidden="true">
-            <span class="tLottie" data-lottie="assets/lottie/dj.json" data-loop="true" data-autoplay="false" aria-hidden="true">
-              <span class="tIcon" aria-hidden="true">🎧</span>
-            </span>
-            <span class="tPulse"></span>
-          </div>
-
-          <div class="tSide tSide--right">
-            <div class="tCard">
-              <div class="tTime">23:00h</div>
-              <div class="tLabel">DJ y barra libre</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ITEM 5 -->
-        <div class="tItem" data-tl-item>
-          <div class="tSide tSide--left">
-            <div class="tCard">
-              <div class="tTime">02:00h</div>
-              <div class="tLabel">Fin de celebración + autobús de vuelta</div>
-            </div>
-          </div>
-
-          <div class="tDot" aria-hidden="true">
-            <span class="tLottie" data-lottie="assets/lottie/finish.json" data-loop="true" data-autoplay="false" aria-hidden="true">
-              <span class="tIcon" aria-hidden="true">🏁</span>
-            </span>
-            <span class="tPulse"></span>
-          </div>
-
-          <div class="tSide tSide--right" aria-hidden="true"></div>
-        </div>
-
-      </div><!-- /#timeline -->
-    </div><!-- /.timelineWrap -->
-
-    <!-- RSVP CALLOUT (✅ fuera del timeline) -->
-    <div class="rsvpCallout" id="confirmar-asistencia" aria-label="Información importante">
-      <div class="rsvpCallout__kicker">IMPORTANTE</div>
-      <p class="rsvpCallout__text">
-        Nos haría muchísima ilusión contar contigo este día. Por favor, confirma tu asistencia para poder organizarlo todo con cariño (una confirmación por persona).
-      </p>
-
-      <button class="hoverCardBtn" id="rsvpToggle" type="button" aria-expanded="false" aria-controls="rsvpPanel">
-        <span class="hoverCardInner" aria-hidden="true">
-          <span class="hoverCardFace hoverCardFront">
-            <span class="hoverCardIcon">✉️</span>
-            <span class="hoverCardTitle">Confirmar asistencia</span>
-            <span class="hoverCardHint">Pincha aquí</span>
-          </span>
-          <span class="hoverCardFace hoverCardBack">
-            <span class="hoverCardTitle">¡Vamos allá!</span>
-            <span class="hoverCardHint">Haz clic para abrir el formulario</span>
-          </span>
-        </span>
-        <span class="srOnly">Confirmar asistencia</span>
-      </button>
-
-      <div class="rsvpStatus" id="rsvpStatus" aria-live="polite"></div>
-    </div>
-
-    <div class="rsvpPanel" id="rsvpPanel" aria-hidden="true">
-  <div class="rsvpHead">
-    <div class="kicker">Confirmación</div>
-    <h3 class="h3">Confirmar asistencia</h3>
-    <p class="p">Nombre, asistencia, alergias, autobús y (opcional) canción sugerida.</p>
-  </div>
-
-  <form class="rsvpForm"
-        id="rsvpForm"
-        method="POST"
-        action="https://script.google.com/macros/s/AKfycbwL-KXOAkh25Mch4__SFcXX_zuGpsdQIvis_cg33bW-QO80cTR-icGkQZ-EgHYPCt3r/exec"
-        autocomplete="on">
-
-    <!-- Honeypot anti-bots (NO TOCAR) -->
-    <div class="hp-field" aria-hidden="true">
-      <label for="website">Website</label>
-      <input type="text"
-             id="website"
-             name="website"
-             tabindex="-1"
-             autocomplete="off">
-    </div>
-
-    <div class="rsvpGrid">
-      <label class="field">
-        <span class="field__label">Nombre y apellidos</span>
-        <input class="field__input"
-               type="text"
-               name="nombre"
-               required
-               placeholder="Tu nombre completo" />
-      </label>
-
-      <label class="field">
-        <span class="field__label">¿Asistirás?</span>
-        <select class="field__input" name="asistencia" required>
-          <option value="" selected disabled>Selecciona</option>
-          <option value="Si">Sí</option>
-          <option value="No">No</option>
-        </select>
-      </label>
-
-      <label class="field field--full">
-        <span class="field__label">
-          Alergias / intolerancias (si no tienes, escribe “Ninguna”)
-        </span>
-        <textarea class="field__input"
-                  name="alergias"
-                  rows="3"
-                  placeholder="Ej. frutos secos, gluten, lactosa…"></textarea>
-      </label>
-
-      <label class="field">
-        <span class="field__label">¿Necesitas autobús?</span>
-        <select class="field__input" name="autobus" required>
-          <option value="" selected disabled>Selecciona</option>
-          <option value="Si">Sí</option>
-          <option value="No">No</option>
-        </select>
-      </label>
-
-      <label class="field field--full">
-        <span class="field__label">Canción sugerida (opcional)</span>
-        <input class="field__input"
-               type="text"
-               name="cancion"
-               placeholder="Artista — Título" />
-      </label>
-    </div>
-
-    <div class="rsvpActions">
-      <button class="btn btn--primary" type="submit">Enviar</button>
-      <button class="btn btn--ghost" type="button" id="rsvpCloseBtn">Cerrar</button>
-    </div>
-
-    <p class="rsvpFine">
-      * Espera la confirmación de envío.
-    </p>
-  </form>
-</div>
-
-    <!-- ✅ CORTE “QUEBRADO” (momentos B -> asistencia A) -->
+    <!-- ✅ CORTE (momentos B -> asistencia A) -->
     <div class="sectionBreak sectionBreak--b-to-a" aria-hidden="true">
       <svg viewBox="0 0 1440 60" preserveAspectRatio="none" focusable="false" aria-hidden="true">
         <path class="sbFill" d="M0,0 H1440 V30
@@ -576,65 +586,65 @@
       </svg>
     </div>
 
-<!-- ASISTENCIA — color A -->
-<section class="section section--a" id="asistencia">
-  <div class="frame section__inner">
-    <div class="sectionHead">
-      <span class="sectionHead__line" aria-hidden="true"></span>
-      <h2 class="sectionHead__title">Todo lo que necesitas</h2>
-    </div>
-    <p class="sectionHead__sub">Dress code, autobús y notas útiles.</p>
-
-    <div class="actionGrid actionGrid--centerMobile">
-      <button class="actionCard" data-modal="dress" type="button">
-        <div class="actionIcon" aria-hidden="true">
-          <span class="actionLottie"
-                data-lottie="assets/lottie/vestido.json"
-                data-loop="true"
-                data-autoplay="false"
-                aria-hidden="true">
-            <span class="actionEmojiFallback" aria-hidden="true">👗</span>
-          </span>
+    <!-- ASISTENCIA — color A -->
+    <section class="section section--a" id="asistencia">
+      <div class="frame section__inner">
+        <div class="sectionHead">
+          <span class="sectionHead__line" aria-hidden="true"></span>
+          <h2 class="sectionHead__title">Todo lo que necesitas</h2>
         </div>
-        <div class="actionTitle">Dress code</div>
-        <div class="actionSub">Una orientación para tu vestuario</div>
-        <div class="actionBtn">Ver más</div>
-      </button>
+        <p class="sectionHead__sub">Dress code, autobús y notas útiles.</p>
 
-      <button class="actionCard" data-modal="bus" type="button">
-        <div class="actionIcon" aria-hidden="true">
-          <span class="actionLottie"
-                data-lottie="assets/lottie/bus.json"
-                data-loop="true"
-                data-autoplay="false"
-                aria-hidden="true">
-            <span class="actionEmojiFallback" aria-hidden="true">🚌</span>
-          </span>
+        <div class="actionGrid actionGrid--centerMobile">
+          <button class="actionCard" data-modal="dress" type="button">
+            <div class="actionIcon" aria-hidden="true">
+              <span class="actionLottie"
+                    data-lottie="assets/lottie/vestido.json"
+                    data-loop="true"
+                    data-autoplay="false"
+                    aria-hidden="true">
+                <span class="actionEmojiFallback" aria-hidden="true">👗</span>
+              </span>
+            </div>
+            <div class="actionTitle">Dress code</div>
+            <div class="actionSub">Una orientación para tu vestuario</div>
+            <div class="actionBtn">Ver más</div>
+          </button>
+
+          <button class="actionCard" data-modal="bus" type="button">
+            <div class="actionIcon" aria-hidden="true">
+              <span class="actionLottie"
+                    data-lottie="assets/lottie/bus.json"
+                    data-loop="true"
+                    data-autoplay="false"
+                    aria-hidden="true">
+                <span class="actionEmojiFallback" aria-hidden="true">🚌</span>
+              </span>
+            </div>
+            <div class="actionTitle">Autobús</div>
+            <div class="actionSub">Horarios y paradas</div>
+            <div class="actionBtn">Ver más</div>
+          </button>
+
+          <button class="actionCard" data-modal="tips" type="button">
+            <div class="actionIcon" aria-hidden="true">
+              <span class="actionLottie"
+                    data-lottie="assets/lottie/tips.json"
+                    data-loop="true"
+                    data-autoplay="false"
+                    aria-hidden="true">
+                <span class="actionEmojiFallback" aria-hidden="true">✨</span>
+              </span>
+            </div>
+            <div class="actionTitle">Tips</div>
+            <div class="actionSub">Información adicional</div>
+            <div class="actionBtn">+ Info</div>
+          </button>
         </div>
-        <div class="actionTitle">Autobús</div>
-        <div class="actionSub">Horarios y paradas</div>
-        <div class="actionBtn">Ver más</div>
-      </button>
+      </div>
+    </section>
 
-      <button class="actionCard" data-modal="tips" type="button">
-        <div class="actionIcon" aria-hidden="true">
-          <span class="actionLottie"
-                data-lottie="assets/lottie/tips.json"
-                data-loop="true"
-                data-autoplay="false"
-                aria-hidden="true">
-            <span class="actionEmojiFallback" aria-hidden="true">✨</span>
-          </span>
-        </div>
-        <div class="actionTitle">Tips</div>
-        <div class="actionSub">Información adicional</div>
-        <div class="actionBtn">+ Info</div>
-      </button>
-    </div>
-  </div>
-</section>
-
-    <!-- ✅ CORTE “QUEBRADO” (asistencia A -> galería B) -->
+    <!-- ✅ CORTE (asistencia A -> galería B) -->
     <div class="sectionBreak sectionBreak--a-to-b" aria-hidden="true">
       <svg viewBox="0 0 1440 60" preserveAspectRatio="none" focusable="false" aria-hidden="true">
         <path class="sbFill" d="M0,0 H1440 V32
@@ -786,7 +796,7 @@
       </div>
     </section>
 
-    <!-- ✅ CORTE “QUEBRADO” (galería B -> otros puntos A) -->
+    <!-- ✅ CORTE (galería B -> otros puntos A) -->
     <div class="sectionBreak sectionBreak--b-to-a" aria-hidden="true">
       <svg viewBox="0 0 1440 60" preserveAspectRatio="none" focusable="false" aria-hidden="true">
         <path class="sbFill" d="M0,0 H1440 V30
@@ -797,7 +807,7 @@
       </svg>
     </div>
 
-    <!-- ✅ OTROS PUNTOS DE VISTA — color A -->
+    <!-- OTROS PUNTOS DE VISTA — color A -->
     <section class="section section--a" id="puntos-de-vista">
       <div class="frame section__inner">
         <div class="sectionHead">
@@ -883,7 +893,7 @@
       </div>
     </section>
 
-    <!-- ✅ CORTE “QUEBRADO” (otros puntos A -> final/footer B) -->
+    <!-- ✅ CORTE (otros puntos A -> footer B) -->
     <div class="sectionBreak sectionBreak--a-to-b" aria-hidden="true">
       <svg viewBox="0 0 1440 60" preserveAspectRatio="none" focusable="false" aria-hidden="true">
         <path class="sbFill" d="M0,0 H1440 V32
@@ -893,39 +903,39 @@
       </svg>
     </div>
 
-<!-- FOOTER — color B -->
-<footer class="footer footer--b" id="final">
-  <div class="frame footer__inner">
-    <div class="footerTop">
-      <div class="footerBrand">
-        <div class="footerNames">Gema &amp; Alberto</div>
+    <!-- FOOTER — color B -->
+    <footer class="footer footer--b" id="final">
+      <div class="frame footer__inner">
+        <div class="footerTop">
+          <div class="footerBrand">
+            <div class="footerNames">Gema &amp; Alberto</div>
 
-        <!-- ✅ Fecha + logo (web: perfecto / móvil: se recoloca SOLO con CSS) -->
-        <div class="footerMeta">
-          <div class="footerDate">26.06.2026</div>
-          <img class="footerLogo"
-               src="assets/img/lacre1.png"
-               alt=""
-               aria-hidden="true"
-               loading="lazy"
-               decoding="async">
+            <!-- Fecha + logo -->
+            <div class="footerMeta">
+              <div class="footerDate">26.06.2026</div>
+              <img class="footerLogo"
+                   src="assets/img/lacre1.png"
+                   alt=""
+                   aria-hidden="true"
+                   loading="lazy"
+                   decoding="async">
+            </div>
+          </div>
+
+          <nav class="footerLinks" aria-label="Accesos rápidos">
+            <a class="footerLink" href="#confirmar-asistencia" id="footerRSVPLink">Confirmar asistencia</a>
+            <a class="footerLink" href="#" id="addToCalendarLink">Añadir al calendario</a>
+            <a class="footerLink" href="#" id="saveToHomeLink">Guardar la web</a>
+          </nav>
+        </div>
+
+        <div class="footerBottom">
+          <div class="footerNote">Hecho con cariño para un día que recordaremos siempre ♥</div>
         </div>
       </div>
+    </footer>
 
-      <nav class="footerLinks" aria-label="Accesos rápidos">
-        <a class="footerLink" href="#confirmar-asistencia" id="footerRSVPLink">Confirmar asistencia</a>
-        <a class="footerLink" href="#" id="addToCalendarLink">Añadir al calendario</a>
-        <a class="footerLink" href="#" id="saveToHomeLink">Guardar la web</a>
-      </nav>
-    </div>
-
-    <div class="footerBottom">
-      <div class="footerNote">Hecho con cariño para un día que recordaremos siempre ♥</div>
-    </div>
-  </div>
-</footer>
-
-</main>
+  </main>
 
   <!-- MODAL -->
   <div class="modal" id="modal" aria-hidden="true">
