@@ -786,11 +786,16 @@
   let lastFocusedEl = null;
 
   const modalTemplates = {
-    dress: `
-      <h2>Dress Code</h2>
-      <p>Sin etiqueta. Ven cómodo y con tu estilo, pero añade un toque elegante.</p>
-      <p><strong>Evita el blanco</strong> para no coincidir con la novia.</p>
-    `,
+dress: `
+  <h2>Dress Code</h2>
+
+  <p>- <strong>Sin etiqueta.</strong> Ven cómodo y con tu estilo, pero añade un toque elegante.</p>
+
+  <p>- <strong>Evita el blanco</strong> para no coincidir con la novia.</p>
+
+  <p>✨ Lo importante es que te sientas bien y disfrutes del día con nosotros.</p>
+`,
+
 bus: `
   <h2>Autobús</h2>
 
@@ -814,12 +819,18 @@ bus: `
 
   </div>
 `,
-    tips: `
-      <h2>Tips y notas</h2>
-      <p>- El cóctel será en el jardín, tenlo en cuenta para el calzado.</p>
-      <p>- Si tienes cualquier duda, contáctanos:</p>
-      <p>📱ALBERTO 620 57 91 01 - GEMA 680 96 21 64</p>
-    `,
+
+tips: `
+  <h2>Tips y notas</h2>
+
+  <p>- El cóctel será en el jardín, tenlo en cuenta a la hora de elegir el calzado.</p>
+
+  <p>- La ida en bus será todo elegancia… pero a la vuelta <strong>¡intentad portaros bien!</strong></p>
+
+  <p>- Si tienes cualquier duda, contáctanos:</p>
+
+  <p>📱 <strong>ALBERTO</strong> 620 57 91 01 — <strong>GEMA</strong> 680 96 21 64</p>
+`,
     save: `
       <h2>Guardar la web</h2>
       <p>Así la tendrás como si fuera una app:</p>

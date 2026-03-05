@@ -337,7 +337,7 @@ a{ color: inherit; text-decoration: none; }
 .envelopeNamesTop{
   font-family: "VintageGoods", serif;
   font-weight: normal;
-  font-size: clamp(40px, 6.2vw, 77px);
+  font-size: clamp(37px, 6.2vw, 77px);
   letter-spacing: .8px;
   color: rgba(255,255,255,0.96);
   text-shadow:
