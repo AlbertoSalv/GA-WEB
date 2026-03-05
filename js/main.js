@@ -791,10 +791,29 @@
       <p>Sin etiqueta. Ven cómodo y con tu estilo, pero añade un toque elegante.</p>
       <p><strong>Evita el blanco</strong> para no coincidir con la novia.</p>
     `,
-    bus: `
-      <h2>Autobús</h2>
-      <p>Horarios y paradas (pendiente de confirmar). Aquí pondremos toda la info.</p>
-    `,
+bus: `
+  <h2>Autobús</h2>
+
+  <p>Horarios y paradas. La información pendiente de confirmar la actualizaremos aquí.</p>
+
+  <div class="modalInfo">
+
+    <h3>🚌 Salida</h3>
+    <p><strong>Hora:</strong> 18:15h</p>
+    <ul>
+      <li>1ª parada: Circular</li>
+      <li>2ª parada: Por determinar</li>
+    </ul>
+
+    <h3>↩️ Vuelta desde El Hueco</h3>
+    <p><strong>Hora:</strong> 02:00h</p>
+    <ul>
+      <li>1ª parada: Por determinar</li>
+      <li>2ª parada: Circular</li>
+    </ul>
+
+  </div>
+`,
     tips: `
       <h2>Tips y notas</h2>
       <p>- El cóctel será en el jardín, tenlo en cuenta para el calzado.</p>
