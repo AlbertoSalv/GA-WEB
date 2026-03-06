@@ -2203,102 +2203,156 @@ textarea.field__input{ resize: vertical; min-height: 96px; }
   letter-spacing: .2px;
 }
 
-/* MÓVIL footer (sin ellipsis) */
+/* MÓVIL footer — versión mejorada */
 @media (max-width:768px){
-  .footer__inner{ overflow:hidden; }
-
-  .footerTop{
-    display:grid;
-    grid-template-columns: 1fr minmax(190px, 48vw);
-    grid-template-rows: auto auto;
-    column-gap: 14px;
-    row-gap: 10px;
-    align-items:start;
-    padding-right: 12px;
+  .footer{
+    padding: 34px 0 58px;
   }
 
-  .footerBrand{ display: contents; }
+  .footer__inner{
+    overflow: hidden;
+    padding: 22px 18px 20px;
+    border-radius: 30px;
+  }
+
+  .footerTop{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding-right: 0;
+  }
+
+  .footerBrand{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    text-align: center;
+  }
 
   .footerNames{
-    grid-column: 1 / -1;
-    grid-row: 1;
-    font-size: clamp(22px, 6.6vw, 30px);
-    line-height: 1.02;
+    font-size: clamp(24px, 8vw, 34px);
+    line-height: 1.05;
+    text-align: center;
     white-space: nowrap;
     overflow: visible;
     text-overflow: clip;
-    color: #111;
+    color: rgba(22,22,22,.92);
+    width: 100%;
+    margin: 0 auto;
   }
 
   .footerMeta{
-    grid-column: 1;
-    grid-row: 2;
-    display:flex;
+    display: flex;
     flex-direction: column;
-    align-items:flex-start;
+    align-items: center;
+    justify-content: center;
     gap: 8px;
-    margin-top: 2px;
+    margin-top: 0;
     min-width: 0;
+    text-align: center;
   }
 
   .footerDate{
     font-size: 12px;
     line-height: 1.1;
-    letter-spacing: 2.0px;
-    color: #111;
+    letter-spacing: 2.2px;
+    color: rgba(22,22,22,.66);
+    text-align: center;
   }
 
   .footerLogo{
-    width: 66px;
-    height: 66px;
-    opacity: .30;
+    width: 58px;
+    height: 58px;
+    opacity: .24;
     transform: none;
     flex: 0 0 auto;
   }
 
   .footerLinks{
-    grid-column: 2;
-    grid-row: 2;
-    display:flex;
+    display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    justify-content: flex-start;
-    gap: 10px;
-    margin-top: 22px;
-    justify-self: end;
-    padding-right: 0px;
+    align-items: center;
+    justify-content: center;
+    gap: 11px;
+    width: 100%;
+    margin-top: 6px;
+    padding-right: 0;
   }
 
   .footerLink{
-    width: 100%;
-    max-width: 220px;
+    width: min(270px, 84%);
+    max-width: 270px;
     text-align: center;
-    padding: 12px 12px;
-    font-size: clamp(9px, 2.45vw, 10px);
-    letter-spacing: clamp(.95px, .22vw, 1.15px);
+    padding: 13px 14px;
+    font-size: 10px;
+    letter-spacing: 1.15px;
     white-space: nowrap;
     line-height: 1;
     overflow: hidden;
     text-overflow: clip;
-    color:#111;
+
+    /* ✅ mismo color suave que en web */
+    color: rgba(22,22,22,.70);
+    background: rgba(255,255,255,.66);
+    border: 1px solid rgba(22,22,22,.10);
+    box-shadow:
+      0 10px 26px rgba(0,0,0,.08),
+      inset 0 1px 0 rgba(255,255,255,.65);
   }
 
-  .footerBottom{ margin-top: 14px; }
+  .footerLink::before{
+    content:"";
+    position:absolute;
+    inset: 1px;
+    border-radius: 999px;
+    pointer-events:none;
+    background: linear-gradient(
+      to bottom,
+      rgba(255,255,255,.55),
+      rgba(255,255,255,0)
+    );
+    opacity: .55;
+  }
+
+  .footerBottom{
+    margin-top: 18px;
+    display: flex;
+    justify-content: center;
+  }
+
   .footerNote{
-    text-align:center;
-    max-width: 28ch;
-    color: rgba(0,0,0,.55);
+    text-align: center;
+    max-width: 24ch;
+    margin: 0 auto;
+    color: rgba(22,22,22,.56);
+    line-height: 1.45;
   }
 }
+
 @media (max-width:360px){
-  .footerTop{
-    grid-template-columns: 1fr minmax(200px, 50vw);
-    padding-right: 12px;
+  .footer__inner{
+    padding: 20px 14px 18px;
   }
+
+  .footerNames{
+    font-size: clamp(22px, 8vw, 30px);
+  }
+
   .footerLink{
-    max-width: 210px;
+    width: min(250px, 88%);
+    max-width: 250px;
     font-size: 9px;
     letter-spacing: 1.0px;
+    padding: 12px 12px;
+  }
+
+  .footerNote{
+    max-width: 22ch;
   }
 }
 
