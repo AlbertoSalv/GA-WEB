@@ -105,7 +105,7 @@ body{
   background:
     radial-gradient(1100px 640px at 18% 0%, rgba(200,162,74,.12), rgba(200,162,74,0) 62%),
     radial-gradient(980px 600px at 82% 6%, rgba(22,22,22,.07), rgba(22,22,22,0) 62%),
-    linear-gradient(180deg, #f4efe3 0%, #e9dcc5 100%);
+    linear-gradient(180deg, #f7f4ee 0%, #efe7d6 100%);
   background-attachment: fixed;
 
   overflow-x: hidden;
