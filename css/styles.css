@@ -44,8 +44,8 @@
   --gutter: 22px;
   --section-pad: 44px;
 
-  --intro-dim: rgba(0,0,0,.52);
-  --intro-blur: 12px;
+  --intro-dim: rgba(245,241,231,.78);
+  --intro-blur: 8px;
 
   --card-radius: 28px;
   --card-shadow: 0 30px 90px rgba(0,0,0,.32);
