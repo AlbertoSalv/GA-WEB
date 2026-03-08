@@ -793,6 +793,8 @@ dress: `
 
   <p>- <strong>Evita el blanco</strong> para no coincidir con la novia.</p>
 
+  <p>- El cóctel será en el jardín, tenlo en cuenta a la hora de elegir el calzado.</p>
+
   <p>✨ Lo importante es que te sientas bien y disfrutes del día con nosotros.</p>
 `,
 
@@ -823,7 +825,7 @@ bus: `
 tips: `
   <h2>Tips y notas</h2>
 
-  <p>- El cóctel será en el jardín, tenlo en cuenta a la hora de elegir el calzado.</p>
+  <p>- Si tienes pensado quedarte a dormir, te recomendamos reservar hotel cuanto antes, ya que ese fin de semana coincide con el festival Conexión Valladolid.</p>
 
   <p>- La ida en bus será todo elegancia… pero a la vuelta <strong>¡intentad portaros bien!</strong></p>
 
